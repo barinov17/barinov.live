@@ -41,7 +41,10 @@
 
   /* две зоны: тёмная — имя и текущий проект, чуть светлее — прошлые проекты и контакты */
   .zone { background: var(--paper); color: var(--ink); padding: 48px clamp(16px, 2.5vw, 28px) 40px; }
-  .zone.top { padding-top: clamp(24px, 4vw, 48px); padding-bottom: 48px; }
+  .zone.top { position: relative; padding-top: clamp(24px, 4vw, 48px); padding-bottom: 48px; }
+  /* переключатель версии страницы — справа вверху */
+  .alt { position: absolute; top: clamp(24px, 4vw, 48px); right: clamp(16px, 2.5vw, 28px); padding: 4px 10px; border: 1px solid var(--muted); color: var(--muted); font-size: var(--small); text-decoration: none; }
+  .alt:hover { border-color: var(--accent); }
   .zone.past { --paper: #313744; --muted: #9DA4B1; --hair: #404756; --accent: #F4628C; }
 
   /* одна сетка на всю страницу: пустая узкая колонка-отступ + колонка текста */
@@ -97,6 +100,7 @@
 <body>
 <main>
 <div class="zone top">
+<a class="alt" href="lab.html">motion ✦</a>
 <div class="sheet">
 
   <div class="me">
