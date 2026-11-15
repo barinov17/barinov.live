@@ -41,8 +41,9 @@
   /* одна сетка на всю страницу: пустая узкая колонка-отступ + колонка текста */
   .sheet { display: grid; grid-template-columns: minmax(0, 1fr); row-gap: 48px; }
   /* каждый блок: подпись слева, содержимое правее */
-  section > :not(h2) { max-width: 380px; }
-  section > h2 { margin-bottom: 14px; }
+  section { display: grid; grid-template-columns: 92px minmax(0, 1fr); column-gap: 28px; align-items: baseline; }
+  section > :not(h2) { grid-column: 2; max-width: 380px; }
+  .sheet > p { padding-left: 120px; }
   /* моноширинный — только для служебного: имя, кнопка, ссылки, подвал */
   h2, .more, .links, .cal, .sheet > p { font: 400 12px/1.6 var(--mono); letter-spacing: 0.02em; }
   h2 { color: var(--muted); text-transform: uppercase; letter-spacing: 0.08em; }
@@ -77,6 +78,10 @@
 
   @media (max-width: 720px) {
     .sheet { row-gap: 40px; }
+    section { grid-template-columns: minmax(0, 1fr); }
+    section > :not(h2) { grid-column: 1; }
+    section > h2 { margin-bottom: 12px; }
+    .sheet > p { padding-left: 0; }
   }
 </style>
 </head>
@@ -104,7 +109,7 @@
   </section>
 
   <section>
-  <h2>Previous:</h2>
+  <h2>Previously:</h2>
   <ul>
 
     <li class="case">
