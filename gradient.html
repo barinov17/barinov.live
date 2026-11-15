@@ -176,6 +176,14 @@
   .me { max-width: 560px; }
   .sheet { row-gap: 56px; }
   .sheet > p { padding-left: 0; }
+
+  /* ——— Иконки у названий проектов: Lucide (lucide.dev), лицензия ISC ——— */
+  .case h3 { display: flex; align-items: center; gap: 10px; }
+  .ico { flex: none; width: 19px; height: 19px; fill: none; stroke: currentColor; stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; }
+  /* ——— Текущий проект — карточка: тонкая рамка, едва заметная заливка, скруглённые углы ——— */
+  .case.main { padding: 22px 24px 24px; border: 1px solid rgba(243, 238, 232, .18); border-radius: 16px; background: rgba(243, 238, 232, .04); }
+  .case.main .site { margin-top: 22px; }
+  @media (max-width: 720px) { .case.main { padding: 18px 18px 20px; border-radius: 14px; } }
 </style>
 </head>
 <body>
@@ -193,7 +201,7 @@
   <h2>Now</h2>
   <ul>
     <li class="case main">
-      <h3>RubiqOS</h3>
+      <h3><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 8V4H8" /><rect width="16" height="12" x="4" y="8" rx="2" /><path d="M2 14h2" /><path d="M20 14h2" /><path d="M15 13v2" /><path d="M9 13v2" /></svg>RubiqOS</h3>
       <p>Physical AI platform for resort operations.</p>
       <div class="content open">
         <p>RubiqOS orchestrates day-to-day operations between people and robots. Its engine plans the tasks, splits the work between staff and machines, and runs both as one team.</p>
@@ -213,7 +221,7 @@
   <ul>
 
     <li class="case">
-      <h3>Private island development</h3>
+      <h3><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M13 8c0-2.76-2.46-5-5.5-5S2 5.24 2 8h2l1-1 1 1h4" /><path d="M13 7.14A5.82 5.82 0 0 1 16.5 6c3.04 0 5.5 2.24 5.5 5h-3l-1-1-1 1h-3" /><path d="M5.89 9.71c-2.15 2.15-2.3 5.47-.35 7.43l4.24-4.25.7-.7.71-.71 2.12-2.12c-1.95-1.96-5.27-1.8-7.42.35" /><path d="M11 15.5c.5 2.5-.17 4.5-1 6.5h4c2-5.5-.5-12-1-14" /></svg>Private island development</h3>
       <p>Masterplan for a $1B resort on a private island in the Caribbean.</p>
       <button class="more" aria-expanded="false">more</button>
       <div class="content">
@@ -223,7 +231,7 @@
     </li>
 
     <li class="case">
-      <h3>CERN lab building</h3>
+      <h3><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="1" /><path d="M20.2 20.2c2.04-2.03.02-7.36-4.5-11.9-4.54-4.52-9.87-6.54-11.9-4.5-2.04 2.03-.02 7.36 4.5 11.9 4.54 4.52 9.87 6.54 11.9 4.5Z" /><path d="M15.7 15.7c4.52-4.54 6.54-9.87 4.5-11.9-2.03-2.04-7.36-.02-11.9 4.5-4.52 4.54-6.54 9.87-4.5 11.9 2.03 2.04 7.36.02 11.9-4.5Z" /></svg>CERN lab building</h3>
       <p>Concept development for a laboratory complex on the CERN campus.</p>
       <button class="more" aria-expanded="false">more</button>
       <div class="content">
@@ -233,7 +241,7 @@
     </li>
 
     <li class="case">
-      <h3>Easyinn</h3>
+      <h3><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M2.586 17.414A2 2 0 0 0 2 18.828V21a1 1 0 0 0 1 1h3a1 1 0 0 0 1-1v-1a1 1 0 0 1 1-1h1a1 1 0 0 0 1-1v-1a1 1 0 0 1 1-1h.172a2 2 0 0 0 1.414-.586l.814-.814a6.5 6.5 0 1 0-4-4z" /><circle cx="16.5" cy="7.5" r=".5" fill="currentColor" /></svg>Easyinn</h3>
       <p>Platform for automated property management.</p>
       <button class="more" aria-expanded="false">more</button>
       <div class="content">
@@ -243,7 +251,7 @@
     </li>
 
     <li class="case">
-      <h3>Habithai</h3>
+      <h3><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M15 21v-8a1 1 0 0 0-1-1h-4a1 1 0 0 0-1 1v8" /><path d="M3 10a2 2 0 0 1 .709-1.528l7-5.999a2 2 0 0 1 2.582 0l7 5.999A2 2 0 0 1 21 10v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" /></svg>Habithai</h3>
       <p>Gated community development on Koh Samui, Thailand.</p>
       <button class="more" aria-expanded="false">more</button>
       <div class="content">
@@ -252,7 +260,7 @@
     </li>
 
     <li class="case">
-      <h3>Foresight Moscow-2050</h3>
+      <h3><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="m10.065 12.493-6.18 1.318a.934.934 0 0 1-1.108-.702l-.537-2.15a1.07 1.07 0 0 1 .691-1.265l13.504-4.44" /><path d="m13.56 11.747 4.332-.924" /><path d="m16 21-3.105-6.21" /><path d="M16.485 5.94a2 2 0 0 1 1.455-2.425l1.09-.272a1 1 0 0 1 1.212.727l1.515 6.06a1 1 0 0 1-.727 1.213l-1.09.272a2 2 0 0 1-2.425-1.455z" /><path d="m6.158 8.633 1.114 4.456" /><path d="m8 21 3.105-6.21" /><circle cx="12" cy="13" r="2" /></svg>Foresight Moscow-2050</h3>
       <p>The largest foresight study for the Moscow masterplan.</p>
       <button class="more" aria-expanded="false">more</button>
       <div class="content">
@@ -268,7 +276,7 @@
     </li>
 
     <li class="case">
-      <h3>Nikolskiy market</h3>
+      <h3><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><line x1="3" x2="21" y1="22" y2="22" /><line x1="6" x2="6" y1="18" y2="11" /><line x1="10" x2="10" y1="18" y2="11" /><line x1="14" x2="14" y1="18" y2="11" /><line x1="18" x2="18" y1="18" y2="11" /><polygon points="12 2 20 7 4 7" /></svg>Nikolskiy market</h3>
       <p>Redevelopment of a cluster of historic buildings in Saint Petersburg.</p>
       <button class="more" aria-expanded="false">more</button>
       <div class="content">
@@ -280,7 +288,7 @@
     </li>
 
     <li class="case">
-      <h3>Aircraft manufacturing facility</h3>
+      <h3><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M17.8 19.2 16 11l3.5-3.5C21 6 21.5 4 21 3c-1-.5-3 0-4.5 1.5L13 8 4.8 6.2c-.5-.1-.9.1-1.1.5l-.3.5c-.2.5-.1 1 .3 1.3L9 12l-2 3H4l-1 1 3 2 2 3 1-1v-3l3-2 3.5 5.3c.3.4.8.5 1.3.3l.5-.2c.4-.3.6-.7.5-1.2z" /></svg>Aircraft manufacturing facility</h3>
       <p>Development and optimization of the masterplan for a high-tech manufacturing center.</p>
       <button class="more" aria-expanded="false">more</button>
       <div class="content">
