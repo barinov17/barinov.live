@@ -1,0 +1,246 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Aleks Barinov — real estate & urban planning</title>
+<meta name="description" content="Aleks Barinov — real estate professional and urban planner. Development concepts, masterplans and proptech.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400&family=IBM+Plex+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<script>document.documentElement.classList.add('js')</script>
+<style>
+  :root {
+    color-scheme: dark;
+    --paper: #151A24;
+    --ink: #E6E8EE;
+    --muted: #848C9C;
+    --hair: #2A3140;
+    --accent: #DC1F5C;
+    --sans: "IBM Plex Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+    --mono: "IBM Plex Mono", ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+  }
+  * { box-sizing: border-box; }
+  html { -webkit-text-size-adjust: 100%; }
+  body {
+    margin: 0;
+    padding: clamp(24px, 4vw, 48px) clamp(16px, 2.5vw, 28px) 40px;
+    background: var(--paper);
+    color: var(--ink);
+    font: 400 15px/1.5 var(--sans);
+    -webkit-font-smoothing: antialiased;
+  }
+  p, h1, h2, h3, ul { margin: 0; padding: 0; font: inherit; list-style: none; }
+  b, h1, h3 { font-weight: 500; }
+  a { color: inherit; text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: 3px; }
+  a:hover { color: var(--accent); }
+  ::selection { background: var(--ink); color: var(--paper); }
+  :focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+  .muted { color: var(--muted); }
+
+  /* одна сетка на всю страницу: пустая узкая колонка-отступ + колонка текста */
+  .sheet { display: grid; grid-template-columns: minmax(0, 1fr); row-gap: 48px; }
+  /* каждый блок: подпись слева, содержимое правее */
+  section > :not(h2) { max-width: 380px; }
+  section > h2 { margin-bottom: 14px; }
+  /* моноширинный — только для служебного: имя, кнопка, ссылки, подвал */
+  h2, .more, .links, .cal, .sheet > p { font: 400 12px/1.6 var(--mono); letter-spacing: 0.02em; }
+  h2 { color: var(--muted); text-transform: uppercase; letter-spacing: 0.08em; }
+  .cal { margin-top: 28px; }
+
+  .me { max-width: 640px; font-size: clamp(18px, 1.6vw, 20px); line-height: 1.4; letter-spacing: -0.01em; }
+  .me h1 { font-weight: 500; margin-bottom: 0.35em; }
+  .me p { color: #B9BECA; text-wrap: balance; }
+  .links { display: flex; flex-wrap: wrap; gap: 0 3ch; }
+
+  .case + .case { margin-top: 26px; }
+  /* основной проект: рамка, описание открыто, ссылка на сайт */
+  .case.main .content { padding-bottom: 0; }
+  /* текущий проект: шире остального и на чуть более светлой подложке */
+  section.current > :not(h2) { max-width: 640px; }
+  .case.main { margin: 0 -16px; padding: 16px 16px 18px; background: #1D2331; }
+  .site { display: inline-block; margin-top: 10px; font: 400 12px/1.6 var(--mono); letter-spacing: 0.02em; }
+  .case h3 { color: var(--accent); font-size: 17px; line-height: 1.3; letter-spacing: -0.01em; margin-bottom: 2px; }
+  .more { display: inline-block; margin: 6px 0 0; padding: 0; border: 0; background: none; color: var(--muted); cursor: pointer; }
+  .more::after { content: " ↓"; }
+  .more[aria-expanded="true"]::after { content: " ↑"; }
+  .more:hover { color: #8FB3D1; }
+  .content { padding: 10px 0 6px; color: var(--muted); font-size: 14px; line-height: 1.55; }
+  .js .content { display: none; }
+  .js .content.open { display: block; }
+  .content p + p, .content ul + p, .content p + ul { margin-top: 1em; }
+  .content li { padding-left: 1.2em; position: relative; }
+  .content li + li { margin-top: .35em; }
+  .content li::before { content: "–"; position: absolute; left: 0; }
+
+  .cal .calendly-inline-widget { min-width: 280px; height: 680px; border: 1px solid var(--hair); margin-top: 12px; }
+
+  @media (max-width: 720px) {
+    .sheet { row-gap: 40px; }
+  }
+</style>
+</head>
+<body>
+<main class="sheet">
+
+  <div class="me">
+    <h1>Aleks Barinov</h1>
+    <p>I specialize in developing concept, product and technical solutions for large-scale development projects.</p>
+  </div>
+
+  <section class="current">
+  <h2>Currently:</h2>
+  <ul>
+    <li class="case main">
+      <h3>RubiqOS</h3>
+      <p>Physical AI platform for resort operations.</p>
+      <div class="content open">
+        <p>RubiqOS orchestrates day-to-day operations between people and robots. Its engine plans the tasks, splits the work between staff and machines, and runs both as one team.</p>
+        <p>The platform works with robots from any maker: a shared fleet of proven machines is built into the operating plan, each doing a specific job in a specific place. Operators keep the systems they already know, and everything runs through a single platform.</p>
+      </div>
+      <a class="site" href="https://rubiqos.com/" target="_blank" rel="noopener">rubiqos.com ↗</a>
+    </li>
+  </ul>
+  </section>
+
+  <section>
+  <h2>Previous:</h2>
+  <ul>
+
+    <li class="case">
+      <h3>Private island development</h3>
+      <p>Masterplan for a $1B resort on a private island in the Caribbean.</p>
+      <button class="more" aria-expanded="false">more</button>
+      <div class="content">
+        <p>My concept won a <a href="https://www.ribacompetitions.com/" target="_blank" rel="noopener">RIBA competition</a>, and I was invited to join the project as Lead Masterplan Architect. I was the third member of the team and helped shape the initial vision, the masterplan and the overall development concept.</p>
+        <p>My scope covered the architectural and development concept of the island, strategic planning and cross-disciplinary coordination.</p>
+      </div>
+    </li>
+
+    <li class="case">
+      <h3>CERN lab building</h3>
+      <p>Concept development for a laboratory complex on the CERN campus.</p>
+      <button class="more" aria-expanded="false">more</button>
+      <div class="content">
+        <p>Our team helped shape the concept for a complex of administrative buildings and laboratories at CERN. We ran several strategy sessions with the architectural teams and laboratory representatives to define clear requirements for the architectural design.</p>
+        <p>In collaboration with <a href="https://home.cern/" target="_blank" rel="noopener">CERN</a> and <a href="https://www.nickl-partner.com/en/" target="_blank" rel="noopener">Nickl &amp; Partner</a></p>
+      </div>
+    </li>
+
+    <li class="case">
+      <h3>Easyinn</h3>
+      <p>Platform for automated property management.</p>
+      <button class="more" aria-expanded="false">more</button>
+      <div class="content">
+        <p>Easyinn started as an internal tool for running our own network of hotels with 280 units in total. It included a keyless access system and a guest app with a marketplace of local services.</p>
+        <p>It was later spun off as a standalone product and launched in several countries.</p>
+      </div>
+    </li>
+
+    <li class="case">
+      <h3>Habithai</h3>
+      <p>Gated community development on Koh Samui, Thailand.</p>
+      <button class="more" aria-expanded="false">more</button>
+      <div class="content">
+        <p>Masterplan and product concept for a gated community of 11 premium villas on Koh Samui, Thailand — plus fundraising, marketing and sales.</p>
+      </div>
+    </li>
+
+    <li class="case">
+      <h3>Foresight Moscow-2050</h3>
+      <p>The largest foresight study for the Moscow masterplan.</p>
+      <button class="more" aria-expanded="false">more</button>
+      <div class="content">
+        <p>I was part of the team that developed the methodology, strategy and overall structure of the study for the Moscow masterplan — a joint effort of three universities and research institutions and more than 2,000 experts from business, government and academia.</p>
+        <p>The project shaped the long-term development strategy of the Moscow masterplan and made several landmark projects possible, including:</p>
+        <ul>
+          <li>Autonomous taxis and delivery drones launched in real urban conditions together with <a href="https://yandex.com/" target="_blank" rel="noopener">Yandex</a> and <a href="https://vkusvill.ru/" target="_blank" rel="noopener">VkusVill</a>.</li>
+          <li><a href="https://badaevsky.com/en/" target="_blank" rel="noopener">Badaevsky</a> — a one-of-a-kind residential complex raised 17 meters above the ground.</li>
+          <li><a href="https://en.wikipedia.org/wiki/Moscow_Regular_River_Transport" target="_blank" rel="noopener">Moscow Regular River Transport</a> — the launch and route planning of the city's regular river service.</li>
+        </ul>
+        <p>In collaboration with the <a href="https://genplanmos.ru/" target="_blank" rel="noopener">Moscow Masterplan Institute</a> and the <a href="https://www.hse.ru/en/" target="_blank" rel="noopener">Higher School of Economics</a></p>
+      </div>
+    </li>
+
+    <li class="case">
+      <h3>Nikolskiy market</h3>
+      <p>Redevelopment of a cluster of historic buildings in Saint Petersburg.</p>
+      <button class="more" aria-expanded="false">more</button>
+      <div class="content">
+        <p>The goal was to increase the value of a restored 40,000 m² historic building fivefold within five years.</p>
+      </div>
+    </li>
+
+    <li class="case">
+      <h3>Aircraft plant</h3>
+      <p>Development and optimization of the masterplan for a high-tech manufacturing center.</p>
+      <button class="more" aria-expanded="false">more</button>
+      <div class="content">
+        <p>The site is an aircraft plant that builds civil aircraft as well as fourth- and fifth-generation fighter jets.</p>
+        <p>Our task was to expand and partially redesign the site to make room for new production facilities.</p>
+      </div>
+    </li>
+  </ul>
+
+  </section>
+
+  <section>
+  <h2>Contacts:</h2>
+  <ul class="links">
+    <li><a href="https://wa.me/12428075582" target="_blank" rel="noopener">WhatsApp</a></li>
+    <li><a href="https://t.me/forbarinov" target="_blank" rel="noopener">Telegram</a></li>
+    <li data-link="x"><span class="muted">X.com</span></li>
+    <li data-link="medium"><span class="muted">Medium</span></li>
+    <li data-link="linkedin"><span class="muted">LinkedIn</span></li>
+  </ul>
+
+  <div class="cal" id="calendly">
+    <p class="muted">Calendar will appear here.</p>
+  </div>
+
+  </section>
+
+  <p class="muted">©2026 Aleks Barinov</p>
+
+</main>
+
+<script>
+  /* ——— Вставь адреса, когда будут. Пустая строка = без ссылки. ——— */
+  var LINKS = {
+    x:        "https://x.com/BarinovLive",
+    medium:   "https://medium.com/@barinov.live",
+    linkedin: "https://www.linkedin.com/in/forbarinov/",
+    calendly: ""    // https://calendly.com/username/30min
+  };
+
+  ['x', 'medium', 'linkedin'].forEach(function (k) {
+    var li = document.querySelector('[data-link="' + k + '"]');
+    if (!LINKS[k]) { li.remove(); return; }
+    var a = document.createElement('a');
+    a.href = LINKS[k]; a.target = '_blank'; a.rel = 'noopener';
+    a.textContent = li.textContent;
+    li.replaceChildren(a);
+  });
+
+  document.querySelectorAll('.more').forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      var open = btn.closest('.case').querySelector('.content').classList.toggle('open');
+      btn.setAttribute('aria-expanded', open);
+      btn.textContent = open ? 'less' : 'more';
+    });
+  });
+
+  if (LINKS.calendly) {
+    var box = document.getElementById('calendly');
+    box.innerHTML = '<div class="calendly-inline-widget"></div>';
+    box.firstChild.setAttribute('data-url', LINKS.calendly + '?hide_gdpr_banner=1&background_color=151a24&text_color=e6e8ee&primary_color=dc1f5c');
+    var s = document.createElement('script');
+    s.src = 'https://assets.calendly.com/assets/external/widget.js';
+    s.async = true;
+    document.body.appendChild(s);
+  } else {
+    document.getElementById('calendly').remove();
+  }
+</script>
+</body>
+</html>
