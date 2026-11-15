@@ -7,7 +7,7 @@
 <meta name="description" content="Aleks Barinov — real estate professional and urban planner. Development concepts, masterplans and proptech.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400&family=IBM+Plex+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <script>document.documentElement.classList.add('js')</script>
 <style>
   :root {
@@ -17,8 +17,9 @@
     --muted: #848C9C;
     --hair: #2A3140;
     --accent: #DC1F5C;
-    --sans: "IBM Plex Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
-    --mono: "IBM Plex Mono", ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+    --sans: "JetBrains Mono", ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+    /* один шрифт, два начертания, четыре кегля: 13 / 15 / 17 / до 30 */
+    --small: 13px;
   }
   * { box-sizing: border-box; }
   html { -webkit-text-size-adjust: 100%; }
@@ -27,7 +28,7 @@
     padding: clamp(24px, 4vw, 48px) clamp(16px, 2.5vw, 28px) 40px;
     background: var(--paper);
     color: var(--ink);
-    font: 400 15px/1.5 var(--sans);
+    font: 400 15px/1.55 var(--sans);
     -webkit-font-smoothing: antialiased;
   }
   p, h1, h2, h3, ul { margin: 0; padding: 0; font: inherit; list-style: none; }
@@ -41,32 +42,35 @@
   /* одна сетка на всю страницу: пустая узкая колонка-отступ + колонка текста */
   .sheet { display: grid; grid-template-columns: minmax(0, 1fr); row-gap: 48px; }
   /* каждый блок: подпись слева, содержимое правее */
-  section { display: grid; grid-template-columns: 92px minmax(0, 1fr); column-gap: 28px; align-items: baseline; }
-  section > :not(h2) { grid-column: 2; max-width: 380px; }
-  .sheet > p { padding-left: 120px; }
+  /* одна ширина колонки на всю страницу: верхний блок, Now и Past заканчиваются на одной вертикали */
+  section { display: grid; grid-template-columns: 88px minmax(0, 1fr); column-gap: 28px; align-items: baseline; }
+  section > :not(h2) { grid-column: 2; max-width: 480px; }
+  .sheet > p { padding-left: 116px; }
   /* моноширинный — только для служебного: имя, кнопка, ссылки, подвал */
-  h2, .more, .links, .cal, .sheet > p { font: 400 12px/1.6 var(--mono); letter-spacing: 0.02em; }
+  h2, .more, .site, .cal, .sheet > p { font-size: var(--small); }
   h2 { color: var(--muted); text-transform: uppercase; letter-spacing: 0.08em; }
   .cal { margin-top: 28px; }
 
-  .me { max-width: 640px; font-size: clamp(18px, 1.6vw, 20px); line-height: 1.4; letter-spacing: -0.01em; }
-  .me h1 { font-weight: 500; margin-bottom: 0.35em; }
-  .me p { color: #B9BECA; text-wrap: balance; }
-  .links { display: flex; flex-wrap: wrap; gap: 0 3ch; }
+  /* верхний блок: один крупный узкий набор, имя + фраза с выделенными словами */
+  /* имя — заголовок, фраза — отдельный абзац на ступень ниже, с отбивкой */
+  .me { max-width: 596px; padding: clamp(8px, 2vw, 24px) 0 8px; }
+  .me h1 { font-size: clamp(22px, 2.6vw, 30px); line-height: 1.2; letter-spacing: -0.02em; font-weight: 500; margin-bottom: 18px; }
+  .me p { font-size: 17px; line-height: 1.5; color: var(--muted); text-wrap: pretty; }
+  .me p b { color: var(--ink); font-weight: inherit; }
+  .me p em { color: var(--accent); font-style: normal; }
+  .links { display: flex; flex-wrap: wrap; gap: 0 24px; max-width: none; }
 
   .case + .case { margin-top: 26px; }
   /* основной проект: рамка, описание открыто, ссылка на сайт */
   .case.main .content { padding-bottom: 0; }
   /* текущий проект: шире остального и на чуть более светлой подложке */
-  section.current > :not(h2) { max-width: 640px; }
-  .case.main { margin: 0 -16px; padding: 16px 16px 18px; background: #1D2331; }
-  .site { display: inline-block; margin-top: 10px; font: 400 12px/1.6 var(--mono); letter-spacing: 0.02em; }
-  .case h3 { color: var(--accent); font-size: 17px; line-height: 1.3; letter-spacing: -0.01em; margin-bottom: 2px; }
-  .more { display: inline-block; margin: 6px 0 0; padding: 0; border: 0; background: none; color: var(--muted); cursor: pointer; }
+  .site { display: inline-block; margin-top: 10px; }
+  .case h3 { color: var(--accent); font-size: 17px; line-height: 1.3; margin-bottom: 2px; }
+  .more { display: inline-block; margin: 6px 0 0; padding: 0; border: 0; background: none; font-family: inherit; color: var(--muted); cursor: pointer; }
   .more::after { content: " ↓"; }
   .more[aria-expanded="true"]::after { content: " ↑"; }
   .more:hover { color: #8FB3D1; }
-  .content { padding: 10px 0 6px; color: var(--muted); font-size: 14px; line-height: 1.55; }
+  .content { padding: 10px 0 6px; color: var(--muted); font-size: var(--small); line-height: 1.5; }
   .js .content { display: none; }
   .js .content.open { display: block; }
   .content p + p, .content ul + p, .content p + ul { margin-top: 1em; }
@@ -90,11 +94,11 @@
 
   <div class="me">
     <h1>Aleks Barinov</h1>
-    <p>I specialize in developing concept, product and technical solutions for large-scale development projects.</p>
+    <p>I specialize in developing <b>masterplans</b>, <b>development concepts</b> and <b>technology solutions</b> for <em><span style="white-space:nowrap">large-scale</span> development projects</em>.</p>
   </div>
 
   <section class="current">
-  <h2>Currently:</h2>
+  <h2>Now:</h2>
   <ul>
     <li class="case main">
       <h3>RubiqOS</h3>
@@ -109,7 +113,7 @@
   </section>
 
   <section>
-  <h2>Previously:</h2>
+  <h2>Past:</h2>
   <ul>
 
     <li class="case">
