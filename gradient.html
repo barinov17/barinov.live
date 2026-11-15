@@ -838,7 +838,7 @@
            остров: вид сверху, как на макете, плавно поворачивается туда-обратно */
         var cn = cur === 'cern', isl = cur === 'island', ang = cn ? ms / 1000 * .12 : isl ? .25 + .3 * Math.sin(ms / 1000 * .16) : .3 * Math.sin(ms / 1000 * .22), ca = Math.cos(ang), sa = Math.sin(ang);
         var tl = cn ? .5 : isl ? .92 : .17, ct = Math.cos(tl), st = Math.sin(tl), ey = cn ? 0 : isl ? .1 : 1.75, pd = cn || isl ? 10 : 8, dk = cn ? .14 : isl ? .1 : .13;
-        var sc = cn ? Math.min(H * .147, W * .102) : isl ? Math.min(H * .25, W * .128) : Math.min(H * .2, W * .105), ox = W * (cn ? .73 : .71), oy = H * (cn ? .46 : .45);
+        var sc = cn ? Math.min(H * .147, W * .102) : isl ? Math.min(H * .21, W * .104) : Math.min(H * .2, W * .105), ox = W * (cn ? .73 : .71), oy = H * (cn ? .46 : .45);
         for (i = 0; i < PTS.length; i++) {
           var e = morph * 1.6 - TD[i] * .6;
           if (e <= 0) continue;
