@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="theme-color" content="#22262E">
+<meta name="theme-color" content="#131218">
 <title>Aleksandr Barinov — lab: sphere</title>
 <meta name="robots" content="noindex">
 <meta name="description" content="Aleksandr Barinov — real estate professional and urban planner. Development concepts, masterplans and proptech.">
@@ -130,6 +130,82 @@
   .case .content { font-size: 15px; line-height: 1.55; max-width: 34em; }
   .case .content a:hover { color: var(--accent); }
 
+  /* ——— Фон: зернистый градиент ———
+     Несколько размытых цветных пятен в правой верхней части экрана медленно плывут;
+     поверх лежит зерно. Слева, под текстом, фон затемнён. */
+  body { background: #131218; }
+  .grad { position: fixed; inset: 0; z-index: 0; overflow: hidden; pointer-events: none; background: #131218; }
+  .grad i { position: absolute; display: block; border-radius: 50%; filter: blur(70px); will-change: transform; }
+  .grad .b1 { width: 62vw; height: 40vw; left: 46%; top: -24vw; background: radial-gradient(closest-side, #F0844A, rgba(240,132,74,0)); opacity: .95; animation: g1 19s ease-in-out infinite alternate; }
+  .grad .b2 { width: 44vw; height: 22vw; left: 30%; top: -8vw; background: radial-gradient(closest-side, #F3C3A6, rgba(243,195,166,0)); opacity: .8; animation: g2 23s ease-in-out infinite alternate; }
+  .grad .b3 { width: 70vw; height: 26vw; left: 42%; top: 9vw; background: radial-gradient(closest-side, #1E88AC, rgba(30,136,172,0)); opacity: .9; animation: g3 21s ease-in-out infinite alternate; }
+  .grad .b4 { width: 56vw; height: 30vw; left: 18%; top: 22vw; background: radial-gradient(closest-side, #5E3D80, rgba(94,61,128,0)); opacity: .55; animation: g4 27s ease-in-out infinite alternate; }
+  .grad .b5 { width: 80vw; height: 30vw; left: 30%; top: 62vh; background: radial-gradient(closest-side, #4A2328, rgba(74,35,40,0)); opacity: .5; animation: g2 31s ease-in-out infinite alternate-reverse; }
+  @keyframes g1 { from { transform: translate(-9vw, -3vw) rotate(-20deg) scale(.9); } to { transform: translate(11vw, 7vw) rotate(-2deg) scale(1.18); } }
+  @keyframes g2 { from { transform: translate(10vw, 3vw) rotate(-4deg) scale(1.12); } to { transform: translate(-12vw, -5vw) rotate(-24deg) scale(.88); } }
+  @keyframes g3 { from { transform: translate(-12vw, 6vw) rotate(-20deg) scale(.92); } to { transform: translate(9vw, -6vw) rotate(-1deg) scale(1.2); } }
+  @keyframes g4 { from { transform: translate(8vw, -6vw) rotate(2deg) scale(1.15); } to { transform: translate(-10vw, 8vw) rotate(-22deg) scale(.9); } }
+  .grad .shade { position: absolute; inset: 0; background: linear-gradient(to right, rgba(19,18,24,.9), rgba(19,18,24,.55) 34%, rgba(19,18,24,0) 62%); }
+  .grad .grain { position: absolute; inset: 0; background-image: url("data:image/svg+xml;utf8,%3Csvg%20xmlns%3D'http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg'%20width%3D'220'%20height%3D'220'%3E%3Cfilter%20id%3D'n'%3E%3CfeTurbulence%20type%3D'fractalNoise'%20baseFrequency%3D'0.9'%20numOctaves%3D'2'%20stitchTiles%3D'stitch'%2F%3E%3CfeColorMatrix%20values%3D'0%200%200%200%201%20%200%200%200%200%201%20%200%200%200%200%201%20%200%200%200%201.1%20-0.15'%2F%3E%3C%2Ffilter%3E%3Crect%20width%3D'100%25'%20height%3D'100%25'%20filter%3D'url(%23n)'%2F%3E%3C%2Fsvg%3E"); background-size: 220px 220px; opacity: .3; mix-blend-mode: overlay; }
+  @media (max-width: 720px) {
+    .grad i { filter: blur(44px); }
+    .grad .b1 { width: 120vw; height: 80vw; left: 20%; top: -52vw; }
+    .grad .b2 { width: 90vw; height: 44vw; left: -10%; top: -22vw; }
+    .grad .b3 { width: 140vw; height: 50vw; left: 10%; top: 6vw; }
+    .grad .b4 { width: 110vw; height: 60vw; left: -20%; top: 40vw; }
+    .grad .shade { background: linear-gradient(to bottom, rgba(19,18,24,.45), rgba(19,18,24,.3) 50%, rgba(19,18,24,.1)); }
+  }
+  @media (prefers-reduced-motion: reduce) { .grad i { animation: none; } }
+
+  /* ——— Цвета страницы под градиент ———
+     Тёплый почти-чёрный с лиловым подтоном, тёплый белый, серо-лиловый для второстепенного.
+     Акцент — персиковый из верхнего пятна; при наведении — бирюзовый из среднего. */
+  :root { --paper: #131218; --ink: #F3EEE8; --muted: #A69DA8; --hair: #322D3A; --accent: #F4A982; }
+  a:hover { color: #7CC6DC; }
+  .more:hover { color: #7CC6DC; }
+  .case .content a:hover { color: #7CC6DC; }
+  ::selection { background: #F4A982; color: #131218; }
+
+  /* ——— Подписи разделов как разделители ———
+     Мелкое слово слева, от середины его высоты вправо идёт тонкая линия на всю ширину колонки.
+     Содержимое раздела стоит под разделителем, от левого края. */
+  section { display: block; max-width: 560px; }
+  section > :not(h2) { max-width: none; }
+  section > h2 { display: flex; align-items: center; gap: 14px; margin: 0 0 28px; font-size: 10px; line-height: 1; letter-spacing: 0.16em; color: var(--muted); }
+  .me { max-width: 560px; }
+  .sheet { row-gap: 56px; }
+  .sheet > p { padding-left: 0; }
+
+  /* ——— Иконки у названий проектов: Lucide (lucide.dev), лицензия ISC; кубик Рубика — Hugeicons, MIT ——— */
+  .case h3 { display: flex; align-items: center; gap: 10px; }
+  .ico { flex: none; width: 19px; height: 19px; fill: none; stroke: currentColor; stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; }
+  /* ——— Текущий проект — карточка: тонкая рамка, едва заметная заливка, скруглённые углы ——— */
+  .case.main .site { margin-top: 22px; }
+
+  /* ——— Контакты: мелкие ссылки с логотипами сервисов (Simple Icons, CC0) ——— */
+  .links { gap: 10px 22px; font-size: 13px; line-height: 1.4; }
+  .links a { display: inline-flex; align-items: center; gap: 7px; text-decoration: none; }
+  .logo { flex: none; width: 14px; height: 14px; fill: #fff; }
+
+  /* ——— Динамика градиента ———
+     Оттенок всей композиции медленно уходит то в тёплую, то в холодную сторону;
+     пятна мягко тянутся за курсором, каждое на свою глубину. */
+  .grad { animation: hue 37s ease-in-out infinite alternate; }
+  @keyframes hue { from { filter: hue-rotate(-16deg) saturate(1.05); } to { filter: hue-rotate(20deg) saturate(1.2); } }
+  .grad .b1 { translate: calc(var(--mx, 0) * 5vw) calc(var(--my, 0) * 3.5vw); }
+  .grad .b2 { translate: calc(var(--mx, 0) * -3vw) calc(var(--my, 0) * -2vw); }
+  .grad .b3 { translate: calc(var(--mx, 0) * 7vw) calc(var(--my, 0) * 4.5vw); }
+  .grad .b4 { translate: calc(var(--mx, 0) * -4.5vw) calc(var(--my, 0) * 3vw); }
+  .grad .b5 { translate: calc(var(--mx, 0) * 3vw) calc(var(--my, 0) * -2.5vw); }
+  @media (prefers-reduced-motion: reduce) { .grad { animation: none; } }
+
+  /* логотип CERN вместо иконки: контурная версия с Wikimedia Commons, залита цветом названия */
+  .ico.mark { width: 26px; height: 26px; fill: currentColor; stroke: none; margin: -4px -2px -4px -3px; }
+
+  /* список партнёров в описании проекта */
+  .content .plabel { margin-top: 1.1em; }
+  .content .plabel + ul { margin-top: .35em; }
+
   /* ——— lab: панель настройки ——— */
   .panel { position: fixed; right: 16px; bottom: 16px; z-index: 5; width: 320px; max-width: calc(100vw - 32px); padding: 14px 16px 16px; background: rgba(23, 26, 32, .94); border: 1px solid var(--hair); font-size: 13px; line-height: 1.4; color: var(--ink); }
   .panel-head, .panel-foot { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; }
@@ -146,13 +222,10 @@
   .panel textarea { display: block; width: 100%; margin-top: 12px; padding: 8px; border: 1px solid var(--hair); background: transparent; color: var(--muted); font: 12px/1.4 ui-monospace, Consolas, monospace; resize: none; }
   .panel.folded .panel-body, .panel.folded .panel-foot, .panel.folded textarea { display: none; }
   @media (max-width: 720px) { .panel { right: 8px; bottom: 8px; left: 8px; width: auto; max-height: 60vh; overflow: auto; } }
-
-  /* список партнёров в описании проекта */
-  .content .plabel { margin-top: 1.1em; }
-  .content .plabel + ul { margin-top: .35em; }
 </style>
 </head>
 <body>
+<div class="grad" aria-hidden="true"><i class="b1"></i><i class="b2"></i><i class="b3"></i><i class="b4"></i><i class="b5"></i><b class="shade"></b><b class="grain"></b></div>
 <canvas id="bg" aria-hidden="true"></canvas>
 <main>
 <div class="zone top">
@@ -164,10 +237,10 @@
   </div>
 
   <section class="current">
-  <h2>Now:</h2>
+  <h2>Now</h2>
   <ul>
     <li class="case main">
-      <h3>RubiqOS</h3>
+      <h3><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M8.643 3.085C10.295 2.362 11.121 2 12 2s1.705.362 3.357 1.085l1.705.747C19.687 4.982 21 5.556 21 6.5s-1.313 1.518-3.938 2.668l-1.705.747C13.705 10.638 12.879 11 12 11s-1.705-.362-3.357-1.085l-1.705-.747C4.313 8.018 3 7.444 3 6.5s1.313-1.518 3.938-2.668z"/><path d="M21 6.5v11c0 .944-1.313 1.518-3.938 2.668l-1.705.747C13.705 21.638 12.879 22 12 22s-1.705-.362-3.357-1.085l-1.705-.747C4.313 19.018 3 18.444 3 17.5v-11"/><path d="M21 12.5L12 17l-9-4m9 9V11"/><path d="M16.5 20V9L7 4"/><path d="M7.5 20V9L17 4"/></svg>RubiqOS</h3>
       <p>Physical AI platform for resort operations.</p>
       <div class="content open">
         <p>RubiqOS orchestrates day-to-day operations between people and robots. Its engine plans the tasks, splits the work between staff and machines, and runs both as one team.</p>
@@ -183,11 +256,11 @@
 <div class="sheet">
 
   <section>
-  <h2>Past:</h2>
+  <h2>Past</h2>
   <ul>
 
     <li class="case">
-      <h3>Private island development</h3>
+      <h3><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M13 8c0-2.76-2.46-5-5.5-5S2 5.24 2 8h2l1-1 1 1h4" /><path d="M13 7.14A5.82 5.82 0 0 1 16.5 6c3.04 0 5.5 2.24 5.5 5h-3l-1-1-1 1h-3" /><path d="M5.89 9.71c-2.15 2.15-2.3 5.47-.35 7.43l4.24-4.25.7-.7.71-.71 2.12-2.12c-1.95-1.96-5.27-1.8-7.42.35" /><path d="M11 15.5c.5 2.5-.17 4.5-1 6.5h4c2-5.5-.5-12-1-14" /></svg>Private island development</h3>
       <p>Masterplan for a $1B resort on a private island in the Caribbean.</p>
       <button class="more" aria-expanded="false">more</button>
       <div class="content">
@@ -197,7 +270,7 @@
     </li>
 
     <li class="case">
-      <h3>CERN campus</h3>
+      <h3><svg class="ico mark" viewBox="0 0 600 600" aria-hidden="true"><path d="m531.43 64.59-18.896 195.07h-0.34699c-2.6966-36.831-21.038-80.799-43.711-108.6-39.349-48.261-97.088-77.389-161.95-77.389-61.834 0-116.95 27.432-154.85 70.439l8.6847 6.8803c35.809-40.489 87.104-66.444 146.16-66.444 71.886 0 130.45 36.831 163.2 86.926 29.226 44.692 38.922 101.97 32.141 143.91-2.2802 14.187-7.4157 41.738-26.312 72.957l3.3113 14.534c23.159-35.909 34.917-67.851 44.078-149.54 7.0389-62.656 19.124-188.75 19.124-188.75zm-72.956 348.1c-35.006 42.848-89.365 71.698-151.8 71.668-13.414 0-26.421-1.5069-37.267-3.7078l-8.9524 9.5174c17.141 3.9656 32.32 5.4527 46.854 5.4527 64.223 0 119.18-29.99 154.15-69.438zm-288.54 15.693c-7.0092-1.0311-15.773-3.5195-21.047-5.77 23.615 26.867 56.103 48.37 88.007 60.426l8.3674-8.8829c-34.61-11.689-59.742-30.456-75.327-45.773m420.06-412.98s-275.61-2.1811-363.48-2.1414c-13.771 0.0297-23 0.98149-25.975 1.1798-108.55 7.0191-190.18 102.21-190.54 206-0.10906 30.188 7.9312 64.193 20.968 110.1 17.25 60.644 37.435 130.23 37.435 130.23h11.014l-40.697-137.32 0.30734-0.19828c29.891 57.749 98.813 104.16 177.02 104.16 42.214 0 81.344-11.817 112.19-33.579l0.27759 0.25776-181.06 192.66h14.147s127.13-135.26 170.36-181.18c33.152-35.185 50.363-57.868 57.561-69.626 8.2584-13.503 34.521-52.396 33.529-109.69l0.3569-0.0397 79.342 360.53h11.381s-66.563-295.1-79.471-356.81c-12.72-60.723-27.749-98.396-43.939-119.87-5.5717-3.113-14.256-6.6424-18.351-7.5941 23.516 29.673 41.103 73.83 41.103 118.01 0 108.14-87.997 196.14-196.14 196.14s-196.12-87.997-196.12-196.14c0-108.15 88.294-196.13 196.19-196.13 47.954 0 92.408 17.587 126.56 46.546 6.6126 0.922 15.456 2.9841 20.75 4.8876l0.0297-0.10905c-24.537-24.488-55.201-42.68-89.295-52.247v-0.27759l314.54 1.9432zm-447.57 378.1c-23.972-37.931-30.793-74.533-31.745-102.56h-11.074c0.922 30.565 8.3377 62.627 24.924 94.044 3.9061 3.1526 13.086 7.1678 17.895 8.5161m222-219.72c-1.4276 0.24785-3.1824 0.44613-5.3436 0.44613-2.1315 0-3.9557-0.21811-5.2048-0.44613 0.53535 9.9933 1.4574 28.493 1.4574 40.608 0 9.111 0 17.082-0.11896 21.593-4.4415-4.7191-55.33-57.382-60.505-63.003l-3.9954-0.0397c0.18837 7.7627 0.40648 16.18 0.40648 31.536 0 19.689-0.27759 40.608-1.2789 53.496 1.4276-0.23793 3.1923-0.43621 5.3536-0.43621 2.1216 0 3.9458 0.22802 5.1949 0.43621-0.53536-9.9834-1.4673-28.473-1.4673-40.598 0-9.1209 0.0198-18.509 0.13879-23.01 4.4316 4.7191 55.618 58.096 60.495 64.709l3.9953 0.0496c-0.18836-7.7627-0.40647-16.487-0.40647-31.844 0-19.669 0.2875-40.608 1.2789-53.496m-129.64 38.45c10.083-0.19828 23.308-3.4005 23.308-17.32 0-12.135-10.618-15.981-18.916-15.981-5.6014 0-9.2597 0.36682-11.827 0.60476-0.36682 8.9127-0.72372 17.092-0.72372 25.876v6.7118c1.2095 0.15863 6.92 0.12889 8.1592 0.10906m-8.1592 4.4613v9.6959c0 10.489 0.48578 21.107 0.98148 31.586-2.0819-0.35691-5.8393-0.39656-6.6126-0.39656-0.75346 0-4.501 0.0397-6.5928 0.39656 0.4957-10.479 0.98149-21.097 0.98149-31.586v-20.978c0-10.489-0.48579-21.097-0.98149-31.596 4.6398 0.36682 10.509 0.61467 15.149 0.61467 4.6298 0 9.2597-0.61467 13.899-0.61467 13.78 0 26.401 4.0846 26.401 19.422 0 16.239-16.17 22.078-25.449 23.298 5.9881 7.4355 27.392 33.519 34.471 41.441-2.4488-0.35691-6.5234-0.39656-7.6437-0.39656-1.1104 0-5.3337 0.0397-7.6338 0.39656-4.8281-7.3364-20.264-30.476-30.773-41.282h-6.1962m-27.328 36.793c0-1.844 0.15862-3.7475 0.29742-4.6695-8.3178 0.76338-31.17 1.4574-40.092 1.5763-0.14871-2.2207-0.34699-28.612-0.10905-32.696 3.5591 0 22.376 0.24785 30.803 1.1004-0.23793-1.2194-0.36681-3.0337-0.36681-4.2432 0-1.2293 0.12888-3.4104 0.36681-4.6199-7.1976 0.60476-16.418 1.2095-30.803 1.2095 0-3.0535 0.23793-25.301 0.36681-30.535 15.852 0 30.198 0.98149 38.238 1.5862-0.13879-0.83277-0.2875-2.538-0.2875-4.2035 0-1.6755 0.10905-3.0138 0.2875-4.1738-4.2333 0.29742-17.875 0.61467-25.191 0.61467-7.3165 0-18.628-0.24785-25.945-0.61467 0.4957 10.37 0.98148 20.988 0.98148 31.477v20.978c0 10.489-0.48578 21.097-0.98148 31.705 7.4454-0.36682 18.866-0.61467 26.302-0.61467 0.3569 0 0.72372 0 1.0806 0.01 2.5578 0.01 5.7799 0.0397 9.111 0.0991 5.77 0.10905 11.857 0.27759 16.239 0.50561-0.17845-1.2789-0.29742-2.6272-0.29742-4.491m-67.969-2.4359c-2.9048 2.2108-12.977 8.4765-28.146 8.4765-27.442 0-46.14-17.31-46.14-43.661 0-26.232 19.828-43.661 46.784-43.661 10.479 0 22.505 3.222 29.197 6.107-1.3979 3.0932-2.5578 7.1876-3.0436 9.7554l-0.73363 0.22802c-5.1751-5.7204-13.513-10.697-25.846-10.697-15.654 0-33.668 12.68-33.668 37.951 0 24.607 18.361 37.683 34.768 37.683 14.742 0 21.801-6.8704 28.136-12.224l0.4957 0.47587z"/></svg>CERN campus</h3>
       <p>Concept development for a laboratory complex on the CERN campus.</p>
       <button class="more" aria-expanded="false">more</button>
       <div class="content">
@@ -211,7 +284,7 @@
     </li>
 
     <li class="case">
-      <h3>Easyinn</h3>
+      <h3><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M2.586 17.414A2 2 0 0 0 2 18.828V21a1 1 0 0 0 1 1h3a1 1 0 0 0 1-1v-1a1 1 0 0 1 1-1h1a1 1 0 0 0 1-1v-1a1 1 0 0 1 1-1h.172a2 2 0 0 0 1.414-.586l.814-.814a6.5 6.5 0 1 0-4-4z" /><circle cx="16.5" cy="7.5" r=".5" fill="currentColor" /></svg>Easyinn</h3>
       <p>Platform for automated property management.</p>
       <button class="more" aria-expanded="false">more</button>
       <div class="content">
@@ -226,7 +299,7 @@
     </li>
 
     <li class="case">
-      <h3>Habithai</h3>
+      <h3><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M15 21v-8a1 1 0 0 0-1-1h-4a1 1 0 0 0-1 1v8" /><path d="M3 10a2 2 0 0 1 .709-1.528l7-5.999a2 2 0 0 1 2.582 0l7 5.999A2 2 0 0 1 21 10v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" /></svg>Habithai</h3>
       <p>Gated community development on Koh Samui, Thailand.</p>
       <button class="more" aria-expanded="false">more</button>
       <div class="content">
@@ -235,7 +308,7 @@
     </li>
 
     <li class="case">
-      <h3>Foresight Moscow-2050</h3>
+      <h3><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="m10.065 12.493-6.18 1.318a.934.934 0 0 1-1.108-.702l-.537-2.15a1.07 1.07 0 0 1 .691-1.265l13.504-4.44" /><path d="m13.56 11.747 4.332-.924" /><path d="m16 21-3.105-6.21" /><path d="M16.485 5.94a2 2 0 0 1 1.455-2.425l1.09-.272a1 1 0 0 1 1.212.727l1.515 6.06a1 1 0 0 1-.727 1.213l-1.09.272a2 2 0 0 1-2.425-1.455z" /><path d="m6.158 8.633 1.114 4.456" /><path d="m8 21 3.105-6.21" /><circle cx="12" cy="13" r="2" /></svg>Foresight Moscow-2050</h3>
       <p>The largest foresight study for the Moscow masterplan.</p>
       <button class="more" aria-expanded="false">more</button>
       <div class="content">
@@ -255,7 +328,7 @@
     </li>
 
     <li class="case">
-      <h3>Nikolskiy market</h3>
+      <h3><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><line x1="3" x2="21" y1="22" y2="22" /><line x1="6" x2="6" y1="18" y2="11" /><line x1="10" x2="10" y1="18" y2="11" /><line x1="14" x2="14" y1="18" y2="11" /><line x1="18" x2="18" y1="18" y2="11" /><polygon points="12 2 20 7 4 7" /></svg>Nikolskiy market</h3>
       <p>Redevelopment of a cluster of historic buildings in Saint Petersburg.</p>
       <button class="more" aria-expanded="false">more</button>
       <div class="content">
@@ -271,7 +344,7 @@
     </li>
 
     <li class="case">
-      <h3>Aircraft assembly plant</h3>
+      <h3><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M17.8 19.2 16 11l3.5-3.5C21 6 21.5 4 21 3c-1-.5-3 0-4.5 1.5L13 8 4.8 6.2c-.5-.1-.9.1-1.1.5l-.3.5c-.2.5-.1 1 .3 1.3L9 12l-2 3H4l-1 1 3 2 2 3 1-1v-3l3-2 3.5 5.3c.3.4.8.5 1.3.3l.5-.2c.4-.3.6-.7.5-1.2z" /></svg>Aircraft assembly plant</h3>
       <p>Masterplan optimization for a high-tech manufacturing site.</p>
       <button class="more" aria-expanded="false">more</button>
       <div class="content">
@@ -284,13 +357,13 @@
   </section>
 
   <section>
-  <h2>Contacts:</h2>
+  <h2>Contacts</h2>
   <ul class="links">
-    <li><a href="https://wa.me/12428075582" target="_blank" rel="noopener">WhatsApp</a></li>
-    <li><a href="https://t.me/forbarinov" target="_blank" rel="noopener">Telegram</a></li>
-    <li data-link="x"><span class="muted">X.com</span></li>
-    <li data-link="medium"><span class="muted">Medium</span></li>
-    <li data-link="linkedin"><span class="muted">LinkedIn</span></li>
+    <li><a href="https://wa.me/12428075582" target="_blank" rel="noopener"><svg class="logo" viewBox="0 0 24 24" aria-hidden="true"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/></svg>WhatsApp</a></li>
+    <li><a href="https://t.me/forbarinov" target="_blank" rel="noopener"><svg class="logo" viewBox="0 0 24 24" aria-hidden="true"><path d="M11.944 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0a12 12 0 0 0-.056 0zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 0 1 .171.325c.016.093.036.306.02.472-.18 1.898-.962 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.48.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z"/></svg>Telegram</a></li>
+    <li><a href="https://x.com/BarinovLive" target="_blank" rel="noopener"><svg class="logo" viewBox="0 0 24 24" aria-hidden="true"><path d="M18.901 1.153h3.68l-8.04 9.19L24 22.846h-7.406l-5.8-7.584-6.638 7.584H.474l8.6-9.83L0 1.154h7.594l5.243 6.932ZM17.61 20.644h2.039L6.486 3.24H4.298Z"/></svg>X.com</a></li>
+    <li><a href="https://medium.com/@barinov.live" target="_blank" rel="noopener"><svg class="logo" viewBox="0 0 24 24" aria-hidden="true"><path d="M13.54 12a6.8 6.8 0 01-6.77 6.82A6.8 6.8 0 010 12a6.8 6.8 0 016.77-6.82A6.8 6.8 0 0113.54 12zM20.96 12c0 3.54-1.51 6.42-3.38 6.42-1.87 0-3.39-2.88-3.39-6.42s1.52-6.42 3.39-6.42 3.38 2.88 3.38 6.42M24 12c0 3.17-.53 5.75-1.19 5.75-.66 0-1.19-2.58-1.19-5.75s.53-5.75 1.19-5.75C23.47 6.25 24 8.83 24 12z"/></svg>Medium</a></li>
+    <li><a href="https://www.linkedin.com/in/forbarinov/" target="_blank" rel="noopener"><svg class="logo" viewBox="0 0 24 24" aria-hidden="true"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>LinkedIn</a></li>
   </ul>
 
   <div class="cal" id="calendly">
@@ -315,7 +388,7 @@
     calendly: ""    // https://calendly.com/username/30min
   };
 
-  ['x', 'medium', 'linkedin'].forEach(function (k) {
+  [].forEach(function (k) {
     var li = document.querySelector('[data-link="' + k + '"]');
     if (!LINKS[k]) { li.remove(); return; }
     var a = document.createElement('a');
@@ -344,6 +417,23 @@
   } else {
     document.getElementById('calendly').remove();
   }
+</script>
+
+<script>
+  /* ——— Градиент следует за курсором: положение сглаживается, чтобы пятна плыли, а не дёргались ——— */
+  (function () {
+    if (matchMedia("(prefers-reduced-motion: reduce)").matches || !matchMedia("(pointer: fine)").matches) return;
+    var g = document.querySelector(".grad"), tx = 0, ty = 0, x = 0, y = 0, raf = 0;
+    function step() {
+      x += (tx - x) * .045; y += (ty - y) * .045;
+      g.style.setProperty("--mx", x.toFixed(4)); g.style.setProperty("--my", y.toFixed(4));
+      raf = Math.abs(tx - x) + Math.abs(ty - y) > .002 ? requestAnimationFrame(step) : 0;
+    }
+    addEventListener("pointermove", function (e) {
+      tx = e.clientX / innerWidth * 2 - 1; ty = e.clientY / innerHeight * 2 - 1;
+      if (!raf) raf = requestAnimationFrame(step);
+    }, { passive: true });
+  })();
 </script>
 <script>
   /* ——— Фон: облако точек на «дышащей» сфере, медленно вращается ———
@@ -431,7 +521,7 @@
       x.clearRect(0, 0, W, H);
       /* связи: три слоя по глубине, ближние ярче */
       if (EDGES.length) {
-        x.strokeStyle = '#E9EAEE'; x.lineWidth = .7;
+        x.strokeStyle = '#F3EEE8'; x.lineWidth = .7;
         for (var band = 0; band < 3; band++) {
           x.globalAlpha = Math.min(1, (.05 + .16 * band) * k * P.alpha);
           x.beginPath();
@@ -445,7 +535,7 @@
       }
       /* точки */
       for (var pass = 0; pass < 2; pass++) {
-        x.fillStyle = pass ? '#EF4F7B' : '#E9EAEE';
+        x.fillStyle = pass ? '#F4A982' : '#F3EEE8';
         for (i = 0; i < PTS.length; i++) {
           if (PTS[i][3] != !!pass) continue;
           var near = NR[i], al = (.1 + .55 * near) * k * P.alpha * (pass ? 1.5 : 1);
@@ -516,7 +606,7 @@
       input.type = 'range'; input.min = c[2]; input.max = c[3]; input.step = c[4];
       input.addEventListener('input', function () {
         P[c[0]] = +input.value;
-        if (c[0] === 'count' || c[0] === 'accent' || c[0] === 'links') S.build();
+        if (c[0] === 'count' || c[0] === 'accent') S.build();
         S.redraw(); show();
       });
       label.append(name, input, val); body.append(label);
