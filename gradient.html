@@ -480,6 +480,7 @@
     var c = document.getElementById('bg'), x = c.getContext('2d');
     var still = matchMedia('(prefers-reduced-motion: reduce)').matches;
     var W, H, PTS = [], EDGES, SX, SY, NR, raf = 0, clock = 0, last = null;
+    var TX, TY, TN, TD, SHAPE = null, morph = 0, goal = 0;   /* роботы: цели точек, текущая и желаемая степень сборки */
     var D = {
       size: .91,       /* радиус сферы в долях высоты экрана */
       x: .84,          /* центр по горизонтали, в долях ширины */
@@ -528,6 +529,74 @@
         if (second >= 0 && rnd(i, 2) < .55) list.push(i, second);
       }
       EDGES = new Int32Array(list);
+      targets();
+    }
+
+    /* ——— Роботы: силуэты гуманоида, робота-доставщика и автономного гольф-кара ———
+       Рисуются один раз на невидимом холсте 900×400; из закрашенных пикселей берутся места для точек.
+       Около трети точек встаёт на контур, чтобы силуэты читались чётко. */
+    function shapes() {
+      if (SHAPE) return SHAPE;
+      var cw = 900, ch = 400, cv = document.createElement('canvas'); cv.width = cw; cv.height = ch;
+      var g = cv.getContext('2d');
+      g.fillStyle = g.strokeStyle = '#000'; g.lineCap = 'round'; g.lineJoin = 'round';
+      function rr(x0, y0, w, h, r) { g.beginPath(); g.moveTo(x0 + r, y0); g.arcTo(x0 + w, y0, x0 + w, y0 + h, r); g.arcTo(x0 + w, y0 + h, x0, y0 + h, r); g.arcTo(x0, y0 + h, x0, y0, r); g.arcTo(x0, y0, x0 + w, y0, r); g.closePath(); g.fill(); }
+      function ln(x0, y0, x1, y1, w) { g.lineWidth = w; g.beginPath(); g.moveTo(x0, y0); g.lineTo(x1, y1); g.stroke(); }
+      function ci(x0, y0, r) { g.beginPath(); g.arc(x0, y0, r, 0, 6.2832); g.fill(); }
+      function cut(fn) { g.globalCompositeOperation = 'destination-out'; fn(); g.globalCompositeOperation = 'source-over'; }
+
+      /* гуманоид */
+      rr(148, 58, 44, 42, 15);
+      cut(function () { rr(155, 72, 30, 9, 4); });
+      rr(164, 102, 12, 7, 2);
+      g.beginPath(); g.moveTo(132, 112); g.lineTo(208, 112); g.lineTo(194, 214); g.lineTo(146, 214); g.closePath(); g.fill(); g.lineWidth = 8; g.stroke();
+      cut(function () { ci(170, 140, 7); });
+      rr(145, 222, 50, 24, 9);
+      ln(120, 118, 110, 176, 15); ln(108, 190, 104, 242, 13); ci(103, 256, 9);
+      ln(220, 118, 230, 176, 15); ln(232, 190, 236, 242, 13); ci(237, 256, 9);
+      ln(158, 254, 155, 298, 18); ln(154, 312, 152, 346, 15); rr(136, 350, 30, 12, 5);
+      ln(182, 254, 185, 298, 18); ln(186, 312, 188, 346, 15); rr(174, 350, 30, 12, 5);
+
+      /* робот-доставщик: короб на шести колёсах, флажок-антенна */
+      rr(366, 262, 128, 66, 24);
+      cut(function () { g.fillRect(366, 284, 128, 3); rr(470, 296, 16, 8, 3); });
+      ln(476, 262, 476, 196, 3); ci(476, 192, 5);
+      g.beginPath(); g.moveTo(476, 198); g.lineTo(456, 205); g.lineTo(476, 212); g.closePath(); g.fill();
+      ci(390, 345, 16); ci(430, 345, 16); ci(470, 345, 16);
+      cut(function () { ci(390, 345, 5); ci(430, 345, 5); ci(470, 345, 5); });
+
+      /* автономный гольф-кар: крыша на стойках, сиденье, датчик на крыше */
+      rr(578, 268, 258, 54, 16);
+      g.beginPath(); g.moveTo(800, 268); g.lineTo(836, 286); g.lineTo(836, 300); g.lineTo(800, 300); g.closePath(); g.fill();
+      cut(function () { ci(622, 334, 34); ci(790, 334, 34); });
+      ci(622, 334, 27); ci(790, 334, 27);
+      cut(function () { ci(622, 334, 10); ci(790, 334, 10); });
+      rr(588, 150, 216, 12, 6);
+      ln(604, 164, 598, 266, 6); ln(778, 164, 804, 266, 6);
+      rr(642, 204, 15, 66, 6); rr(642, 252, 78, 16, 6);
+      rr(584, 232, 42, 34, 6);
+      rr(684, 136, 36, 12, 5); ci(702, 132, 5);
+      cut(function () { g.fillRect(660, 290, 110, 3); });
+
+      var d = g.getImageData(0, 0, cw, ch).data, fill = [], edge = [], px, py;
+      function on(ax, ay) { return ax >= 0 && ay >= 0 && ax < cw && ay < ch && d[(ay * cw + ax) * 4 + 3] > 120; }
+      for (py = 0; py < ch; py++) for (px = 0; px < cw; px++) {
+        if (!on(px, py)) continue;
+        fill.push(px, py);
+        if (!on(px - 1, py) || !on(px + 1, py) || !on(px, py - 1) || !on(px, py + 1)) edge.push(px, py);
+      }
+      return (SHAPE = { fill: fill, edge: edge });
+    }
+
+    function targets() {
+      var n = PTS.length, sh = shapes(), i;
+      TX = new Float32Array(n); TY = new Float32Array(n); TN = new Float32Array(n); TD = new Float32Array(n);
+      for (i = 0; i < n; i++) {
+        var src = rnd(i, 3) < .36 ? sh.edge : sh.fill, j = Math.floor(rnd(i, 5) * (src.length / 2)) * 2;
+        TX[i] = src[j] + rnd(i, 6) - .5; TY[i] = src[j + 1] + rnd(i, 8) - .5;
+        TN[i] = src === sh.edge ? .8 + .2 * rnd(i, 9) : .3 + .5 * rnd(i, 9);
+        TD[i] = rnd(i, 7);
+      }
     }
 
     function setup() {
@@ -540,7 +609,9 @@
 
     function draw(ms) {
       if (last === null) last = ms;
-      clock += Math.max(0, Math.min(.1, (ms - last) / 1000)) * P.speed; last = ms;
+      var rdt = Math.max(0, Math.min(.1, (ms - last) / 1000));
+      clock += rdt * P.speed; last = ms;
+      if (still) morph = goal; else { morph += (goal - morph) * (1 - Math.exp(-rdt * 3)); if (Math.abs(goal - morph) < .001) morph = goal; }
       var t = clock, k = W < 720 ? .85 : 1, i;
       var cx = W * P.x, cy = H * P.y, R = H * P.size, b = P.breathe;
       var ry = t * .12, rx = .35 + Math.sin(t * .07) * .2;
@@ -554,6 +625,18 @@
         var y1 = py * cX - z1 * sX, z2 = py * sX + z1 * cX;
         var f = 3 / (3 + z2);
         SX[i] = cx + x1 * R * f; SY[i] = cy + y1 * R * f; NR[i] = 1 - (z2 + 1.3) / 2.6;
+      }
+      /* роботы: точки переезжают со сферы в силуэты, каждая со своей задержкой */
+      if (morph > 0) {
+        var ms2 = ms / 1000, sc = Math.min(W * .48 / 760, H * .62 / 310), ox = W * .72 - 470 * sc, oy = H * .5 - 210 * sc;
+        for (i = 0; i < PTS.length; i++) {
+          var e = morph * 1.6 - TD[i] * .6;
+          if (e <= 0) continue;
+          if (e > 1) e = 1;
+          e = e * e * (3 - 2 * e);
+          var gx = ox + TX[i] * sc + Math.sin(ms2 * 1.3 + i) * .7, gy = oy + TY[i] * sc + Math.cos(ms2 * 1.1 + i * 1.7) * .7;
+          SX[i] += (gx - SX[i]) * e; SY[i] += (gy - SY[i]) * e; NR[i] += (TN[i] - NR[i]) * e;
+        }
       }
       x.clearRect(0, 0, W, H);
       /* связи: три слоя по глубине, ближние ярче */
@@ -575,7 +658,7 @@
         x.fillStyle = pass ? '#F4A982' : '#F3EEE8';
         for (i = 0; i < PTS.length; i++) {
           if (PTS[i][3] != !!pass) continue;
-          var near = NR[i], al = (.1 + .55 * near) * k * P.alpha * (pass ? 1.5 : 1);
+          var near = NR[i], al = (.1 + .55 * near) * k * P.alpha * (pass ? 1.5 : 1) * (1 + morph * 1.3);
           if (al <= .004) continue;
           x.globalAlpha = al > 1 ? 1 : al;
           var s = (near > .55 ? 2.2 : 1.4) * P.dot;
@@ -594,7 +677,15 @@
     document.addEventListener('visibilitychange', function () { document.hidden ? stop() : start(); });
 
     /* для страницы настройки: доступ к параметрам снаружи */
-    window.sphere = { P: P, reset: function () { defaults(); build(); }, build: build, redraw: function () { if (still) draw(0); } };
+    window.sphere = { P: P, reset: function () { defaults(); build(); }, build: build, redraw: function () { if (still) draw(0); },
+      morph: function (v) { goal = v ? 1 : 0; if (still) draw(0); } };
+
+    /* наведение на RubiqOS собирает точки в роботов; на узких экранах эффект выключен */
+    var rq = document.querySelector('.case.main');
+    if (rq) {
+      rq.addEventListener('pointerenter', function (ev) { if (ev.pointerType !== 'touch' && innerWidth >= 900) window.sphere.morph(1); });
+      rq.addEventListener('pointerleave', function () { window.sphere.morph(0); });
+    }
   })();
 </script>
 <script>
