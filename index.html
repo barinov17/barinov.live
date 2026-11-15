@@ -129,6 +129,7 @@
 </style>
 </head>
 <body>
+<canvas id="bg" aria-hidden="true"></canvas>
 <main>
 <div class="zone top">
 <div class="sheet">
@@ -352,6 +353,131 @@
   } else {
     document.getElementById('calendly').remove();
   }
+</script>
+<script>
+  /* ——— Фон: генплан ———
+     Тонкий чертёж территории: участок последовательно делится на кварталы и участки (так строится
+     мастерплан). При загрузке линии прочерчиваются одна за другой, дальше чертёж неподвижен,
+     а по его улицам медленно движутся несколько точек — люди и машины, работающие на территории. */
+  (function () {
+    var c = document.getElementById('bg'), x = c.getContext('2d');
+    var still = matchMedia('(prefers-reduced-motion: reduce)').matches;
+    var W, H, DPR, lines, fills, agents, cache = null, t0 = null, last = 0, raf = 0, tick = 0;
+    var ANG = -12 * Math.PI / 180, INK = '#E9EAEE', ACC = '#EF4F7B';
+    var DRAW = 3.2;                             /* сколько секунд чертёж прорисовывается при загрузке */
+
+    function rng(seed) { return function () { seed = seed + 0x6D2B79F5 | 0; var t = Math.imul(seed ^ seed >>> 15, 1 | seed); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; }; }
+
+    /* отрезок, обрезанный по экрану: по нему ходят точки */
+    function clip(l) {
+      var ta = 0, tb = 1, dx = l.x1 - l.x0, dy = l.y1 - l.y0, m = 24;
+      var p = [-dx, dx, -dy, dy], q = [l.x0 + m, W + m - l.x0, l.y0 + m, H + m - l.y0];
+      for (var i = 0; i < 4; i++) {
+        if (p[i] === 0) { if (q[i] < 0) return false; continue; }
+        var r = q[i] / p[i];
+        if (p[i] < 0) { if (r > tb) return false; if (r > ta) ta = r; } else { if (r < ta) return false; if (r < tb) tb = r; }
+      }
+      l.ta = ta; l.tb = tb; l.vis = (tb - ta) * l.len;
+      return l.vis > 0;
+    }
+
+    function setup() {
+      DPR = Math.min(window.devicePixelRatio || 1, 2);
+      W = innerWidth; H = innerHeight;
+      c.width = W * DPR; c.height = H * DPR;
+      var m = W < 720, R = rng(11), min = m ? 64 : 92, ca = Math.cos(ANG), sa = Math.sin(ANG);
+      var cx = W * (m ? .5 : .6), cy = H * .5, S = Math.hypot(W, H) * .62, raw = [];
+      lines = []; fills = []; cache = null;
+      function pt(u, v) { return [cx + u * ca - v * sa, cy + u * sa + v * ca]; }
+      /* деление: участок режется улицей на два, каждый — дальше, пока не станет размером с квартал */
+      (function split(x0, y0, x1, y1, d) {
+        var w = x1 - x0, h = y1 - y0;
+        if (d > 8 || (w < min * 2 && h < min * 2) || (d > 3 && R() < .1)) { if (R() < .13) fills.push([pt(x0, y0), pt(x1, y0), pt(x1, y1), pt(x0, y1)]); return; }
+        var vert = w > h ? R() < .82 : R() < .18;
+        if (vert && w < min * 2) vert = false; else if (!vert && h < min * 2) vert = true;
+        var r = .32 + R() * .36;
+        if (vert) { var xm = x0 + w * r; raw.push([xm, y0, xm, y1, d]); split(x0, y0, xm, y1, d + 1); split(xm, y0, x1, y1, d + 1); }
+        else { var ym = y0 + h * r; raw.push([x0, ym, x1, ym, d]); split(x0, y0, x1, ym, d + 1); split(x0, ym, x1, y1, d + 1); }
+      })(-S, -S, S, S, 0);
+      raw.forEach(function (r) {
+        var a = pt(r[0], r[1]), b = pt(r[2], r[3]);
+        var l = { x0: a[0], y0: a[1], x1: b[0], y1: b[1], d: r[4], len: Math.hypot(b[0] - a[0], b[1] - a[1]), delay: r[4] * .28 + R() * .35 };
+        if (clip(l)) lines.push(l);
+      });
+      /* точки ходят по улицам покрупнее */
+      var roads = lines.filter(function (l) { return l.d <= 5 && l.vis > 140; });
+      agents = [];
+      for (var i = 0; i < (m ? 5 : 11) && roads.length; i++) {
+        var a = { acc: i % 4 === 0, v: 14 + R() * 14 };
+        place(a, roads, R, true); agents.push(a);
+      }
+      agents.roads = roads; agents.R = R;
+    }
+
+    function place(a, roads, R, anywhere) {
+      a.l = roads[Math.floor(R() * roads.length)];
+      a.dir = R() < .5 ? 1 : -1;
+      a.s = anywhere ? R() * a.l.vis : (a.dir > 0 ? 0 : a.l.vis);
+    }
+
+    function plan(g, t) {
+      var m = W < 720 ? .8 : 1, i;
+      g.fillStyle = INK; g.globalAlpha = .028 * m * Math.min(1, t / DRAW);
+      for (i = 0; i < fills.length; i++) {
+        var f = fills[i];
+        g.beginPath(); g.moveTo(f[0][0], f[0][1]); g.lineTo(f[1][0], f[1][1]); g.lineTo(f[2][0], f[2][1]); g.lineTo(f[3][0], f[3][1]); g.fill();
+      }
+      g.strokeStyle = INK;
+      for (i = 0; i < lines.length; i++) {
+        var l = lines[i], p = Math.min(1, Math.max(0, (t - l.delay) / .9));
+        if (p <= 0) continue;
+        p = 1 - (1 - p) * (1 - p);
+        g.globalAlpha = (l.d <= 1 ? .24 : l.d <= 3 ? .15 : l.d <= 5 ? .1 : .075) * m;
+        g.lineWidth = l.d <= 1 ? 1.2 : 1;
+        g.setLineDash(l.d >= 6 ? [2, 5] : []);
+        g.beginPath(); g.moveTo(l.x0, l.y0); g.lineTo(l.x0 + (l.x1 - l.x0) * p, l.y0 + (l.y1 - l.y0) * p); g.stroke();
+      }
+      g.setLineDash([]); g.globalAlpha = 1;
+    }
+
+    function draw(ms) {
+      if (t0 === null) { t0 = ms; last = ms; }
+      var t = still ? 99 : Math.max(0, (ms - t0) / 1000), dt = Math.max(0, Math.min(.1, (ms - last) / 1000)); last = ms;
+      x.setTransform(DPR, 0, 0, DPR, 0, 0);
+      x.clearRect(0, 0, W, H);
+      if (t < DRAW + 2.6) plan(x, t);
+      else {
+        /* чертёж дорисован — дальше он берётся готовой картинкой, каждый кадр рисуются только точки */
+        if (!cache) { cache = document.createElement('canvas'); cache.width = c.width; cache.height = c.height; var g = cache.getContext('2d'); g.setTransform(DPR, 0, 0, DPR, 0, 0); plan(g, 99); }
+        x.setTransform(1, 0, 0, 1, 0, 0); x.drawImage(cache, 0, 0); x.setTransform(DPR, 0, 0, DPR, 0, 0);
+      }
+      var show = Math.min(1, Math.max(0, (t - DRAW * .6) / 1.5)), m = W < 720 ? .8 : 1;
+      x.lineCap = 'round';
+      for (var i = 0; i < agents.length; i++) {
+        var a = agents[i], l = a.l;
+        if (!still) { a.s += a.dir * a.v * dt; if (a.s < 0 || a.s > l.vis) { place(a, agents.roads, agents.R, false); l = a.l; } }
+        var fade = Math.min(1, a.s / 40, (l.vis - a.s) / 40) * show * m;
+        if (fade <= 0) continue;
+        var ux = (l.x1 - l.x0) / l.len, uy = (l.y1 - l.y0) / l.len, s = l.ta * l.len + a.s;
+        var px = l.x0 + ux * s, py = l.y0 + uy * s, tail = 34 * a.dir;
+        x.strokeStyle = x.fillStyle = a.acc ? ACC : INK;
+        x.lineWidth = 1.2;
+        x.globalAlpha = .28 * fade; x.beginPath(); x.moveTo(px, py); x.lineTo(px - ux * tail, py - uy * tail); x.stroke();
+        x.globalAlpha = .5 * fade; x.beginPath(); x.moveTo(px, py); x.lineTo(px - ux * tail * .4, py - uy * tail * .4); x.stroke();
+        x.globalAlpha = (a.acc ? .95 : .8) * fade; x.beginPath(); x.arc(px, py, a.acc ? 2.2 : 1.8, 0, 6.2832); x.fill();
+      }
+      x.globalAlpha = 1;
+    }
+
+    /* движение медленное — хватает ~30 кадров в секунду */
+    function frame(ms) { if (tick++ % 2 === 0) draw(ms); raf = requestAnimationFrame(frame); }
+    function start() { if (still) draw(performance.now()); else if (!raf) raf = requestAnimationFrame(frame); }
+    function stop() { cancelAnimationFrame(raf); raf = 0; }
+
+    setup(); start();
+    addEventListener('resize', function () { setup(); if (still) draw(performance.now()); });
+    document.addEventListener('visibilitychange', function () { if (document.hidden) stop(); else { last = performance.now(); start(); } });
+  })();
 </script>
 </body>
 </html>
