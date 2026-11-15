@@ -121,7 +121,6 @@
 </style>
 </head>
 <body>
-<canvas id="bg" aria-hidden="true"></canvas>
 <main>
 <div class="zone top">
 <div class="sheet">
@@ -345,93 +344,6 @@
   } else {
     document.getElementById('calendly').remove();
   }
-</script>
-<script>
-  /* ——— Фон: растр из точек ———
-     Точки стоят на ровной сетке и не двигаются; меняется только их размер. Размер задаёт медленно
-     плывущее поле (два слоя шума) плюс уклон сверху вниз: наверху пусто, внизу плотно.
-     Размеры идут ступенями, поэтому поле читается как пятна и полосы рельефа. */
-  (function () {
-    var c = document.getElementById('bg'), x = c.getContext('2d');
-    var still = matchMedia('(prefers-reduced-motion: reduce)').matches;
-    var W, H, cols, rows, n, cell, F, raf = 0, tick = 0;
-    var R = [0, .55, 1, 1.5, 2.1, 2.8, 3.5];   /* радиусы ступеней при шаге сетки 11px */
-    var BAND = .12, EDGE = .78;                 /* ширина ступени по полю; с какой доли ступени начинается рост к следующей */
-
-    function setup() {
-      var d = Math.min(window.devicePixelRatio || 1, 2);
-      W = innerWidth; H = innerHeight;
-      c.width = W * d; c.height = H * d;
-      x.setTransform(d, 0, 0, d, 0, 0);
-      cell = W < 720 ? 10 : 11;                 /* шаг сетки точек, px */
-      cols = Math.ceil(W / cell); rows = Math.ceil(H / cell); n = cols + 1;
-      F = new Float32Array(n * (rows + 1));
-    }
-
-    function hash(ix, iz) {
-      var q = Math.imul(ix, 374761393) + Math.imul(iz, 668265263) | 0;
-      q = Math.imul(q ^ (q >>> 13), 1274126177);
-      return ((q ^ (q >>> 16)) >>> 0) / 4294967295;
-    }
-    /* один слой шума по всей сетке; углы ячейки решётки пересчитываются только при переходе в соседнюю */
-    function layer(scale, ox, oy, amp, first) {
-      var st = cell / scale;
-      for (var j = 0; j <= rows; j++) {
-        var v = j * st + oy, iv = Math.floor(v), fv = v - iv, o = j * n, last = null, a, b, cc, dd;
-        fv = fv * fv * fv * (fv * (fv * 6 - 15) + 10);
-        for (var i = 0; i <= cols; i++) {
-          var u = i * st + ox, iu = Math.floor(u), fu = u - iu;
-          if (iu !== last) { a = hash(iu, iv); b = hash(iu + 1, iv); cc = hash(iu, iv + 1); dd = hash(iu + 1, iv + 1); last = iu; }
-          fu = fu * fu * fu * (fu * (fu * 6 - 15) + 10);
-          var val = amp * (a + (b - a) * fu + (cc - a) * fv + (a - b - cc + dd) * fu * fv);
-          if (first) F[o + i] = val; else F[o + i] += val;
-        }
-      }
-    }
-
-    function draw(ms) {
-      var t = ms / 1000, i, j, top = R.length - 1, k = cell / 11, mob = W < 720 ? .8 : 1;
-      layer(560, t * .012, -t * .02, 1, true);
-      layer(230, -t * .019 + 31, -t * .011 + 7, .5, false);
-      x.clearRect(0, 0, W, H);
-      /* два прохода: обычные точки и точки верхней ступени (акцент) */
-      for (var pass = 0; pass < 2; pass++) {
-        x.fillStyle = pass ? '#F0507F' : '#E6E8EE';
-        x.globalAlpha = (pass ? .7 : .36) * mob;
-        x.beginPath();
-        for (j = 0; j <= rows; j++) {
-          var py = j * cell + cell / 2, bias = (py / H - .5) * .8, o = j * n;
-          for (i = 0; i <= cols; i++) {
-            var q = (F[o + i] / 1.5 + bias - .44) / BAND;
-            if (q < 1) continue;
-            var s = Math.floor(q), f = q - s, r;
-            if (s >= top) { if (!pass) continue; r = R[top]; }
-            else {
-              if (pass) { if (s < top - 1 || f < EDGE) continue; }
-              else if (s === top - 1 && f >= EDGE) continue;
-              var g = f < EDGE ? 0 : (f - EDGE) / (1 - EDGE);
-              r = R[s] + (R[s + 1] - R[s]) * g * g * (3 - 2 * g);
-            }
-            r *= k;
-            var px = i * cell + cell / 2;
-            if (r < .9) x.rect(px - r, py - r, r * 2, r * 2);
-            else { x.moveTo(px + r, py); x.arc(px, py, r, 0, 6.2832); }
-          }
-        }
-        x.fill();
-      }
-      x.globalAlpha = 1;
-    }
-
-    /* поле меняется медленно — хватает ~30 кадров в секунду */
-    function frame(ms) { if (tick++ % 2 === 0) draw(ms); raf = requestAnimationFrame(frame); }
-    function start() { if (still) draw(0); else if (!raf) raf = requestAnimationFrame(frame); }
-    function stop() { cancelAnimationFrame(raf); raf = 0; }
-
-    setup(); start();
-    addEventListener('resize', function () { setup(); if (still) draw(0); });
-    document.addEventListener('visibilitychange', function () { document.hidden ? stop() : start(); });
-  })();
 </script>
 </body>
 </html>
