@@ -9,7 +9,7 @@
 <meta name="description" content="Aleksandr Barinov — real estate professional and urban planner. Development concepts, masterplans and proptech.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600&family=Instrument+Serif&display=swap" rel="stylesheet">
 <script>document.documentElement.classList.add('js')</script>
 <style>
   :root {
@@ -230,6 +230,19 @@
     .hc { display: none; }
   }
 
+  /* ——— Роль под именем — акцентным цветом ——— */
+  .me .role { color: var(--accent); }
+  .me .sum { max-width: 27em; }
+
+  /* ——— Варианты шрифта имени (временный переключатель слева внизу) ——— */
+  html[data-nf="1"] .me h1 { font-weight: 500; letter-spacing: -0.04em; }
+  html[data-nf="3"] .me h1 { font-weight: 400; letter-spacing: -0.045em; font-size: clamp(46px, 6vw, 80px); }
+  html[data-nf="4"] .me h1 { font-family: "Instrument Serif", Georgia, serif; font-weight: 400; letter-spacing: -0.015em; font-size: clamp(52px, 6.8vw, 92px); line-height: .92; }
+  .nf { position: fixed; left: clamp(22px, 6.5vw, 104px); bottom: 12px; z-index: 5; display: flex; gap: 4px; align-items: center; font-size: 10px; letter-spacing: .12em; text-transform: uppercase; color: var(--muted); }
+  .nf button { font: inherit; letter-spacing: inherit; text-transform: inherit; color: var(--muted); background: rgba(19, 18, 24, .6); border: 0; border-radius: 999px; padding: 5px 9px; cursor: pointer; }
+  .nf button[aria-pressed="true"] { color: var(--ink); background: rgba(243, 238, 232, .14); }
+  @media (max-width: 720px) { .nf { display: none; } }
+
   /* ——— Больше поле слева; прошлые проекты — более узкой колонкой ——— */
   .zone { padding-left: clamp(22px, 6.5vw, 104px); }
   .zone.past .case { max-width: 440px; }
@@ -246,7 +259,7 @@
   <div class="me">
     <h1>Aleksandr<br>Barinov</h1>
     <p class="role">Real estate professional and urban planner</p>
-    <p class="sum">I specialize in concept development and masterplanning for large-scale development projects.</p>
+    <p class="sum">I specialize in concept development and masterplanning for large-scale development projects, and in technology solutions for real estate operations.</p>
     <aside class="hc">
       <h2>Contact</h2>
       <a href="https://wa.me/12428075582" target="_blank" rel="noopener">WhatsApp</a>
@@ -580,6 +593,26 @@
 
     /* для страницы настройки: доступ к параметрам снаружи */
     window.sphere = { P: P, reset: function () { defaults(); build(); }, build: build, redraw: function () { if (still) draw(0); } };
+  })();
+</script>
+<div class="nf" id="nf"><span>Name font</span>
+  <button type="button" data-v="1">Medium</button>
+  <button type="button" data-v="2">Bold</button>
+  <button type="button" data-v="3">Light</button>
+  <button type="button" data-v="4">Serif</button>
+</div>
+<script>
+  /* временный переключатель шрифта имени; выбор запоминается в браузере */
+  (function () {
+    var bs = document.querySelectorAll("#nf button"), v = "1";
+    try { v = localStorage.getItem("grad-nf") || "1"; } catch (e) {}
+    function set(x) {
+      document.documentElement.setAttribute("data-nf", x);
+      for (var i = 0; i < bs.length; i++) bs[i].setAttribute("aria-pressed", bs[i].getAttribute("data-v") === x);
+      try { localStorage.setItem("grad-nf", x); } catch (e) {}
+    }
+    for (var i = 0; i < bs.length; i++) bs[i].addEventListener("click", function () { set(this.getAttribute("data-v")); });
+    set(v);
   })();
 </script>
 </body>
