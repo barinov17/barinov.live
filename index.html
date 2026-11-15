@@ -106,7 +106,8 @@
   /* фон-анимация: холст под содержимым, зоны полупрозрачные */
   #bg { position: fixed; inset: 0; width: 100%; height: 100%; z-index: 0; pointer-events: none; }
   /* на широком экране линии под текстом слева приглушены */
-  @media (min-width: 721px) { #bg { -webkit-mask-image: linear-gradient(to right, rgba(0,0,0,.4), #000 62%); mask-image: linear-gradient(to right, rgba(0,0,0,.4), #000 62%); } }
+  @media (min-width: 721px) { #bg { -webkit-mask-image: linear-gradient(to right, rgba(0,0,0,.16), rgba(0,0,0,.26) 40%, #000 72%); mask-image: linear-gradient(to right, rgba(0,0,0,.16), rgba(0,0,0,.26) 40%, #000 72%); } }
+  @media (max-width: 720px) { #bg { opacity: .4; } }
   main { position: relative; z-index: 1; }
   .zone { background: transparent; }
 
@@ -346,32 +347,25 @@
   }
 </script>
 <script>
-  /* ——— Фон: «живая» топографическая карта ———
-     Крупный пологий рельеф из двух слоёв шума, которые медленно плывут в разные стороны.
-     Горизонталей немного; каждая собирается в цельную сглаженную кривую. Основные — сплошные,
-     промежуточные — пунктиром, одна высота — акцентом. */
+  /* ——— Фон: растр из точек ———
+     Точки стоят на ровной сетке и не двигаются; меняется только их размер. Размер задаёт медленно
+     плывущее поле (два слоя шума) плюс уклон сверху вниз: наверху пусто, внизу плотно.
+     Размеры идут ступенями, поэтому поле читается как пятна и полосы рельефа. */
   (function () {
     var c = document.getElementById('bg'), x = c.getContext('2d');
     var still = matchMedia('(prefers-reduced-motion: reduce)').matches;
-    var W, H, cols, rows, n, HN, cell, F, raf = 0, tick = 0;
-    var SX, SY, E0, E1, USED, SA, SB, STAMP, PTS, ns = 0, stamp = 0;
-    var D = .075;                               /* шаг горизонталей по высоте: больше — линий меньше */
-    var SEG = [[], [3, 0], [0, 1], [3, 1], [1, 2], [3, 0, 1, 2], [0, 2], [3, 2], [2, 3], [0, 2], [0, 1, 2, 3], [1, 2], [1, 3], [0, 1], [3, 0], []];
+    var W, H, cols, rows, n, cell, F, raf = 0, tick = 0;
+    var R = [0, .55, 1, 1.5, 2.1, 2.8, 3.5];   /* радиусы ступеней при шаге сетки 11px */
+    var BAND = .12, EDGE = .78;                 /* ширина ступени по полю; с какой доли ступени начинается рост к следующей */
 
     function setup() {
-      var d = Math.min(window.devicePixelRatio || 1, 1.5);
+      var d = Math.min(window.devicePixelRatio || 1, 2);
       W = innerWidth; H = innerHeight;
       c.width = W * d; c.height = H * d;
       x.setTransform(d, 0, 0, d, 0, 0);
-      x.lineJoin = x.lineCap = 'round';
-      cell = W < 720 ? 14 : 18;                 /* расчётная сетка; гладкость дают сглаженные кривые, а не мелкий шаг */
-      cols = Math.ceil(W / cell); rows = Math.ceil(H / cell); n = cols + 1; HN = n * (rows + 1);
-      F = new Float32Array(HN);
-      var cap = cols * rows;
-      SX = new Float32Array(cap * 2); SY = new Float32Array(cap * 2);
-      E0 = new Int32Array(cap); E1 = new Int32Array(cap); USED = new Uint8Array(cap);
-      SA = new Int32Array(HN * 2); SB = new Int32Array(HN * 2); STAMP = new Int32Array(HN * 2);
-      PTS = new Float32Array(cap * 2 + 4);
+      cell = W < 720 ? 10 : 11;                 /* шаг сетки точек, px */
+      cols = Math.ceil(W / cell); rows = Math.ceil(H / cell); n = cols + 1;
+      F = new Float32Array(n * (rows + 1));
     }
 
     function hash(ix, iz) {
@@ -395,84 +389,41 @@
       }
     }
 
-    function link(e, s) { if (STAMP[e] !== stamp) { STAMP[e] = stamp; SA[e] = s; SB[e] = -1; } else SB[e] = s; }
-
-    /* отрезки одной горизонтали: концы лежат на рёбрах ячеек, у каждого ребра свой номер */
-    function collect(l) {
-      ns = 0; stamp++;
-      for (var j = 0; j < rows; j++) for (var i = 0; i < cols; i++) {
-        var p = j * n + i, h0 = F[p], h1 = F[p + 1], h2 = F[p + n + 1], h3 = F[p + n];
-        if ((h0 > l) === (h1 > l) && (h1 > l) === (h2 > l) && (h2 > l) === (h3 > l)) continue;
-        var s = SEG[(h0 > l ? 1 : 0) | (h1 > l ? 2 : 0) | (h2 > l ? 4 : 0) | (h3 > l ? 8 : 0)];
-        for (var e = 0; e < s.length; e += 2) {
-          for (var q = 0; q < 2; q++) {
-            var ed = s[e + q], px, py, id;
-            if (ed === 0) { px = i + (l - h0) / (h1 - h0); py = j; id = p; }
-            else if (ed === 1) { px = i + 1; py = j + (l - h1) / (h2 - h1); id = HN + p + 1; }
-            else if (ed === 2) { px = i + (l - h3) / (h2 - h3); py = j + 1; id = p + n; }
-            else { px = i; py = j + (l - h0) / (h3 - h0); id = HN + p; }
-            SX[ns * 2 + q] = px * cell; SY[ns * 2 + q] = py * cell;
-            if (q) E1[ns] = id; else E0[ns] = id;
-            link(id, ns);
-          }
-          USED[ns++] = 0;
-        }
-      }
-    }
-
-    /* цепочка отрезков от s через ребро входа — в одну кривую, сглаженную через середины звеньев */
-    function chain(s, fromE0) {
-      var m = 0, e;
-      PTS[m++] = SX[s * 2 + (fromE0 ? 0 : 1)]; PTS[m++] = SY[s * 2 + (fromE0 ? 0 : 1)];
-      while (true) {
-        USED[s] = 1;
-        PTS[m++] = SX[s * 2 + (fromE0 ? 1 : 0)]; PTS[m++] = SY[s * 2 + (fromE0 ? 1 : 0)];
-        e = fromE0 ? E1[s] : E0[s];
-        var t = SA[e] === s ? SB[e] : SA[e];
-        if (t < 0 || USED[t]) break;
-        fromE0 = E0[t] === e; s = t;
-      }
-      var k = m / 2;
-      x.moveTo(PTS[0], PTS[1]);
-      if (k < 3) { x.lineTo(PTS[2], PTS[3]); return; }
-      for (var i = 1; i < k - 1; i++) x.quadraticCurveTo(PTS[i * 2], PTS[i * 2 + 1], (PTS[i * 2] + PTS[i * 2 + 2]) / 2, (PTS[i * 2 + 1] + PTS[i * 2 + 3]) / 2);
-      x.lineTo(PTS[k * 2 - 2], PTS[k * 2 - 1]);
-    }
-
-    function contour(l) {
-      collect(l);
-      if (!ns) return;
-      var s;
-      x.beginPath();
-      /* сначала линии, уходящие за край экрана (у них есть свободный конец), потом замкнутые */
-      for (s = 0; s < ns; s++) {
-        if (USED[s]) continue;
-        if (SB[E0[s]] < 0) chain(s, true); else if (SB[E1[s]] < 0) chain(s, false);
-      }
-      for (s = 0; s < ns; s++) if (!USED[s]) chain(s, true);
-      x.stroke();
-    }
-
     function draw(ms) {
-      var t = ms / 1000, i, mn = Infinity, mx = -Infinity;
-      layer(760, t * .006, t * .0035, 1, true);
-      layer(330, -t * .009 + 31, t * .0065 + 7, .45, false);
-      for (i = 0; i < HN; i++) { var h = F[i]; if (h < mn) mn = h; if (h > mx) mx = h; }
+      var t = ms / 1000, i, j, top = R.length - 1, k = cell / 11, mob = W < 720 ? .8 : 1;
+      layer(560, t * .012, -t * .02, 1, true);
+      layer(230, -t * .019 + 31, -t * .011 + 7, .5, false);
       x.clearRect(0, 0, W, H);
-      var mob = W < 720 ? .85 : 1;
-      for (var k = Math.ceil(mn / D); k <= Math.floor(mx / D); k++) {
-        var acc = k === 10, main = k % 3 === 0;
-        x.strokeStyle = acc ? '#F0507F' : '#E6E8EE';
-        x.globalAlpha = (acc ? .6 : main ? .3 : .2) * mob;
-        x.lineWidth = main || acc ? 1.1 : 1;
-        x.setLineDash(main || acc ? [] : [3, 7]);
-        contour(k * D);
+      /* два прохода: обычные точки и точки верхней ступени (акцент) */
+      for (var pass = 0; pass < 2; pass++) {
+        x.fillStyle = pass ? '#F0507F' : '#E6E8EE';
+        x.globalAlpha = (pass ? .7 : .36) * mob;
+        x.beginPath();
+        for (j = 0; j <= rows; j++) {
+          var py = j * cell + cell / 2, bias = (py / H - .5) * .8, o = j * n;
+          for (i = 0; i <= cols; i++) {
+            var q = (F[o + i] / 1.5 + bias - .44) / BAND;
+            if (q < 1) continue;
+            var s = Math.floor(q), f = q - s, r;
+            if (s >= top) { if (!pass) continue; r = R[top]; }
+            else {
+              if (pass) { if (s < top - 1 || f < EDGE) continue; }
+              else if (s === top - 1 && f >= EDGE) continue;
+              var g = f < EDGE ? 0 : (f - EDGE) / (1 - EDGE);
+              r = R[s] + (R[s + 1] - R[s]) * g * g * (3 - 2 * g);
+            }
+            r *= k;
+            var px = i * cell + cell / 2;
+            if (r < .9) x.rect(px - r, py - r, r * 2, r * 2);
+            else { x.moveTo(px + r, py); x.arc(px, py, r, 0, 6.2832); }
+          }
+        }
+        x.fill();
       }
-      x.setLineDash([]);
       x.globalAlpha = 1;
     }
 
-    /* движение очень медленное — хватает ~30 кадров в секунду */
+    /* поле меняется медленно — хватает ~30 кадров в секунду */
     function frame(ms) { if (tick++ % 2 === 0) draw(ms); raf = requestAnimationFrame(frame); }
     function start() { if (still) draw(0); else if (!raf) raf = requestAnimationFrame(frame); }
     function stop() { cancelAnimationFrame(raf); raf = 0; }
