@@ -8,271 +8,205 @@
 <meta name="description" content="Aleks Barinov — masterplanning, development concepts and technological solutions for large-scale development projects.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@300;400;500;600&display=swap" rel="stylesheet">
-<script>document.documentElement.classList.add('js')</script>
+<link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@300;400;500&display=swap" rel="stylesheet">
 <style>
-  /* ——— Одна гарнитура, четыре колонки, пять кеглей ——— */
+  /* ——— Только текст и воздух: одна гарнитура, три кегля, никаких линий ——— */
   :root {
     --paper: #EEECE7;
     --ink: #151515;
-    --muted: #77746D;
-    --rule: #151515;            /* линейки разделов */
-    --hair: #D2CFC7;            /* тонкие линии строк и направляющие сетки */
-    --signal: #FF4A1C;          /* единственный цвет: метка текущего проекта */
+    --muted: #7C7972;
     --font: "Hanken Grotesk", "Helvetica Neue", Helvetica, Arial, sans-serif;
-    --fs-xs: 12px;              /* подписи */
-    --fs-s: 15px;               /* текст */
-    --fs-m: 21px;               /* названия проектов, ссылки */
-    --fs-l: clamp(23px, 2.5vw, 34px);    /* вводная фраза, текущий проект */
-    --fs-xl: clamp(54px, 9.4vw, 136px);  /* имя */
-    --pad: clamp(18px, 3vw, 44px);
-    --gap: clamp(16px, 2.4vw, 36px);
-    --col: calc((100% - 3 * var(--gap)) / 4);
+    --fs-s: 13px;                         /* подписи, служебное */
+    --fs-m: 16px;                         /* текст */
+    --fs-l: clamp(22px, 2.3vw, 30px);     /* имя, вводная фраза, названия проектов */
+    --pad: clamp(20px, 4vw, 56px);
+    --label: 168px;                       /* колонка подписей */
+    --measure: 560px;                     /* ширина текста */
+    --space: clamp(72px, 10vw, 136px);    /* расстояние между разделами */
   }
   * { box-sizing: border-box; }
   html { -webkit-text-size-adjust: 100%; }
-  body { margin: 0; background: var(--paper); color: var(--ink); font: 400 var(--fs-s)/1.45 var(--font); -webkit-font-smoothing: antialiased; text-rendering: optimizeLegibility; }
+  body { margin: 0; padding: var(--pad) var(--pad) 40px; background: var(--paper); color: var(--ink); font: 400 var(--fs-m)/1.5 var(--font); -webkit-font-smoothing: antialiased; text-rendering: optimizeLegibility; }
   p, h1, h2, h3, ul, dl, dd { margin: 0; padding: 0; font: inherit; list-style: none; }
-  a { color: inherit; text-decoration: none; }
+  a { color: inherit; text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: 3px; }
+  a:hover, button:hover { color: var(--muted); }
   button { font: inherit; color: inherit; }
   ::selection { background: var(--ink); color: var(--paper); }
   :focus-visible { outline: 1px solid var(--ink); outline-offset: 4px; }
+  .small { font-size: var(--fs-s); color: var(--muted); }
 
-  .page { position: relative; max-width: 1360px; margin: 0 auto; padding: 0 var(--pad); }
-  /* направляющие сетки: три вертикали между колонками */
-  .guides { position: absolute; inset: 0 var(--pad); pointer-events: none; z-index: 0; }
-  .guides i { position: absolute; top: 0; bottom: 0; width: 1px; background: var(--hair); }
-  .guides i:nth-child(1) { left: calc(var(--col) + var(--gap) / 2); }
-  .guides i:nth-child(2) { left: calc(2 * var(--col) + 1.5 * var(--gap)); }
-  .guides i:nth-child(3) { left: calc(3 * var(--col) + 2.5 * var(--gap)); }
-  .page > :not(.guides) { position: relative; z-index: 1; }
+  .ver { position: absolute; top: var(--pad); right: var(--pad); }
 
-  .g { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); column-gap: var(--gap); }
-  .label { font-size: var(--fs-xs); font-weight: 600; letter-spacing: 0.01em; }
-  .muted { color: var(--muted); }
-  .u { border-bottom: 1px solid currentColor; padding-bottom: 1px; transition: opacity .2s; }
-  .u:hover { opacity: .55; }
+  /* имя и вводная фраза — один блок одного кегля: имя плотнее, фраза светлее */
+  .me { max-width: calc(var(--label) + var(--measure)); font-size: var(--fs-l); line-height: 1.24; letter-spacing: -0.018em; padding-top: clamp(40px, 9vw, 130px); }
+  .me h1 { font-weight: 500; }
+  .me p { font-weight: 300; text-wrap: pretty; }
 
-  /* ——— шапка ——— */
-  .bar { padding: 22px 0; align-items: baseline; }
-  .bar .ver { grid-column: 4; justify-self: end; font-size: var(--fs-xs); font-weight: 600; }
+  /* разделы: подпись слева, текст правее */
+  section { display: grid; grid-template-columns: var(--label) minmax(0, var(--measure)); margin-top: var(--space); align-items: baseline; }
+  section > h2 { font-size: var(--fs-s); color: var(--muted); }
 
-  /* ——— имя ——— */
-  .name { border-top: 1px solid var(--rule); padding: clamp(14px, 2vw, 26px) 0 clamp(56px, 11vw, 170px); }
-  .name h1 { font-size: var(--fs-xl); line-height: .92; letter-spacing: -0.04em; font-weight: 600; margin-left: -0.045em; }
-  .name h1 span { display: block; font-weight: 300; }
-
-  /* ——— разделы ——— */
-  .sec { border-top: 1px solid var(--rule); padding: 16px 0 clamp(64px, 9vw, 130px); }
-  .sec > .label { grid-column: 1; }
-  .sec > .body { grid-column: 2 / -1; }
-
-  .intro { font-size: var(--fs-l); line-height: 1.22; letter-spacing: -0.018em; font-weight: 400; max-width: 27em; text-wrap: pretty; }
-
-  /* текущий проект */
-  .now { column-gap: var(--gap); }
-  .now h3 { grid-column: 1 / span 2; font-size: var(--fs-l); line-height: 1.15; letter-spacing: -0.02em; font-weight: 600; }
-  .now h3 + p { grid-column: 1 / span 2; grid-row: 2; font-size: var(--fs-l); line-height: 1.2; letter-spacing: -0.02em; font-weight: 300; max-width: 16em; }
-  .now .txt { grid-column: 3; grid-row: 1 / span 2; padding-top: 6px; }
-  .now .txt p + p { margin-top: 1.2em; }
-  .dot { display: inline-block; width: 9px; height: 9px; margin-left: 8px; border-radius: 50%; background: var(--signal); vertical-align: 1px; }
-
-  /* прошлые проекты: строка = название / описание / кнопка */
-  .case { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); column-gap: var(--gap); align-items: baseline; padding: 15px 0 17px; border-top: 1px solid var(--hair); }
-  .case:first-child { border-top: 0; padding-top: 0; }
-  .case h3 { font-size: var(--fs-m); line-height: 1.2; letter-spacing: -0.015em; font-weight: 500; }
-  .case > p { color: var(--ink); max-width: 30em; }
-  .more { justify-self: end; padding: 0; border: 0; background: none; font-size: var(--fs-xs); font-weight: 600; cursor: pointer; white-space: nowrap; }
-  .more::after { content: " +"; }
-  .more:hover { opacity: .55; }
-  .case:hover h3 { opacity: .55; }
+  .case + .case { margin-top: 34px; }
+  .case h3 { font-size: var(--fs-l); line-height: 1.2; letter-spacing: -0.018em; font-weight: 400; margin-bottom: 6px; }
+  .case .txt { margin-top: 14px; color: var(--muted); }
+  .case .site { display: inline-block; margin-top: 14px; }
+  .more { display: inline-block; margin-top: 8px; padding: 0; border: 0; background: none; font-size: var(--fs-s); color: var(--muted); text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: 3px; cursor: pointer; }
+  .more:hover { color: var(--ink); }
   .content { display: none; }
 
-  /* контакты */
-  .links { display: flex; flex-wrap: wrap; gap: 6px var(--gap); font-size: var(--fs-m); letter-spacing: -0.015em; }
-
-  .foot { border-top: 1px solid var(--rule); padding: 16px 0 28px; font-size: var(--fs-xs); }
-  .foot span:last-child { grid-column: 4; justify-self: end; }
+  .links { display: flex; flex-wrap: wrap; gap: 4px 28px; }
+  .foot { margin-top: var(--space); padding-left: var(--label); }
 
   /* ——— окно Details ——— */
   [hidden] { display: none !important; }
-  dialog { width: min(680px, calc(100vw - 28px)); max-height: calc(100vh - 40px); padding: 0; border: 0; background: #F7F6F2; color: var(--ink); overflow: auto; }
-  dialog::backdrop { background: rgba(21, 21, 21, .55); }
+  dialog { width: min(640px, calc(100vw - 28px)); max-height: calc(100vh - 40px); padding: 0; border: 0; background: #F8F7F3; color: var(--ink); overflow: auto; }
+  dialog::backdrop { background: rgba(21, 21, 21, .5); }
   .d-img { display: block; width: 100%; aspect-ratio: 16 / 9; object-fit: cover; }
-  .d-ph { display: grid; place-items: center; aspect-ratio: 16 / 9; background: #E3E0D9; font-size: var(--fs-xs); font-weight: 600; color: var(--muted); }
-  .d-in { padding: 18px 24px 28px; }
-  .d-head { display: flex; justify-content: space-between; align-items: baseline; gap: 24px; padding-bottom: 14px; border-bottom: 1px solid var(--rule); }
-  .d-head h3 { font-size: var(--fs-l); line-height: 1.12; letter-spacing: -0.02em; font-weight: 600; }
-  .d-close { flex: none; padding: 0; border: 0; background: none; font-size: var(--fs-xs); font-weight: 600; cursor: pointer; }
-  .d-close:hover { opacity: .55; }
-  .d-sub { padding-top: 14px; font-size: var(--fs-m); line-height: 1.25; letter-spacing: -0.015em; font-weight: 300; max-width: 22em; }
-  .d-meta { display: grid; grid-template-columns: 110px minmax(0, 1fr); margin-top: 22px; }
-  .d-meta dt, .d-meta dd { padding: 7px 0; border-top: 1px solid var(--hair); }
-  .d-meta dt { font-size: var(--fs-xs); font-weight: 600; padding-top: 9px; }
-  .d-text { padding-top: 22px; max-width: 34em; }
+  .d-ph { aspect-ratio: 16 / 9; background: #E4E1DA; }
+  .d-in { padding: 24px 28px 32px; }
+  .d-head { display: flex; justify-content: space-between; align-items: baseline; gap: 24px; }
+  .d-head h3 { font-size: var(--fs-l); line-height: 1.2; letter-spacing: -0.018em; font-weight: 400; }
+  .d-close { flex: none; padding: 0; border: 0; background: none; font-size: var(--fs-s); color: var(--muted); cursor: pointer; }
+  .d-close:hover { color: var(--ink); }
+  .d-sub { margin-top: 6px; }
+  .d-meta { display: grid; grid-template-columns: 96px minmax(0, 1fr); row-gap: 4px; margin-top: 24px; }
+  .d-meta dt { font-size: var(--fs-s); color: var(--muted); align-self: baseline; }
+  .d-text { margin-top: 24px; max-width: 34em; }
   .d-text p + p, .d-text ul + p, .d-text p + ul { margin-top: 1em; }
   .d-text li { padding-left: 1.3em; position: relative; }
   .d-text li + li { margin-top: .45em; }
   .d-text li::before { content: "–"; position: absolute; left: 0; }
-  .d-text a { border-bottom: 1px solid currentColor; }
-  .d-text a:hover { opacity: .55; }
-
-  /* ——— появление: линейки и блоки проявляются по очереди ——— */
-  @media (prefers-reduced-motion: no-preference) {
-    .js .rise { opacity: 0; transform: translateY(10px); animation: rise .7s cubic-bezier(.2, .7, .2, 1) forwards; animation-delay: calc(var(--i, 0) * 70ms); }
-    @keyframes rise { to { opacity: 1; transform: none; } }
-  }
 
   @media (max-width: 760px) {
-    .guides { display: none; }
-    .sec > .label { grid-column: 1 / -1; margin-bottom: 22px; }
-    .sec > .body { grid-column: 1 / -1; }
-    .now h3, .now h3 + p, .now .txt { grid-column: 1 / -1; grid-row: auto; }
-    .now .txt { padding-top: 20px; }
-    .case { grid-template-columns: minmax(0, 1fr) auto; row-gap: 4px; }
-    .case > p { grid-column: 1; grid-row: 2; }
-    .more { grid-column: 2; grid-row: 1; }
-    .bar .ver, .foot span:last-child { grid-column: 3 / -1; }
+    section { grid-template-columns: minmax(0, 1fr); row-gap: 18px; }
+    .foot { padding-left: 0; }
+    .ver { position: static; display: inline-block; }
+    .me { padding-top: 40px; }
   }
 </style>
 </head>
 <body>
-<div class="page">
-  <div class="guides" aria-hidden="true"><i></i><i></i><i></i></div>
 
-  <header class="g bar rise">
-    <span class="label">barinov.live</span>
-    <a class="ver u" href="../">Main version</a>
-  </header>
+<a class="ver small" href="../">Main version</a>
 
-  <div class="name rise" style="--i:1">
-    <h1>Aleks<span>Barinov</span></h1>
-  </div>
-
-  <section class="g sec rise" style="--i:2">
-    <h2 class="label">Profile</h2>
-    <p class="body intro">I specialize in masterplanning, development concepts and technological solutions for large-scale development projects.</p>
-  </section>
-
-  <section class="g sec rise" style="--i:3">
-    <h2 class="label">Now<i class="dot" aria-hidden="true"></i></h2>
-    <div class="body g now" style="grid-template-columns: repeat(3, minmax(0, 1fr))">
-      <h3>RubiqOS</h3>
-      <p>Physical AI platform for resort operations.</p>
-      <div class="txt">
-        <p>RubiqOS orchestrates day-to-day operations between people and robots. Its engine plans the tasks, splits the work between staff and machines, and runs both as one team.</p>
-        <p><a class="u" href="https://rubiqos.com/" target="_blank" rel="noopener">rubiqos.com</a></p>
-      </div>
-    </div>
-  </section>
-
-  <section class="g sec rise" style="--i:4">
-    <h2 class="label">Past</h2>
-    <ul class="body">
-
-      <li class="case">
-        <h3>Private island development</h3>
-        <p>Masterplan for a $1B resort on a private island in the Caribbean.</p>
-        <button class="more" aria-haspopup="dialog">Details</button>
-        <div class="content">
-          <p>My concept won a <a href="https://www.ribacompetitions.com/" target="_blank" rel="noopener">RIBA competition</a>, and I was invited to join the project as Lead Masterplan Architect. I was the third member of the team and helped shape the initial vision, the masterplan and the overall development concept.</p>
-          <p>My scope covered the architectural and development concept of the island, strategic planning and cross-disciplinary coordination.</p>
-        </div>
-      </li>
-
-      <li class="case">
-        <h3>CERN lab building</h3>
-        <p>Concept development for a laboratory complex on the CERN campus.</p>
-        <button class="more" aria-haspopup="dialog">Details</button>
-        <div class="content">
-          <p>Our team helped shape the concept for a complex of administrative buildings and laboratories at CERN. We ran several strategy sessions with the architectural teams and laboratory representatives to define clear requirements for the architectural design.</p>
-          <p>In collaboration with <a href="https://home.cern/" target="_blank" rel="noopener">CERN</a> and <a href="https://www.nickl-partner.com/en/" target="_blank" rel="noopener">Nickl &amp; Partner</a></p>
-        </div>
-      </li>
-
-      <li class="case">
-        <h3>Easyinn</h3>
-        <p>Platform for automated property management.</p>
-        <button class="more" aria-haspopup="dialog">Details</button>
-        <div class="content">
-          <p>Easyinn started as an internal tool for running our own network of hotels with 280 units in total. It included a keyless access system and a guest app with a marketplace of local services.</p>
-          <p>It was later spun off as a standalone product and launched in several countries.</p>
-        </div>
-      </li>
-
-      <li class="case">
-        <h3>Habithai</h3>
-        <p>Gated community development on Koh Samui, Thailand.</p>
-        <button class="more" aria-haspopup="dialog">Details</button>
-        <div class="content">
-          <p>Masterplan and product concept for a gated community of 11 premium villas on Koh Samui, Thailand — plus fundraising, marketing and sales.</p>
-        </div>
-      </li>
-
-      <li class="case">
-        <h3>Foresight Moscow-2050</h3>
-        <p>The largest foresight study for the Moscow masterplan.</p>
-        <button class="more" aria-haspopup="dialog">Details</button>
-        <div class="content">
-          <p>I was part of the team that developed the methodology, strategy and overall structure of the study for the Moscow masterplan — a joint effort of three universities and research institutions and more than 2,000 experts from business, government and academia.</p>
-          <p>The project shaped the long-term development strategy of the Moscow masterplan and made several landmark projects possible, including:</p>
-          <ul>
-            <li>Autonomous taxis and delivery drones launched in real urban conditions together with <a href="https://yandex.com/" target="_blank" rel="noopener">Yandex</a> and <a href="https://vkusvill.ru/" target="_blank" rel="noopener">VkusVill</a>.</li>
-            <li><a href="https://badaevsky.com/en/" target="_blank" rel="noopener">Badaevsky</a> — a one-of-a-kind residential complex raised 17 meters above the ground.</li>
-            <li><a href="https://en.wikipedia.org/wiki/Moscow_Regular_River_Transport" target="_blank" rel="noopener">Moscow Regular River Transport</a> — the launch and route planning of the city's regular river service.</li>
-          </ul>
-          <p>In collaboration with the <a href="https://genplanmos.ru/" target="_blank" rel="noopener">Moscow Masterplan Institute</a> and the <a href="https://www.hse.ru/en/" target="_blank" rel="noopener">Higher School of Economics</a></p>
-        </div>
-      </li>
-
-      <li class="case">
-        <h3>Nikolskiy market</h3>
-        <p>Redevelopment of a cluster of historic buildings in Saint Petersburg.</p>
-        <button class="more" aria-haspopup="dialog">Details</button>
-        <div class="content">
-          <p>The goal was to increase the value of a restored 40,000 m² historic building fivefold within five years.</p>
-          <p>The overall development strategy was to create an attractive public space, fill it with hospitality operators, and acquire and redevelop the neighboring buildings in the block.</p>
-          <p>As a result, Saint Petersburg gained another informal center of attraction in the heart of the city.</p>
-          <p>In collaboration with <a href="https://milesandyards.com/" target="_blank" rel="noopener">Miles &amp; Yards</a> and <a href="https://arch-katarsis.com/" target="_blank" rel="noopener">Katarsis Architects</a></p>
-        </div>
-      </li>
-
-      <li class="case">
-        <h3>Aircraft manufacturing facility</h3>
-        <p>Development and optimization of the masterplan for a high-tech manufacturing center.</p>
-        <button class="more" aria-haspopup="dialog">Details</button>
-        <div class="content">
-          <p>The facility builds civil aircraft as well as fourth- and fifth-generation fighter jets.</p>
-          <p>Our task was to expand and partially redesign the site to make room for new production facilities.</p>
-        </div>
-      </li>
-    </ul>
-  </section>
-
-  <section class="g sec rise" style="--i:5">
-    <h2 class="label">Contacts</h2>
-    <ul class="body links">
-      <li><a class="u" href="https://wa.me/12428075582" target="_blank" rel="noopener">WhatsApp</a></li>
-      <li><a class="u" href="https://t.me/forbarinov" target="_blank" rel="noopener">Telegram</a></li>
-      <li><a class="u" href="https://x.com/BarinovLive" target="_blank" rel="noopener">X.com</a></li>
-      <li><a class="u" href="https://medium.com/@barinov.live" target="_blank" rel="noopener">Medium</a></li>
-      <li><a class="u" href="https://www.linkedin.com/in/forbarinov/" target="_blank" rel="noopener">LinkedIn</a></li>
-    </ul>
-  </section>
-
-  <footer class="g foot">
-    <span>©2026 Aleks Barinov</span>
-    <span class="muted">Swiss version</span>
-  </footer>
+<div class="me">
+  <h1>Aleks Barinov</h1>
+  <p>I specialize in masterplanning, development concepts and technological solutions for large-scale development projects.</p>
 </div>
+
+<section>
+  <h2>Now</h2>
+  <div class="case">
+    <h3>RubiqOS</h3>
+    <p>Physical AI platform for resort operations.</p>
+    <p class="txt">RubiqOS orchestrates day-to-day operations between people and robots. Its engine plans the tasks, splits the work between staff and machines, and runs both as one team.</p>
+    <a class="site" href="https://rubiqos.com/" target="_blank" rel="noopener">rubiqos.com</a>
+  </div>
+</section>
+
+<section>
+  <h2>Past</h2>
+  <ul>
+
+    <li class="case">
+      <h3>Private island development</h3>
+      <p>Masterplan for a $1B resort on a private island in the Caribbean.</p>
+      <button class="more" aria-haspopup="dialog">Details</button>
+      <div class="content">
+        <p>My concept won a <a href="https://www.ribacompetitions.com/" target="_blank" rel="noopener">RIBA competition</a>, and I was invited to join the project as Lead Masterplan Architect. I was the third member of the team and helped shape the initial vision, the masterplan and the overall development concept.</p>
+        <p>My scope covered the architectural and development concept of the island, strategic planning and cross-disciplinary coordination.</p>
+      </div>
+    </li>
+
+    <li class="case">
+      <h3>CERN lab building</h3>
+      <p>Concept development for a laboratory complex on the CERN campus.</p>
+      <button class="more" aria-haspopup="dialog">Details</button>
+      <div class="content">
+        <p>Our team helped shape the concept for a complex of administrative buildings and laboratories at CERN. We ran several strategy sessions with the architectural teams and laboratory representatives to define clear requirements for the architectural design.</p>
+        <p>In collaboration with <a href="https://home.cern/" target="_blank" rel="noopener">CERN</a> and <a href="https://www.nickl-partner.com/en/" target="_blank" rel="noopener">Nickl &amp; Partner</a></p>
+      </div>
+    </li>
+
+    <li class="case">
+      <h3>Easyinn</h3>
+      <p>Platform for automated property management.</p>
+      <button class="more" aria-haspopup="dialog">Details</button>
+      <div class="content">
+        <p>Easyinn started as an internal tool for running our own network of hotels with 280 units in total. It included a keyless access system and a guest app with a marketplace of local services.</p>
+        <p>It was later spun off as a standalone product and launched in several countries.</p>
+      </div>
+    </li>
+
+    <li class="case">
+      <h3>Habithai</h3>
+      <p>Gated community development on Koh Samui, Thailand.</p>
+      <button class="more" aria-haspopup="dialog">Details</button>
+      <div class="content">
+        <p>Masterplan and product concept for a gated community of 11 premium villas on Koh Samui, Thailand — plus fundraising, marketing and sales.</p>
+      </div>
+    </li>
+
+    <li class="case">
+      <h3>Foresight Moscow-2050</h3>
+      <p>The largest foresight study for the Moscow masterplan.</p>
+      <button class="more" aria-haspopup="dialog">Details</button>
+      <div class="content">
+        <p>I was part of the team that developed the methodology, strategy and overall structure of the study for the Moscow masterplan — a joint effort of three universities and research institutions and more than 2,000 experts from business, government and academia.</p>
+        <p>The project shaped the long-term development strategy of the Moscow masterplan and made several landmark projects possible, including:</p>
+        <ul>
+          <li>Autonomous taxis and delivery drones launched in real urban conditions together with <a href="https://yandex.com/" target="_blank" rel="noopener">Yandex</a> and <a href="https://vkusvill.ru/" target="_blank" rel="noopener">VkusVill</a>.</li>
+          <li><a href="https://badaevsky.com/en/" target="_blank" rel="noopener">Badaevsky</a> — a one-of-a-kind residential complex raised 17 meters above the ground.</li>
+          <li><a href="https://en.wikipedia.org/wiki/Moscow_Regular_River_Transport" target="_blank" rel="noopener">Moscow Regular River Transport</a> — the launch and route planning of the city's regular river service.</li>
+        </ul>
+        <p>In collaboration with the <a href="https://genplanmos.ru/" target="_blank" rel="noopener">Moscow Masterplan Institute</a> and the <a href="https://www.hse.ru/en/" target="_blank" rel="noopener">Higher School of Economics</a></p>
+      </div>
+    </li>
+
+    <li class="case">
+      <h3>Nikolskiy market</h3>
+      <p>Redevelopment of a cluster of historic buildings in Saint Petersburg.</p>
+      <button class="more" aria-haspopup="dialog">Details</button>
+      <div class="content">
+        <p>The goal was to increase the value of a restored 40,000 m² historic building fivefold within five years.</p>
+        <p>The overall development strategy was to create an attractive public space, fill it with hospitality operators, and acquire and redevelop the neighboring buildings in the block.</p>
+        <p>As a result, Saint Petersburg gained another informal center of attraction in the heart of the city.</p>
+        <p>In collaboration with <a href="https://milesandyards.com/" target="_blank" rel="noopener">Miles &amp; Yards</a> and <a href="https://arch-katarsis.com/" target="_blank" rel="noopener">Katarsis Architects</a></p>
+      </div>
+    </li>
+
+    <li class="case">
+      <h3>Aircraft manufacturing facility</h3>
+      <p>Development and optimization of the masterplan for a high-tech manufacturing center.</p>
+      <button class="more" aria-haspopup="dialog">Details</button>
+      <div class="content">
+        <p>The facility builds civil aircraft as well as fourth- and fifth-generation fighter jets.</p>
+        <p>Our task was to expand and partially redesign the site to make room for new production facilities.</p>
+      </div>
+    </li>
+  </ul>
+</section>
+
+<section>
+  <h2>Contacts</h2>
+  <ul class="links">
+    <li><a href="https://wa.me/12428075582" target="_blank" rel="noopener">WhatsApp</a></li>
+    <li><a href="https://t.me/forbarinov" target="_blank" rel="noopener">Telegram</a></li>
+    <li><a href="https://x.com/BarinovLive" target="_blank" rel="noopener">X.com</a></li>
+    <li><a href="https://medium.com/@barinov.live" target="_blank" rel="noopener">Medium</a></li>
+    <li><a href="https://www.linkedin.com/in/forbarinov/" target="_blank" rel="noopener">LinkedIn</a></li>
+  </ul>
+</section>
+
+<p class="foot small">©2026 Aleks Barinov</p>
 
 <dialog id="details" aria-labelledby="d-title">
   <img class="d-img" id="d-img" alt="" hidden>
-  <div class="d-ph" id="d-ph">Image</div>
+  <div class="d-ph" id="d-ph"></div>
   <div class="d-in">
     <div class="d-head">
       <h3 id="d-title"></h3>
-      <button class="d-close" id="d-close">Close ×</button>
+      <button class="d-close" id="d-close">Close</button>
     </div>
     <p class="d-sub" id="d-sub"></p>
     <dl class="d-meta" id="d-meta"></dl>
