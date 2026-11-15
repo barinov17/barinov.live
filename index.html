@@ -3,6 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#E6E8EE">
 <title>Aleks Barinov — real estate & urban planning</title>
 <meta name="description" content="Aleks Barinov — real estate professional and urban planner. Development concepts, masterplans and proptech.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -25,7 +26,6 @@
   html { -webkit-text-size-adjust: 100%; }
   body {
     margin: 0;
-    padding: clamp(24px, 4vw, 48px) clamp(16px, 2.5vw, 28px) 40px;
     background: var(--paper);
     color: var(--ink);
     font: 400 15px/1.55 var(--sans);
@@ -38,6 +38,10 @@
   ::selection { background: var(--ink); color: var(--paper); }
   :focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
   .muted { color: var(--muted); }
+
+  /* две зоны: светлая — имя и текущий проект, тёмная — прошлые проекты и контакты */
+  .zone { background: var(--paper); color: var(--ink); padding: 48px clamp(16px, 2.5vw, 28px) 40px; }
+  .zone.light { --paper: #E6E8EE; --ink: #151A24; --muted: #5B6373; --hair: #C9CDD6; --accent: #C4124D; padding-top: clamp(24px, 4vw, 48px); padding-bottom: 48px; }
 
   /* одна сетка на всю страницу: пустая узкая колонка-отступ + колонка текста */
   .sheet { display: grid; grid-template-columns: minmax(0, 1fr); row-gap: 48px; }
@@ -90,7 +94,9 @@
 </style>
 </head>
 <body>
-<main class="sheet">
+<main>
+<div class="zone light">
+<div class="sheet">
 
   <div class="me">
     <h1>Aleks Barinov</h1>
@@ -111,6 +117,11 @@
     </li>
   </ul>
   </section>
+
+</div>
+</div>
+<div class="zone">
+<div class="sheet">
 
   <section>
   <h2>Past:</h2>
@@ -212,6 +223,8 @@
 
   <p class="muted">©2026 Aleks Barinov</p>
 
+</div>
+</div>
 </main>
 
 <script>
