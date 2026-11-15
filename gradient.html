@@ -208,6 +208,17 @@
   .tabs { position: absolute; top: clamp(24px, 4vw, 48px); right: clamp(16px, 2.5vw, 28px); z-index: 2; display: flex; gap: 14px; margin-top: clamp(8px, 2vw, 24px); font-size: 10px; line-height: 2.4; letter-spacing: 0.14em; text-transform: uppercase; }
   .tabs a { color: var(--muted); text-decoration: none; }
   .tabs a[aria-current] { color: var(--ink); border-bottom: 1px solid currentColor; }
+
+  /* ——— Верхний блок с портретом: рисунок слева, имя и описание справа ——— */
+  .me { display: grid; grid-template-columns: 148px minmax(0, 1fr); column-gap: 30px; align-items: start; max-width: 780px; }
+  .me .portrait { grid-row: 1 / span 2; display: block; width: 100%; height: auto; margin-top: -10px; opacity: .92; }
+  .me h1, .me p { grid-column: 2; }
+  @media (max-width: 720px) {
+    .me { grid-template-columns: 76px minmax(0, 1fr); column-gap: 16px; align-items: center; }
+    .me .portrait { grid-row: 1; margin-top: 0; }
+    .me h1 { margin-bottom: 0; }
+    .me p { grid-column: 1 / -1; margin-top: 18px; }
+  }
 </style>
 </head>
 <body>
@@ -219,6 +230,7 @@
 <div class="sheet">
 
   <div class="me">
+    <img class="portrait" src="portrait.png" width="1086" height="1448" alt="Portrait of Aleksandr Barinov, line drawing">
     <h1>Aleksandr Barinov</h1>
     <p>I specialize in <b>concept development</b> and <b>masterplanning</b> for <em><span style="white-space:nowrap">large-scale</span> development projects</em>.</p>
   </div>
