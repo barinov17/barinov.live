@@ -8,7 +8,7 @@
 <meta name="description" content="Aleks Barinov — real estate professional and urban planner. Development concepts, masterplans and proptech.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500&display=swap" rel="stylesheet">
 <script>document.documentElement.classList.add('js')</script>
 <style>
   :root {
@@ -18,9 +18,9 @@
     --muted: #9198A6;
     --hair: #343944;
     --accent: #EF4F7B;
-    --sans: "JetBrains Mono", ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+    --sans: "Geist", system-ui, -apple-system, "Segoe UI", sans-serif;
     /* один шрифт, два начертания, четыре кегля: 13 / 15 / 17 / до 30 */
-    --small: 13px;
+    --small: 14px;
   }
   * { box-sizing: border-box; }
   html { -webkit-text-size-adjust: 100%; }
@@ -117,6 +117,14 @@
     section > h2 { margin-bottom: 12px; }
     .sheet > p { padding-left: 0; }
   }
+
+  /* гротеск вместо моноширинного: кегли на ступень крупнее */
+  body { font-size: 16.5px; line-height: 1.5; }
+  .me h1 { font-size: clamp(25px, 3vw, 34px); letter-spacing: -0.015em; }
+  .me p { font-size: 19.5px; line-height: 1.42; }
+  .case h3, dialog h3 { font-size: 19.5px; }
+  h2 { letter-spacing: 0.06em; }
+  .d-text { font-size: 16px; }
 </style>
 </head>
 <body>
