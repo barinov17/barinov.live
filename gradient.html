@@ -136,15 +136,15 @@
   body { background: #131218; }
   .grad { position: fixed; inset: 0; z-index: 0; overflow: hidden; pointer-events: none; background: #131218; }
   .grad i { position: absolute; display: block; border-radius: 50%; filter: blur(70px); will-change: transform; }
-  .grad .b1 { width: 62vw; height: 40vw; left: 46%; top: -24vw; background: radial-gradient(closest-side, #F0844A, rgba(240,132,74,0)); opacity: .95; animation: g1 34s ease-in-out infinite alternate; }
-  .grad .b2 { width: 44vw; height: 22vw; left: 30%; top: -8vw; background: radial-gradient(closest-side, #F3C3A6, rgba(243,195,166,0)); opacity: .8; animation: g2 41s ease-in-out infinite alternate; }
-  .grad .b3 { width: 70vw; height: 26vw; left: 42%; top: 9vw; background: radial-gradient(closest-side, #1E88AC, rgba(30,136,172,0)); opacity: .9; animation: g3 38s ease-in-out infinite alternate; }
-  .grad .b4 { width: 56vw; height: 30vw; left: 18%; top: 22vw; background: radial-gradient(closest-side, #5E3D80, rgba(94,61,128,0)); opacity: .55; animation: g4 47s ease-in-out infinite alternate; }
-  .grad .b5 { width: 80vw; height: 30vw; left: 30%; top: 62vh; background: radial-gradient(closest-side, #4A2328, rgba(74,35,40,0)); opacity: .5; animation: g2 53s ease-in-out infinite alternate-reverse; }
-  @keyframes g1 { from { transform: translate(-3vw, -1vw) rotate(-14deg); } to { transform: translate(5vw, 3vw) rotate(-8deg); } }
-  @keyframes g2 { from { transform: translate(4vw, 1vw) rotate(-10deg); } to { transform: translate(-5vw, -2vw) rotate(-16deg); } }
-  @keyframes g3 { from { transform: translate(-5vw, 2vw) rotate(-13deg); } to { transform: translate(4vw, -2vw) rotate(-7deg); } }
-  @keyframes g4 { from { transform: translate(3vw, -2vw) rotate(-6deg); } to { transform: translate(-4vw, 3vw) rotate(-14deg); } }
+  .grad .b1 { width: 62vw; height: 40vw; left: 46%; top: -24vw; background: radial-gradient(closest-side, #F0844A, rgba(240,132,74,0)); opacity: .95; animation: g1 19s ease-in-out infinite alternate; }
+  .grad .b2 { width: 44vw; height: 22vw; left: 30%; top: -8vw; background: radial-gradient(closest-side, #F3C3A6, rgba(243,195,166,0)); opacity: .8; animation: g2 23s ease-in-out infinite alternate; }
+  .grad .b3 { width: 70vw; height: 26vw; left: 42%; top: 9vw; background: radial-gradient(closest-side, #1E88AC, rgba(30,136,172,0)); opacity: .9; animation: g3 21s ease-in-out infinite alternate; }
+  .grad .b4 { width: 56vw; height: 30vw; left: 18%; top: 22vw; background: radial-gradient(closest-side, #5E3D80, rgba(94,61,128,0)); opacity: .55; animation: g4 27s ease-in-out infinite alternate; }
+  .grad .b5 { width: 80vw; height: 30vw; left: 30%; top: 62vh; background: radial-gradient(closest-side, #4A2328, rgba(74,35,40,0)); opacity: .5; animation: g2 31s ease-in-out infinite alternate-reverse; }
+  @keyframes g1 { from { transform: translate(-9vw, -3vw) rotate(-20deg) scale(.9); } to { transform: translate(11vw, 7vw) rotate(-2deg) scale(1.18); } }
+  @keyframes g2 { from { transform: translate(10vw, 3vw) rotate(-4deg) scale(1.12); } to { transform: translate(-12vw, -5vw) rotate(-24deg) scale(.88); } }
+  @keyframes g3 { from { transform: translate(-12vw, 6vw) rotate(-20deg) scale(.92); } to { transform: translate(9vw, -6vw) rotate(-1deg) scale(1.2); } }
+  @keyframes g4 { from { transform: translate(8vw, -6vw) rotate(2deg) scale(1.15); } to { transform: translate(-10vw, 8vw) rotate(-22deg) scale(.9); } }
   .grad .shade { position: absolute; inset: 0; background: linear-gradient(to right, rgba(19,18,24,.9), rgba(19,18,24,.55) 34%, rgba(19,18,24,0) 62%); }
   .grad .grain { position: absolute; inset: 0; background-image: url("data:image/svg+xml;utf8,%3Csvg%20xmlns%3D'http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg'%20width%3D'220'%20height%3D'220'%3E%3Cfilter%20id%3D'n'%3E%3CfeTurbulence%20type%3D'fractalNoise'%20baseFrequency%3D'0.9'%20numOctaves%3D'2'%20stitchTiles%3D'stitch'%2F%3E%3CfeColorMatrix%20values%3D'0%200%200%200%201%20%200%200%200%200%201%20%200%200%200%200%201%20%200%200%200%201.1%20-0.15'%2F%3E%3C%2Ffilter%3E%3Crect%20width%3D'100%25'%20height%3D'100%25'%20filter%3D'url(%23n)'%2F%3E%3C%2Fsvg%3E"); background-size: 220px 220px; opacity: .3; mix-blend-mode: overlay; }
   @media (max-width: 720px) {
@@ -186,6 +186,18 @@
   .links { gap: 10px 22px; font-size: 13px; line-height: 1.4; }
   .links a { display: inline-flex; align-items: center; gap: 7px; text-decoration: none; }
   .logo { flex: none; width: 14px; height: 14px; fill: #fff; }
+
+  /* ——— Динамика градиента ———
+     Оттенок всей композиции медленно уходит то в тёплую, то в холодную сторону;
+     пятна мягко тянутся за курсором, каждое на свою глубину. */
+  .grad { animation: hue 37s ease-in-out infinite alternate; }
+  @keyframes hue { from { filter: hue-rotate(-16deg) saturate(1.05); } to { filter: hue-rotate(20deg) saturate(1.2); } }
+  .grad .b1 { translate: calc(var(--mx, 0) * 5vw) calc(var(--my, 0) * 3.5vw); }
+  .grad .b2 { translate: calc(var(--mx, 0) * -3vw) calc(var(--my, 0) * -2vw); }
+  .grad .b3 { translate: calc(var(--mx, 0) * 7vw) calc(var(--my, 0) * 4.5vw); }
+  .grad .b4 { translate: calc(var(--mx, 0) * -4.5vw) calc(var(--my, 0) * 3vw); }
+  .grad .b5 { translate: calc(var(--mx, 0) * 3vw) calc(var(--my, 0) * -2.5vw); }
+  @media (prefers-reduced-motion: reduce) { .grad { animation: none; } }
 </style>
 </head>
 <body>
@@ -365,5 +377,21 @@
   }
 </script>
 
+<script>
+  /* ——— Градиент следует за курсором: положение сглаживается, чтобы пятна плыли, а не дёргались ——— */
+  (function () {
+    if (matchMedia("(prefers-reduced-motion: reduce)").matches || !matchMedia("(pointer: fine)").matches) return;
+    var g = document.querySelector(".grad"), tx = 0, ty = 0, x = 0, y = 0, raf = 0;
+    function step() {
+      x += (tx - x) * .045; y += (ty - y) * .045;
+      g.style.setProperty("--mx", x.toFixed(4)); g.style.setProperty("--my", y.toFixed(4));
+      raf = Math.abs(tx - x) + Math.abs(ty - y) > .002 ? requestAnimationFrame(step) : 0;
+    }
+    addEventListener("pointermove", function (e) {
+      tx = e.clientX / innerWidth * 2 - 1; ty = e.clientY / innerHeight * 2 - 1;
+      if (!raf) raf = requestAnimationFrame(step);
+    }, { passive: true });
+  })();
+</script>
 </body>
 </html>
