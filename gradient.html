@@ -209,7 +209,7 @@
   .tabs a { color: var(--muted); text-decoration: none; }
   .tabs a[aria-current] { color: var(--ink); border-bottom: 1px solid currentColor; }
 
-  /* ——— Режим отладки сцен (?debug): панель с бегунками слева внизу ——— */
+  /* ——— Lab (?lab): панель с бегунками слева внизу — базовая сцена и изображения кейсов ——— */
   .dbg { position: fixed; left: 14px; bottom: 14px; z-index: 20; width: 318px; max-height: calc(100vh - 28px); overflow: auto; padding: 12px 14px 12px; border-radius: 12px; background: rgba(19, 18, 24, .9); border: 1px solid rgba(243, 238, 232, .14); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); font-size: 11.5px; line-height: 1.35; color: var(--ink); }
   .dbg b { font-weight: 500; }
   .dbg-head { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; margin-bottom: 8px; }
@@ -283,7 +283,7 @@
 <body>
 <div class="grad" aria-hidden="true"><i class="b1"></i><i class="b2"></i><i class="b3"></i><i class="b4"></i><i class="b5"></i><b class="shade"></b><b class="grain"></b></div>
 <canvas id="bg" aria-hidden="true"></canvas>
-<nav class="tabs" aria-label="Versions"><a href="/">main</a><a href="/gradient.html" aria-current="page">gradient</a><a href="/lab.html">lab</a></nav>
+<nav class="tabs" aria-label="Versions"><a href="/">main</a><a href="/gradient.html" aria-current="page">gradient</a><a href="/gradient.html?lab">lab</a></nav>
 <main>
 <div class="zone top">
 <div class="sheet">
@@ -1007,15 +1007,26 @@
   })();
 </script>
 <script>
-  /* ——— Режим отладки сцен: /gradient.html?debug ———
-     Клик по проекту со сценой закрепляет её (повторный клик отпускает). В панели — настройки именно этой
-     сцены; значения запоминаются в браузере и применяются только в режиме отладки. Кнопки копирования
-     отдают строку с названием сцены, чтобы было понятно, чьи это параметры. */
+  /* ——— Lab: /gradient.html?lab (старый адрес ?debug тоже работает) ———
+     Одна панель с переключателем:
+     «Базовая сцена» — параметры сферы из точек (размер, положение, число точек и т. д.);
+     «Изображения кейсов» — клик по проекту закрепляет его сцену, в панели настройки именно этой сцены.
+     Значения запоминаются в браузере и применяются только в lab. Кнопки копирования отдают строку
+     с названием — чтобы было понятно, чьи это параметры. */
   (function () {
-    var S = window.sphere, nav = document.querySelector('.tabs'), on = /[?&]debug\b/.test(location.search);
-    if (nav) { var lk = document.createElement('a'); lk.textContent = 'debug'; lk.href = on ? location.pathname : '?debug'; if (on) lk.setAttribute('aria-current', 'true'); nav.appendChild(lk); }
+    var S = window.sphere, nav = document.querySelector('.tabs'), on = /[?&](lab|debug)\b/.test(location.search);
+    if (nav && on) {
+      var ls = nav.querySelectorAll('a');
+      for (var q = 0; q < ls.length; q++) { if (/lab/.test(ls[q].textContent)) ls[q].setAttribute('aria-current', 'page'); else ls[q].removeAttribute('aria-current'); }
+    }
     if (!on || !S) return;
     S.debug = true; document.body.classList.add('debug');
+
+    var BASE = [
+      ['size', 'Размер', .15, 1.8, .01], ['x', 'Позиция по X', -.3, 1.3, .01], ['y', 'Позиция по Y', -.3, 1.3, .01],
+      ['speed', 'Скорость', 0, 2.5, .01], ['count', 'Число точек', 300, 16000, 100], ['dot', 'Размер точки', .3, 3.5, .05],
+      ['alpha', 'Яркость', 0, 1.6, .01], ['breathe', '«Дыхание» формы', 0, 3, .05], ['accent', 'Акцентных точек, %', 0, 40, 1]
+    ];
     var SCN = [['robots', 'RubiqOS'], ['cern', 'CERN campus'], ['island', 'Private island']];
     var GROUPS = [
       ['Положение и вид', [
@@ -1031,19 +1042,24 @@
         ['edge', 'Прижатие точек к линиям', 0, 1, .01], ['accent', 'Яркость линий (берег, дороги)', 0, 3, .05],
         ['accentDot', 'Размер точек линий', .3, 3, .05], ['marina', 'Яркость марины и причалов', 0, 3, .05], ['build', 'Яркость зданий и объёмов', 0, 3, .05]]]
     ];
-    var cur = 'robots', pinned = null, rows = {}, tabs = {}, cases = {};
+    var mode = 'base', cur = 'robots', pinned = null, rows = {}, brow = {}, tabs = {}, cases = {}, modes = {};
     try { var sv = JSON.parse(localStorage.getItem('grad-debug-scenes-2')); if (sv) for (var a in sv) if (S.V[a]) for (var b in sv[a]) if (b in S.V[a] && isFinite(sv[a][b])) S.V[a][b] = +sv[a][b]; } catch (e) {}
+    try { var sb = JSON.parse(localStorage.getItem('grad-lab-base')); if (sb) { for (var k0 in sb) if (k0 in S.P && isFinite(sb[k0])) S.P[k0] = +sb[k0]; S.baseY = S.P.y; S.build(); } } catch (e) {}
+    try { mode = localStorage.getItem('grad-lab-mode') === 'cases' ? 'cases' : 'base'; } catch (e) {}
 
     var box = document.createElement('div'); box.className = 'dbg';
-    box.innerHTML = '<div class="dbg-head"><b>Отладка сцен</b><span><button type="button" id="dbg-fold">свернуть</button></span></div>' +
-      '<div class="dbg-hint">Кликните по проекту или по кнопке ниже — сцена закрепится. Повторный клик отпускает.</div>' +
-      '<div class="dbg-tabs" id="dbg-tabs"></div><div id="dbg-body"></div>' +
-      '<div class="dbg-foot"><button type="button" id="dbg-copy">скопировать эту сцену</button><button type="button" id="dbg-all">скопировать все</button><button type="button" id="dbg-reset">сброс сцены</button></div>' +
+    box.innerHTML = '<div class="dbg-head"><b>Lab</b><span><button type="button" id="dbg-fold">свернуть</button></span></div>' +
+      '<div class="dbg-tabs" id="dbg-mode"></div>' +
+      '<div id="dbg-base"></div>' +
+      '<div id="dbg-cases"><div class="dbg-hint">Кликните по проекту или по кнопке ниже — сцена закрепится. Повторный клик отпускает.</div><div class="dbg-tabs" id="dbg-tabs"></div><div id="dbg-body"></div></div>' +
+      '<div class="dbg-foot"><button type="button" id="dbg-copy">скопировать</button><button type="button" id="dbg-all">скопировать всё</button><button type="button" id="dbg-reset">сброс</button></div>' +
       '<textarea id="dbg-out" readonly aria-label="Текущие значения"></textarea>';
     document.body.appendChild(box);
     var body = box.querySelector('#dbg-body'), out = box.querySelector('#dbg-out'), tb = box.querySelector('#dbg-tabs');
+    var pb = box.querySelector('#dbg-base'), pc = box.querySelector('#dbg-cases'), mb = box.querySelector('#dbg-mode');
 
-    function fmt(v, step) { return (+v).toFixed(step < .01 ? 3 : 2); }
+    function fmt(v, step) { return step >= 1 ? String(Math.round(v)) : (+v).toFixed(step < .01 ? 3 : 2); }
+    function baseLine() { return 'Базовая сцена [sphere] — ' + BASE.map(function (c) { return c[0] + ': ' + fmt(S.P[c[0]], c[4]); }).join(', '); }
     function line(k) {
       var name = '', parts = [];
       SCN.forEach(function (q) { if (q[0] === k) name = q[1]; });
@@ -1051,20 +1067,51 @@
       return name + ' [' + k + '] — ' + parts.join(', ');
     }
     function show() {
+      modes.base.setAttribute('aria-pressed', mode === 'base'); modes.cases.setAttribute('aria-pressed', mode === 'cases');
+      pb.style.display = mode === 'base' ? '' : 'none'; pc.style.display = mode === 'cases' ? '' : 'none';
+      BASE.forEach(function (c) { brow[c[0]].input.value = S.P[c[0]]; brow[c[0]].val.textContent = fmt(S.P[c[0]], c[4]); });
       GROUPS.forEach(function (g) { g[1].forEach(function (c) { rows[c[0]].input.value = S.V[cur][c[0]]; rows[c[0]].val.textContent = fmt(S.V[cur][c[0]], c[4]); }); });
-      SCN.forEach(function (q) { tabs[q[0]].setAttribute('aria-pressed', q[0] === cur); if (cases[q[0]]) cases[q[0]].classList.toggle('pinned', pinned === q[0]); });
-      out.value = line(cur);
-      try { localStorage.setItem('grad-debug-scenes-2', JSON.stringify(S.V)); } catch (e) {}
+      SCN.forEach(function (q) { tabs[q[0]].setAttribute('aria-pressed', mode === 'cases' && q[0] === cur); if (cases[q[0]]) cases[q[0]].classList.toggle('pinned', pinned === q[0]); });
+      out.value = mode === 'base' ? baseLine() : line(cur);
+      try {
+        localStorage.setItem('grad-debug-scenes-2', JSON.stringify(S.V));
+        var o = {}; BASE.forEach(function (c) { o[c[0]] = +fmt(c[0] === 'y' && S.labY != null ? S.labY : S.P[c[0]], c[4]); }); localStorage.setItem('grad-lab-base', JSON.stringify(o));
+        localStorage.setItem('grad-lab-mode', mode);
+      } catch (e) {}
+    }
+    function setMode(m) {
+      mode = m;
+      if (m === 'base' && pinned) { pinned = null; S.pin(null); }       /* в базовой сцене ничего не закреплено — видна сама сфера */
+      show();
     }
     function pick(k) {
       if (pinned === k) { pinned = null; S.pin(null); } else { pinned = k; cur = k; S.pin(k); }
-      show();
+      mode = 'cases'; show();
     }
     S.onPick = function (k, el) { cases[k] = el; pick(k); };
 
+    [['base', 'Базовая сцена'], ['cases', 'Изображения кейсов']].forEach(function (m) {
+      var bt = document.createElement('button'); bt.type = 'button'; bt.textContent = m[1];
+      bt.addEventListener('click', function () { setMode(m[0]); });
+      mb.appendChild(bt); modes[m[0]] = bt;
+    });
+    function slider(parent, c, store, onInput) {
+      var label = document.createElement('label'), name = document.createElement('span'), input = document.createElement('input'), val = document.createElement('output');
+      name.textContent = c[1]; input.type = 'range'; input.min = c[2]; input.max = c[3]; input.step = c[4];
+      input.addEventListener('input', function () { onInput(+input.value); S.redraw(); show(); });
+      label.append(name, val, input); parent.appendChild(label);
+      store[c[0]] = { input: input, val: val };
+    }
+    BASE.forEach(function (c) {
+      slider(pb, c, brow, function (v) {
+        S.P[c[0]] = v;
+        if (c[0] === 'y') { S.baseY = v; S.labY = v; }
+        if (c[0] === 'count' || c[0] === 'accent') S.build();
+      });
+    });
     SCN.forEach(function (q) {
       var bt = document.createElement('button'); bt.type = 'button'; bt.textContent = q[1];
-      bt.addEventListener('click', function () { if (pinned === q[0]) { pick(q[0]); } else { pinned = null; pick(q[0]); } });
+      bt.addEventListener('click', function () { if (pinned !== q[0]) pinned = null; pick(q[0]); });
       tb.appendChild(bt); tabs[q[0]] = bt;
     });
     var hs = document.querySelectorAll('.case h3');
@@ -1074,22 +1121,19 @@
     }
     GROUPS.forEach(function (g) {
       var h = document.createElement('h4'); h.textContent = g[0]; body.appendChild(h);
-      g[1].forEach(function (c) {
-        var label = document.createElement('label'), name = document.createElement('span'), input = document.createElement('input'), val = document.createElement('output');
-        name.textContent = c[1]; input.type = 'range'; input.min = c[2]; input.max = c[3]; input.step = c[4];
-        input.addEventListener('input', function () { S.V[cur][c[0]] = +input.value; S.redraw(); show(); });
-        label.append(name, val, input); body.appendChild(label);
-        rows[c[0]] = { input: input, val: val };
-      });
+      g[1].forEach(function (c) { slider(body, c, rows, function (v) { S.V[cur][c[0]] = v; }); });
     });
     function copy(text, bt, label) {
       out.value = text; out.select();
       (navigator.clipboard ? navigator.clipboard.writeText(text) : Promise.reject()).then(function () { bt.textContent = 'скопировано'; }, function () { try { document.execCommand('copy'); bt.textContent = 'скопировано'; } catch (e) { bt.textContent = 'выделите текст ниже'; } });
       setTimeout(function () { bt.textContent = label; }, 1600);
     }
-    box.querySelector('#dbg-copy').addEventListener('click', function () { copy(line(cur), this, 'скопировать эту сцену'); });
-    box.querySelector('#dbg-all').addEventListener('click', function () { copy(SCN.map(function (q) { return line(q[0]); }).join('\n'), this, 'скопировать все'); });
-    box.querySelector('#dbg-reset').addEventListener('click', function () { for (var p in S.DEF[cur]) S.V[cur][p] = S.DEF[cur][p]; S.redraw(); show(); });
+    box.querySelector('#dbg-copy').addEventListener('click', function () { copy(mode === 'base' ? baseLine() : line(cur), this, 'скопировать'); });
+    box.querySelector('#dbg-all').addEventListener('click', function () { copy([baseLine()].concat(SCN.map(function (q) { return line(q[0]); })).join('\n'), this, 'скопировать всё'); });
+    box.querySelector('#dbg-reset').addEventListener('click', function () {
+      if (mode === 'base') { S.reset(); S.baseY = S.P.y; S.labY = null; } else for (var p in S.DEF[cur]) S.V[cur][p] = S.DEF[cur][p];
+      S.redraw(); show();
+    });
     box.querySelector('#dbg-fold').addEventListener('click', function () { this.textContent = box.classList.toggle('folded') ? 'развернуть' : 'свернуть'; });
     show();
   })();
@@ -1105,6 +1149,7 @@
       if (g) g.style.setProperty("--sy", y.toFixed(1));
       var sp = window.sphere;
       if (sp && sp.P) {
+        if (sp.baseY != null) { base = sp.baseY; sp.baseY = null; }   /* положение задали бегунком в lab */
         if (base === null) base = sp.P.y;
         sp.P.y = base - y / Math.max(1, innerHeight) * .06;
       }
