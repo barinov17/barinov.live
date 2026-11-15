@@ -3,29 +3,454 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#252934">
 <title>Aleks Barinov — GPT version</title>
+<meta name="description" content="Aleks Barinov — masterplanning, development concepts and technological solutions for large-scale development projects.">
 <meta name="robots" content="noindex">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<script>document.documentElement.classList.add('js')</script>
 <style>
-  body {
-    margin: 0;
-    padding: clamp(32px, 6vw, 72px) clamp(16px, 2.5vw, 28px);
-    background: #151A24;
-    color: #E6E8EE;
-    font: 400 15px/1.55 "JetBrains Mono", ui-monospace, Menlo, Consolas, monospace;
-    -webkit-font-smoothing: antialiased;
+  /* ——— Токены: цвет, шрифт, шаг, интенсивность графики ——— */
+  :root {
+    color-scheme: dark;
+    /* цвет */
+    --bg-1: #252934;            /* основной фон */
+    --bg-2: #2C303B;            /* вторичный фон (зона прошлых проектов) */
+    --ink-1: #E2E4EB;           /* основной текст */
+    --ink-2: #A0A5B1;           /* вторичный текст */
+    --ink-3: #7F8695;           /* третичный: подписи, метаданные */
+    --accent: #E2608D;
+    --hair: #3A3F4C;
+    /* графика фона: цвет линий и три уровня плотности */
+    --g-line: #9AA6BD;
+    --g-a0: 0.13;
+    --g-a1: 0.30;
+    --g-a2: 0.60;
+    /* шрифт: одна гарнитура, шесть ступеней */
+    --font: "IBM Plex Mono", ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+    --fs-0: 12.5px;             /* подписи разделов, метаданные */
+    --fs-1: 14px;               /* описания, служебные кнопки */
+    --fs-2: 16.5px;             /* основной текст */
+    --fs-3: 19px;               /* названия прошлых проектов, вводная фраза */
+    --fs-4: 23px;               /* текущий проект */
+    --fs-5: 34px;               /* имя */
+    /* шаг и пропорции */
+    --s-1: 8px; --s-2: 16px; --s-3: 28px; --s-4: 48px; --s-5: 72px;
+    --label: 96px;              /* колонка подписей */
+    --measure: 520px;           /* ширина текстовой колонки */
+    --gutter: clamp(16px, 2.6vw, 32px);
   }
-  h1 { margin: 0 0 18px; font-size: clamp(22px, 2.6vw, 30px); line-height: 1.2; letter-spacing: -0.02em; font-weight: 500; }
-  p { margin: 0 0 24px; color: #848C9C; max-width: 480px; }
+  @media (max-width: 720px) {
+    :root { --fs-0: 12px; --fs-1: 13.5px; --fs-2: 15px; --fs-3: 17px; --fs-4: 20px; --fs-5: 26px; --s-4: 40px; --s-5: 48px; --g-a0: 0.10; --g-a1: 0.22; --g-a2: 0.45; }
+  }
+
+  * { box-sizing: border-box; }
+  html { -webkit-text-size-adjust: 100%; }
+  body { margin: 0; background: var(--bg-1); color: var(--ink-1); font: 400 var(--fs-2)/1.55 var(--font); -webkit-font-smoothing: antialiased; }
+  p, h1, h2, h3, ul { margin: 0; padding: 0; font: inherit; list-style: none; }
   a { color: inherit; text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: 3px; }
-  a:hover { color: #DC1F5C; }
+  a:hover { color: var(--accent); }
+  button { font: inherit; color: inherit; }
+  ::selection { background: var(--ink-1); color: var(--bg-1); }
+  :focus-visible { outline: 1px solid var(--accent); outline-offset: 3px; }
+
+  /* ——— Поле: холст под содержимым; слева, под текстом, приглушён ——— */
+  #field { position: fixed; inset: 0; width: 100%; height: 100%; z-index: 0; pointer-events: none; }
+  @media (min-width: 721px) { #field { -webkit-mask-image: linear-gradient(to right, rgba(0,0,0,.34), #000 64%); mask-image: linear-gradient(to right, rgba(0,0,0,.34), #000 64%); } }
+  @media (max-width: 720px) { #field { opacity: .7; } }
+  main { position: relative; z-index: 1; }
+
+  /* ——— Зоны ——— */
+  .zone { padding: var(--s-4) var(--gutter); }
+  .zone.top { position: relative; padding-top: clamp(28px, 5vw, 64px); padding-bottom: var(--s-5); }
+  .zone.past { background: rgba(44, 48, 59, .7); }
+  .sheet { display: grid; grid-template-columns: minmax(0, 1fr); row-gap: var(--s-4); }
+
+  /* ——— Служебный уровень: подписи, метаданные, переключатели ——— */
+  .label, .meta, .cap, .alt, .tog, .foot { font-size: var(--fs-0); line-height: 1.5; letter-spacing: 0.09em; text-transform: uppercase; color: var(--ink-3); }
+  .alt { position: absolute; top: clamp(28px, 5vw, 64px); right: var(--gutter); text-decoration: none; }
+  .alt::after { content: " →"; }
+
+  /* ——— Верхний блок ——— */
+  .me { max-width: calc(var(--label) + var(--s-3) + var(--measure)); }
+  .me p.label { margin-bottom: var(--s-2); font-size: var(--fs-0); line-height: 1.5; color: var(--ink-3); }
+  .me h1 { font-size: var(--fs-5); line-height: 1.12; letter-spacing: -0.02em; font-weight: 500; margin-bottom: var(--s-3); }
+  .me p { font-size: var(--fs-3); line-height: 1.5; color: var(--ink-2); text-wrap: pretty; }
+  .me p b { color: var(--ink-1); font-weight: 400; }
+  .me p em { color: var(--accent); font-style: normal; }
+
+  /* ——— Разделы: подпись слева, содержимое правее ——— */
+  section { display: grid; grid-template-columns: var(--label) minmax(0, 1fr); column-gap: var(--s-3); align-items: baseline; }
+  section > :not(.label) { grid-column: 2; max-width: var(--measure); }
+
+  /* ——— Проекты ——— */
+  .case + .case { margin-top: var(--s-3); }
+  .case h3 { font-size: var(--fs-3); line-height: 1.3; font-weight: 500; letter-spacing: -0.005em; transition: color .25s; }
+  .case:hover h3, .case.open h3 { color: var(--accent); }
+  .case .meta { margin: 3px 0 6px; }
+  .case .meta span + span::before { content: " / "; }
+  .case .sub { color: var(--ink-1); }
+  .more { display: inline-block; margin-top: 6px; padding: 0; border: 0; background: none; font-size: var(--fs-1); color: var(--ink-2); cursor: pointer; }
+  .more::after { content: " ↓"; }
+  .more[aria-expanded="true"]::after { content: " ↑"; }
+  .more:hover { color: var(--accent); }
+  .content { padding-top: var(--s-2); color: var(--ink-2); font-size: var(--fs-1); line-height: 1.6; }
+  .js .content { display: none; }
+  .js .content.open { display: block; }
+  .content p + p, .content ul + p, .content p + ul { margin-top: .9em; }
+  .content li { padding-left: 1.4em; position: relative; }
+  .content li + li { margin-top: .4em; }
+  .content li::before { content: "–"; position: absolute; left: 0; }
+
+  /* текущий проект: крупнее, акцентом, с тонкой линией слева */
+  .case.main { margin-left: calc(-1 * var(--s-2) - 1px); padding-left: var(--s-2); border-left: 1px solid var(--accent); }
+  .case.main h3 { font-size: var(--fs-4); line-height: 1.2; color: var(--accent); letter-spacing: -0.01em; }
+  .case.main .sub { font-size: var(--fs-3); line-height: 1.4; }
+  .case.main .content { font-size: var(--fs-2); color: var(--ink-2); }
+  .site { display: inline-block; margin-top: var(--s-2); font-size: var(--fs-1); }
+
+  /* ——— Контакты, подвал ——— */
+  .links { display: flex; flex-wrap: wrap; gap: 4px var(--s-3); max-width: none; }
+  .foot { display: flex; flex-wrap: wrap; gap: 6px var(--s-3); padding-left: calc(var(--label) + var(--s-3)); text-transform: none; letter-spacing: 0.02em; }
+  .tog { padding: 0; border: 0; background: none; cursor: pointer; text-transform: none; letter-spacing: 0.02em; text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: 3px; }
+  .tog:hover { color: var(--ink-1); }
+
+  /* ——— Подпись поля: что сейчас показывает фон ——— */
+  .cap { position: fixed; right: var(--gutter); bottom: var(--s-3); z-index: 1; text-align: right; pointer-events: none; }
+  .cap b { display: block; font-weight: 400; color: var(--ink-2); }
+
+  @media (max-width: 900px) { .cap { display: none; } }
+  @media (max-width: 720px) {
+    section { grid-template-columns: minmax(0, 1fr); }
+    section > :not(.label) { grid-column: 1; }
+    section > .label { margin-bottom: var(--s-2); }
+    .foot { padding-left: 0; }
+    .alt { position: static; display: inline-block; margin-bottom: var(--s-3); }
+    .case.main { margin-left: 0; }
+  }
+  @media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
 </style>
 </head>
 <body>
-  <h1>GPT version</h1>
-  <p>An alternative version of this site, designed with ChatGPT. In progress.</p>
-  <a href="../">← Main version</a>
+<canvas id="field" aria-hidden="true"></canvas>
+
+<main>
+<div class="zone top">
+<a class="alt" href="../">Main version</a>
+<div class="sheet">
+
+  <div class="me">
+    <p class="label">Space / Systems / Intelligence</p>
+    <h1>Aleks Barinov</h1>
+    <p>I specialize in <b>masterplanning</b>, <b>development concepts</b> and <b>technological solutions</b> for <em><span style="white-space:nowrap">large-scale</span> development projects</em>.</p>
+  </div>
+
+  <section>
+  <h2 class="label">Now</h2>
+  <ul>
+    <li class="case main" data-field="rubiq">
+      <h3>RubiqOS</h3>
+      <p class="meta"><span>Physical AI</span><span>Hospitality operations</span><span>Ongoing</span></p>
+      <p class="sub">Physical AI platform for resort operations.</p>
+      <div class="content open">
+        <p>RubiqOS orchestrates day-to-day operations between people and robots. Its engine plans the tasks, splits the work between staff and machines, and runs both as one team.</p>
+      </div>
+      <a class="site" href="https://rubiqos.com/" target="_blank" rel="noopener">rubiqos.com ↗</a>
+    </li>
+  </ul>
+  </section>
+
+</div>
+</div>
+
+<div class="zone past">
+<div class="sheet">
+
+  <section>
+  <h2 class="label">Past</h2>
+  <ul id="past">
+
+    <li class="case" data-field="island">
+      <h3>Private island development</h3>
+      <p class="meta"><span>Masterplanning</span><span>Caribbean</span><span>$1B</span></p>
+      <p class="sub">Masterplan for a $1B resort on a private island in the Caribbean.</p>
+      <button class="more" aria-expanded="false">more</button>
+      <div class="content">
+        <p>My concept won a <a href="https://www.ribacompetitions.com/" target="_blank" rel="noopener">RIBA competition</a>, and I was invited to join the project as Lead Masterplan Architect. I was the third member of the team and helped shape the initial vision, the masterplan and the overall development concept.</p>
+        <p>My scope covered the architectural and development concept of the island, strategic planning and cross-disciplinary coordination.</p>
+      </div>
+    </li>
+
+    <li class="case" data-field="cern">
+      <h3>CERN lab building</h3>
+      <p class="meta"><span>Scientific infrastructure</span><span>Geneva</span></p>
+      <p class="sub">Concept development for a laboratory complex on the CERN campus.</p>
+      <button class="more" aria-expanded="false">more</button>
+      <div class="content">
+        <p>Our team helped shape the concept for a complex of administrative buildings and laboratories at CERN. We ran several strategy sessions with the architectural teams and laboratory representatives to define clear requirements for the architectural design.</p>
+        <p>In collaboration with <a href="https://home.cern/" target="_blank" rel="noopener">CERN</a> and <a href="https://www.nickl-partner.com/en/" target="_blank" rel="noopener">Nickl &amp; Partner</a></p>
+      </div>
+    </li>
+
+    <li class="case" data-field="easyinn">
+      <h3>Easyinn</h3>
+      <p class="meta"><span>Proptech</span><span>Hospitality</span><span>280 units</span></p>
+      <p class="sub">Platform for automated property management.</p>
+      <button class="more" aria-expanded="false">more</button>
+      <div class="content">
+        <p>Easyinn started as an internal tool for running our own network of hotels with 280 units in total. It included a keyless access system and a guest app with a marketplace of local services.</p>
+        <p>It was later spun off as a standalone product and launched in several countries.</p>
+      </div>
+    </li>
+
+    <li class="case" data-field="habithai">
+      <h3>Habithai</h3>
+      <p class="meta"><span>Residential development</span><span>Koh Samui</span><span>11 villas</span></p>
+      <p class="sub">Gated community development on Koh Samui, Thailand.</p>
+      <button class="more" aria-expanded="false">more</button>
+      <div class="content">
+        <p>Masterplan and product concept for a gated community of 11 premium villas on Koh Samui, Thailand — plus fundraising, marketing and sales.</p>
+      </div>
+    </li>
+
+    <li class="case" data-field="foresight">
+      <h3>Foresight Moscow-2050</h3>
+      <p class="meta"><span>Urban foresight</span><span>Moscow</span><span>2,000+ experts</span></p>
+      <p class="sub">The largest foresight study for the Moscow masterplan.</p>
+      <button class="more" aria-expanded="false">more</button>
+      <div class="content">
+        <p>I was part of the team that developed the methodology, strategy and overall structure of the study for the Moscow masterplan — a joint effort of three universities and research institutions and more than 2,000 experts from business, government and academia.</p>
+        <p>The project shaped the long-term development strategy of the Moscow masterplan and made several landmark projects possible, including:</p>
+        <ul>
+          <li>Autonomous taxis and delivery drones launched in real urban conditions together with <a href="https://yandex.com/" target="_blank" rel="noopener">Yandex</a> and <a href="https://vkusvill.ru/" target="_blank" rel="noopener">VkusVill</a>.</li>
+          <li><a href="https://badaevsky.com/en/" target="_blank" rel="noopener">Badaevsky</a> — a one-of-a-kind residential complex raised 17 meters above the ground.</li>
+          <li><a href="https://en.wikipedia.org/wiki/Moscow_Regular_River_Transport" target="_blank" rel="noopener">Moscow Regular River Transport</a> — the launch and route planning of the city's regular river service.</li>
+        </ul>
+        <p>In collaboration with the <a href="https://genplanmos.ru/" target="_blank" rel="noopener">Moscow Masterplan Institute</a> and the <a href="https://www.hse.ru/en/" target="_blank" rel="noopener">Higher School of Economics</a></p>
+      </div>
+    </li>
+
+    <li class="case" data-field="nikolskiy">
+      <h3>Nikolskiy market</h3>
+      <p class="meta"><span>Redevelopment</span><span>Saint Petersburg</span><span>40,000 m²</span></p>
+      <p class="sub">Redevelopment of a cluster of historic buildings in Saint Petersburg.</p>
+      <button class="more" aria-expanded="false">more</button>
+      <div class="content">
+        <p>The goal was to increase the value of a restored 40,000 m² historic building fivefold within five years.</p>
+        <p>The overall development strategy was to create an attractive public space, fill it with hospitality operators, and acquire and redevelop the neighboring buildings in the block.</p>
+        <p>As a result, Saint Petersburg gained another informal center of attraction in the heart of the city.</p>
+        <p>In collaboration with <a href="https://milesandyards.com/" target="_blank" rel="noopener">Miles &amp; Yards</a> and <a href="https://arch-katarsis.com/" target="_blank" rel="noopener">Katarsis Architects</a></p>
+      </div>
+    </li>
+
+    <li class="case" data-field="aircraft">
+      <h3>Aircraft manufacturing facility</h3>
+      <p class="meta"><span>Industrial masterplanning</span><span>High-tech manufacturing</span></p>
+      <p class="sub">Development and optimization of the masterplan for a high-tech manufacturing center.</p>
+      <button class="more" aria-expanded="false">more</button>
+      <div class="content">
+        <p>The facility builds civil aircraft as well as fourth- and fifth-generation fighter jets.</p>
+        <p>Our task was to expand and partially redesign the site to make room for new production facilities.</p>
+      </div>
+    </li>
+  </ul>
+  </section>
+
+  <section>
+  <h2 class="label">Contacts</h2>
+  <ul class="links">
+    <li><a href="https://wa.me/12428075582" target="_blank" rel="noopener">WhatsApp</a></li>
+    <li><a href="https://t.me/forbarinov" target="_blank" rel="noopener">Telegram</a></li>
+    <li><a href="https://x.com/BarinovLive" target="_blank" rel="noopener">X.com</a></li>
+    <li><a href="https://medium.com/@barinov.live" target="_blank" rel="noopener">Medium</a></li>
+    <li><a href="https://www.linkedin.com/in/forbarinov/" target="_blank" rel="noopener">LinkedIn</a></li>
+  </ul>
+  </section>
+
+  <p class="foot"><span>©2026 Aleks Barinov</span><button class="tog" id="motion" aria-pressed="true">motion: on</button></p>
+
+</div>
+</div>
+</main>
+
+<p class="cap" aria-hidden="true"><b id="cap-name">RubiqOS</b><span id="cap-kind">scalar field · agents</span></p>
+
+<script>
+/* ——— Поле: одна вычислительная модель, восемь состояний ———
+   Скалярное поле читается и как рельеф, и как математическая функция; его изолинии — фон страницы.
+   По изолиниям движутся агенты. У каждого проекта свои параметры поля; при наведении на проект
+   или раскрытии описания поле плавно перестраивается. */
+(function () {
+  var c = document.getElementById('field'), x = c.getContext('2d');
+  var css = getComputedStyle(document.documentElement);
+  var tok = function (n, d) { return (css.getPropertyValue(n) || '').trim() || d; };
+  var LINE = tok('--g-line', '#9AA6BD'), ACC = tok('--accent', '#E2608D');
+  var A = [parseFloat(tok('--g-a0', '.13')), parseFloat(tok('--g-a1', '.3')), parseFloat(tok('--g-a2', '.6'))];
+
+  /* f — масштаб, w — искривление, d — шаг изолиний, a — агенты, p/q — фазы (форма рельефа) */
+  var P = {
+    rubiq:     { f: 1.00, w: 1.30, d: .20, a: 1.00, p: 0.0, q: 0.0, n: 'RubiqOS',                         k: 'scalar field · agents' },
+    island:    { f: 0.72, w: 1.70, d: .15, a: 0.12, p: 1.9, q: 0.7, n: 'Private island development',      k: 'terrain · contour lines' },
+    cern:      { f: 1.55, w: 0.25, d: .24, a: 0.45, p: 3.1, q: 1.6, n: 'CERN lab building',               k: 'interference field' },
+    easyinn:   { f: 1.20, w: 0.90, d: .26, a: 0.90, p: 4.4, q: 2.9, n: 'Easyinn',                         k: 'distributed agents' },
+    habithai:  { f: 0.88, w: 1.45, d: .19, a: 0.18, p: 5.2, q: 4.1, n: 'Habithai',                        k: 'terrain · contour lines' },
+    foresight: { f: 0.58, w: 2.10, d: .14, a: 0.60, p: 0.9, q: 5.3, n: 'Foresight Moscow-2050',           k: 'flow field' },
+    nikolskiy: { f: 1.35, w: 0.70, d: .22, a: 0.32, p: 2.6, q: 3.4, n: 'Nikolskiy market',                k: 'urban block field' },
+    aircraft:  { f: 1.75, w: 0.12, d: .28, a: 0.08, p: 3.8, q: 0.3, n: 'Aircraft manufacturing facility', k: 'orthogonal field' }
+  };
+  var KEYS = ['f', 'w', 'd', 'a', 'p', 'q'];
+  var cur = {}, tgt = P.rubiq, sticky = 'rubiq';
+  KEYS.forEach(function (k) { cur[k] = tgt[k]; });
+
+  var reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var saved = null; try { saved = localStorage.getItem('field-motion'); } catch (e) {}
+  var moving = !reduce && saved !== 'off';
+
+  var W, H, cols, rows, cell, sc, F, raf = 0, tick = 0, now = 12, agents = [];
+  var SEG = [[], [3, 0], [0, 1], [3, 1], [1, 2], [3, 0, 1, 2], [0, 2], [3, 2], [2, 3], [0, 2], [0, 1, 2, 3], [1, 2], [1, 3], [0, 1], [3, 0], []];
+
+  function height(u, v, t) {
+    var f = cur.f, w = cur.w;
+    u *= f; v *= f;
+    return Math.sin(u * 1.1 + t * .10 + cur.p + 1.3 * w * Math.sin(v * .7 - t * .07))
+         + Math.sin(v * 1.3 - t * .08 + cur.q + 1.1 * w * Math.sin(u * .9 + t * .05))
+         + .5 * Math.sin((u + v) * 1.7 + t * .12 + cur.p * .5)
+         + .5 * Math.sin((u - v) * 2.1 - t * .09 - cur.q * .5 + w * Math.sin(u * .5));
+  }
+
+  function spawn(a) { a.x = Math.random() * W; a.y = Math.random() * H; a.life = 180 + Math.random() * 420; a.tr = []; }
+
+  function setup() {
+    var d = Math.min(window.devicePixelRatio || 1, 2);
+    W = innerWidth; H = innerHeight;
+    c.width = W * d; c.height = H * d;
+    x.setTransform(d, 0, 0, d, 0, 0);
+    var m = W < 720;
+    cell = m ? 12 : 14; sc = m ? 170 : 230;
+    cols = Math.ceil(W / cell); rows = Math.ceil(H / cell);
+    F = new Float32Array((cols + 1) * (rows + 1));
+    var n = m ? 36 : Math.min(120, Math.round(W * H / 11000));
+    agents = [];
+    for (var i = 0; i < n; i++) { var a = { dir: i % 2 ? 1 : -1, acc: i % 6 === 0 }; spawn(a); agents.push(a); }
+  }
+
+  function contours(t) {
+    var n = cols + 1, i, j, k = 0, l;
+    for (j = 0; j <= rows; j++) for (i = 0; i <= cols; i++) F[j * n + i] = height(i * cell / sc, j * cell / sc, t);
+    var LV = [[], [], []], kacc = Math.round(2.95 / cur.d);
+    for (l = -2.6; l <= 2.6; l += cur.d, k++) LV[k === kacc ? 2 : k % 4 === 0 ? 1 : 0].push(l);
+    x.lineWidth = 1;
+    for (var cls = 0; cls < 3; cls++) {
+      var L = LV[cls];
+      x.strokeStyle = cls === 2 ? ACC : LINE;
+      x.globalAlpha = A[cls];
+      x.beginPath();
+      for (j = 0; j < rows; j++) for (i = 0; i < cols; i++) {
+        var p = j * n + i, a = F[p], b = F[p + 1], cc = F[p + n + 1], dd = F[p + n];
+        var mn = Math.min(a, b, cc, dd), mx = Math.max(a, b, cc, dd);
+        for (var q = 0; q < L.length; q++) {
+          l = L[q];
+          if (l < mn || l > mx) continue;
+          var s = SEG[(a > l ? 1 : 0) | (b > l ? 2 : 0) | (cc > l ? 4 : 0) | (dd > l ? 8 : 0)];
+          for (var e = 0; e < s.length; e++) {
+            var ed = s[e], px, py;
+            if (ed === 0) { px = i + (l - a) / (b - a); py = j; }
+            else if (ed === 1) { px = i + 1; py = j + (l - b) / (cc - b); }
+            else if (ed === 2) { px = i + (l - dd) / (cc - dd); py = j + 1; }
+            else { px = i; py = j + (l - a) / (dd - a); }
+            if (e % 2) x.lineTo(px * cell, py * cell); else x.moveTo(px * cell, py * cell);
+          }
+        }
+      }
+      x.stroke();
+    }
+  }
+
+  /* агенты идут вдоль изолиний: направление — перпендикуляр к градиенту поля */
+  function swarm(t, step) {
+    if (cur.a < .03) return;
+    var e = .012;
+    for (var i = 0; i < agents.length; i++) {
+      var a = agents[i];
+      if (step) {
+        var u = a.x / sc, v = a.y / sc;
+        var gx = height(u + e, v, t) - height(u - e, v, t), gy = height(u, v + e, t) - height(u, v - e, t);
+        var m = Math.sqrt(gx * gx + gy * gy) || 1;
+        a.x += -gy / m * a.dir * .9; a.y += gx / m * a.dir * .9;
+        a.tr.push(a.x, a.y); if (a.tr.length > 28) a.tr.splice(0, 2);
+        if (--a.life < 0 || a.x < -20 || a.y < -20 || a.x > W + 20 || a.y > H + 20) spawn(a);
+      }
+      x.strokeStyle = x.fillStyle = a.acc ? ACC : LINE;
+      if (a.tr.length > 3) {
+        x.globalAlpha = (a.acc ? .55 : .32) * cur.a;
+        x.beginPath(); x.moveTo(a.tr[0], a.tr[1]);
+        for (var k = 2; k < a.tr.length; k += 2) x.lineTo(a.tr[k], a.tr[k + 1]);
+        x.stroke();
+      }
+      x.globalAlpha = (a.acc ? .95 : .7) * cur.a;
+      x.fillRect(a.x - 1, a.y - 1, 2, 2);
+    }
+  }
+
+  function draw(t, step) {
+    x.clearRect(0, 0, W, H);
+    contours(t);
+    swarm(t, step);
+    x.globalAlpha = 1;
+  }
+
+  function frame(ms) {
+    if (tick++ % 2 === 0) {
+      KEYS.forEach(function (k) { cur[k] += (tgt[k] - cur[k]) * .055; });
+      now = 12 + ms / 1000;
+      draw(now, true);
+    }
+    raf = requestAnimationFrame(frame);
+  }
+  function still() { KEYS.forEach(function (k) { cur[k] = tgt[k]; }); draw(now, false); }
+  function start() { if (moving) { if (!raf) raf = requestAnimationFrame(frame); } else still(); }
+  function stop() { cancelAnimationFrame(raf); raf = 0; }
+
+  function show(key) {
+    tgt = P[key] || P.rubiq;
+    document.getElementById('cap-name').textContent = tgt.n;
+    document.getElementById('cap-kind').textContent = tgt.k;
+    if (!moving) still();
+  }
+
+  /* проект под курсором или в фокусе задаёт состояние поля; раскрытый проект его удерживает */
+  document.querySelectorAll('.case').forEach(function (li) {
+    var key = li.dataset.field;
+    li.addEventListener('mouseenter', function () { show(key); });
+    li.addEventListener('focusin', function () { show(key); });
+    li.addEventListener('mouseleave', function () { show(sticky); });
+    li.addEventListener('focusout', function () { show(sticky); });
+    var btn = li.querySelector('.more');
+    if (!btn) return;
+    btn.addEventListener('click', function () {
+      var open = li.classList.toggle('open');
+      li.querySelector('.content').classList.toggle('open', open);
+      btn.setAttribute('aria-expanded', open);
+      btn.textContent = open ? 'less' : 'more';
+      sticky = open ? key : 'rubiq';
+      show(sticky);
+    });
+  });
+
+  var tog = document.getElementById('motion');
+  function label() { tog.textContent = 'motion: ' + (moving ? 'on' : 'off'); tog.setAttribute('aria-pressed', moving); }
+  tog.addEventListener('click', function () {
+    moving = !moving;
+    try { localStorage.setItem('field-motion', moving ? 'on' : 'off'); } catch (e) {}
+    label(); stop(); start();
+  });
+
+  setup(); label(); start();
+  addEventListener('resize', function () { setup(); if (!moving) still(); });
+  document.addEventListener('visibilitychange', function () { if (document.hidden) stop(); else start(); });
+})();
+</script>
 </body>
 </html>
