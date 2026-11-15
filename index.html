@@ -307,44 +307,71 @@
   }
 </script>
 <script>
-  /* ——— Фон: облако точек на «дышащей» сфере, медленно вращается ——— */
+  /* ——— Фон: облако точек на «дышащей» сфере, медленно вращается ———
+     Все настройки собраны в D (десктоп) и MOB (поправки для телефона). */
   (function () {
     var c = document.getElementById('bg'), x = c.getContext('2d');
     var still = matchMedia('(prefers-reduced-motion: reduce)').matches;
-    var W, H, P = [], raf = 0;
+    var W, H, PTS = [], raf = 0, clock = 0, last = null;
+    var D = {
+      size: .7,        /* радиус сферы в долях высоты экрана */
+      x: .86,          /* центр по горизонтали, в долях ширины */
+      y: .56,          /* центр по вертикали, в долях высоты */
+      speed: .55,      /* скорость вращения и «дыхания» */
+      count: 5200,     /* число точек */
+      dot: 1,          /* размер точки */
+      alpha: .5,       /* яркость */
+      breathe: 1,      /* насколько сильно сфера меняет форму */
+      accent: 5        /* доля акцентных точек, % */
+    };
+    var MOB = { size: .48, x: 1.05, y: .34, count: 2600 };
+    var P = {};
+
+    function defaults() {
+      var k;
+      for (k in D) P[k] = D[k];
+      if (innerWidth < 720) for (k in MOB) P[k] = MOB[k];
+    }
+
+    function build() {
+      var n = Math.max(1, Math.round(P.count)), g = Math.PI * (3 - Math.sqrt(5));
+      PTS = [];
+      for (var i = 0; i < n; i++) {
+        var y = 1 - 2 * (i + .5) / n, r = Math.sqrt(1 - y * y), a = i * g;
+        PTS.push([Math.cos(a) * r, y, Math.sin(a) * r, (i * 7919 % 1000) < P.accent * 10]);
+      }
+    }
 
     function setup() {
       var d = Math.min(window.devicePixelRatio || 1, 2);
       W = innerWidth; H = innerHeight;
       c.width = W * d; c.height = H * d;
       x.setTransform(d, 0, 0, d, 0, 0);
-      var n = W < 720 ? 2600 : 5200, g = Math.PI * (3 - Math.sqrt(5));
-      P = [];
-      for (var i = 0; i < n; i++) {
-        var y = 1 - 2 * (i + .5) / n, r = Math.sqrt(1 - y * y), a = i * g;
-        P.push([Math.cos(a) * r, y, Math.sin(a) * r, i % 19 === 0]);
-      }
+      build();
     }
 
     function draw(ms) {
-      var t = ms / 1000 * .55, m = W < 720;
-      var cx = m ? W * 1.05 : W * .86, cy = m ? H * .34 : H * .56;
-      var R = m ? W * 1.05 : Math.max(W * .44, H * .7), k = m ? .85 : 1;
+      if (last === null) last = ms;
+      clock += Math.max(0, Math.min(.1, (ms - last) / 1000)) * P.speed; last = ms;
+      var t = clock, k = W < 720 ? .85 : 1;
+      var cx = W * P.x, cy = H * P.y, R = H * P.size, b = P.breathe;
       var ry = t * .12, rx = .35 + Math.sin(t * .07) * .2;
       var cY = Math.cos(ry), sY = Math.sin(ry), cX = Math.cos(rx), sX = Math.sin(rx);
       x.clearRect(0, 0, W, H);
       for (var pass = 0; pass < 2; pass++) {
         x.fillStyle = pass ? '#EF4F7B' : '#E9EAEE';
-        for (var i = 0; i < P.length; i++) {
-          var p = P[i];
+        for (var i = 0; i < PTS.length; i++) {
+          var p = PTS[i];
           if (p[3] != !!pass) continue;
-          var d = 1 + .16 * Math.sin(3 * p[0] + t * .6) * Math.sin(3 * p[1] + t * .45) + .1 * Math.sin(4 * p[2] - t * .5 + 2 * p[0]);
+          var d = 1 + b * (.16 * Math.sin(3 * p[0] + t * .6) * Math.sin(3 * p[1] + t * .45) + .1 * Math.sin(4 * p[2] - t * .5 + 2 * p[0]));
           var px = p[0] * d, py = p[1] * d, pz = p[2] * d;
           var x1 = px * cY + pz * sY, z1 = pz * cY - px * sY;
           var y1 = py * cX - z1 * sX, z2 = py * sX + z1 * cX;
           var f = 3 / (3 + z2), near = 1 - (z2 + 1.3) / 2.6;
-          x.globalAlpha = Math.min(1, (.1 + .55 * near) * k * (pass ? 1.5 : 1));
-          var s = near > .55 ? 2.2 : 1.4;
+          var a = (.1 + .55 * near) * k * P.alpha * (pass ? 1.5 : 1);
+          if (a <= .004) continue;
+          x.globalAlpha = a > 1 ? 1 : a;
+          var s = (near > .55 ? 2.2 : 1.4) * P.dot;
           x.fillRect(cx + x1 * R * f, cy + y1 * R * f, s, s);
         }
       }
@@ -352,12 +379,15 @@
     }
 
     function frame(ms) { draw(ms); raf = requestAnimationFrame(frame); }
-    function start() { if (still) draw(0); else if (!raf) raf = requestAnimationFrame(frame); }
-    function stop() { cancelAnimationFrame(raf); raf = 0; }
+    function start() { if (still) { clock = 20; draw(0); } else if (!raf) raf = requestAnimationFrame(frame); }
+    function stop() { cancelAnimationFrame(raf); raf = 0; last = null; }
 
-    setup(); start();
+    defaults(); setup(); start();
     addEventListener('resize', function () { setup(); if (still) draw(0); });
     document.addEventListener('visibilitychange', function () { document.hidden ? stop() : start(); });
+
+    /* для страницы настройки: доступ к параметрам снаружи */
+    window.sphere = { P: P, reset: function () { defaults(); build(); }, build: build, redraw: function () { if (still) draw(0); } };
   })();
 </script>
 </body>
