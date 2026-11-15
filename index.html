@@ -3,7 +3,6 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="theme-color" content="#272C37">
 <title>Aleks Barinov — real estate & urban planning</title>
 <meta name="description" content="Aleks Barinov — real estate professional and urban planner. Development concepts, masterplans and proptech.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -13,11 +12,11 @@
 <style>
   :root {
     color-scheme: dark;
-    --paper: #272C37;
+    --paper: #151A24;
     --ink: #E6E8EE;
-    --muted: #939AA8;
-    --hair: #363C49;
-    --accent: #F0507F;
+    --muted: #848C9C;
+    --hair: #2A3140;
+    --accent: #DC1F5C;
     --sans: "JetBrains Mono", ui-monospace, "SF Mono", Menlo, Consolas, monospace;
     /* один шрифт, два начертания, четыре кегля: 13 / 15 / 17 / до 30 */
     --small: 13px;
@@ -26,6 +25,7 @@
   html { -webkit-text-size-adjust: 100%; }
   body {
     margin: 0;
+    padding: clamp(24px, 4vw, 48px) clamp(16px, 2.5vw, 28px) 40px;
     background: var(--paper);
     color: var(--ink);
     font: 400 15px/1.55 var(--sans);
@@ -38,14 +38,6 @@
   ::selection { background: var(--ink); color: var(--paper); }
   :focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
   .muted { color: var(--muted); }
-
-  /* две зоны: тёмная — имя и текущий проект, чуть светлее — прошлые проекты и контакты */
-  .zone { background: var(--paper); color: var(--ink); padding: 48px clamp(16px, 2.5vw, 28px) 40px; }
-  .zone.top { position: relative; padding-top: clamp(24px, 4vw, 48px); padding-bottom: 48px; }
-  /* переключатель версии страницы — справа вверху */
-  .alt { position: absolute; top: clamp(24px, 4vw, 48px); right: clamp(16px, 2.5vw, 28px); padding: 4px 10px; border: 1px solid var(--muted); color: var(--muted); font-size: var(--small); text-decoration: none; }
-  .alt:hover { border-color: var(--accent); }
-  .zone.past { --paper: #313744; --muted: #9DA4B1; --hair: #404756; --accent: #F4628C; }
 
   /* одна сетка на всю страницу: пустая узкая колонка-отступ + колонка текста */
   .sheet { display: grid; grid-template-columns: minmax(0, 1fr); row-gap: 48px; }
@@ -73,10 +65,9 @@
   .case.main .content { padding-bottom: 0; }
   /* текущий проект: шире остального и на чуть более светлой подложке */
   .site { display: inline-block; margin-top: 10px; }
-  .case h3 { color: var(--accent); font-size: 17px; line-height: 1.3; margin-bottom: 2px; }
+  .case h3, dialog h3 { color: var(--accent); font-size: 17px; line-height: 1.3; margin-bottom: 2px; }
   .more { display: inline-block; margin: 6px 0 0; padding: 0; border: 0; background: none; font-family: inherit; color: var(--muted); cursor: pointer; }
-  .more::after { content: " ↓"; }
-  .more[aria-expanded="true"]::after { content: " ↑"; }
+  .more::after { content: " →"; }
   .more:hover { color: #8FB3D1; }
   .content { padding: 10px 0 6px; color: var(--muted); font-size: var(--small); line-height: 1.5; }
   .js .content { display: none; }
@@ -85,6 +76,25 @@
   .content li { padding-left: 1.2em; position: relative; }
   .content li + li { margin-top: .35em; }
   .content li::before { content: "–"; position: absolute; left: 0; }
+
+  /* окно Details: картинка, название, параметры, текст */
+  [hidden] { display: none !important; }
+  dialog { width: min(600px, calc(100vw - 32px)); max-height: calc(100vh - 48px); padding: 0; border: 0; --ink: #16171A; --muted: #6E6D68; --hair: #D6D4CD; background: #F1F0EC; color: var(--ink); overflow: auto; }
+  dialog::backdrop { background: rgba(8, 10, 15, 0.74); }
+  .d-img { display: block; width: 100%; aspect-ratio: 16 / 9; object-fit: cover; }
+  .d-ph { display: grid; place-items: center; aspect-ratio: 16 / 9; background: repeating-linear-gradient(135deg, #E4E2DC 0 14px, #DCDAD3 14px 28px); font-size: var(--small); color: var(--muted); text-transform: uppercase; letter-spacing: 0.08em; }
+  /* ссылка на альтернативную версию сайта */
+  .alt { position: absolute; top: clamp(24px, 4vw, 48px); right: clamp(16px, 2.5vw, 28px); margin-top: clamp(8px, 2vw, 24px); font-size: var(--small); color: var(--muted); line-height: 2.6; }
+  .alt:hover { color: var(--ink); }
+  .d-in { padding: 22px 28px 28px; }
+  .d-head { display: flex; justify-content: space-between; align-items: baseline; gap: 24px; }
+  .d-close { flex: none; padding: 0; border: 0; background: none; font-family: inherit; font-size: var(--small); color: var(--muted); cursor: pointer; }
+  .d-close:hover { color: var(--ink); }
+  .d-meta { display: grid; grid-template-columns: 88px minmax(0, 1fr); gap: 4px 28px; margin: 20px 0 0; }
+  .d-meta dt { font-size: var(--small); color: var(--muted); text-transform: uppercase; letter-spacing: 0.08em; align-self: baseline; }
+  .d-meta dd { margin: 0; }
+  .d-text { padding: 20px 0 0; color: var(--ink); font-size: 15px; line-height: 1.55; }
+  @media (max-width: 720px) { .d-in { padding: 18px 18px 22px; } }
 
   .cal .calendly-inline-widget { min-width: 280px; height: 680px; border: 1px solid var(--hair); margin-top: 12px; }
 
@@ -98,14 +108,12 @@
 </style>
 </head>
 <body>
-<main>
-<div class="zone top">
-<a class="alt" href="lab.html">motion ✦</a>
-<div class="sheet">
+<a class="alt" href="gpt/">GPT version →</a>
+<main class="sheet">
 
   <div class="me">
     <h1>Aleks Barinov</h1>
-    <p>I specialize in <b>masterplanning</b>, <b>development concepts</b> and <b>technological solutions</b> for <em><span style="white-space:nowrap">large-scale</span> development projects</em>.</p>
+    <p>I specialize in developing <b>masterplans</b>, <b>development concepts</b> and <b>technological solutions</b> for <em><span style="white-space:nowrap">large-scale</span> development projects</em>.</p>
   </div>
 
   <section class="current">
@@ -116,64 +124,61 @@
       <p>Physical AI platform for resort operations.</p>
       <div class="content open">
         <p>RubiqOS orchestrates day-to-day operations between people and robots. Its engine plans the tasks, splits the work between staff and machines, and runs both as one team.</p>
+        <p>The platform works with robots from any maker: a shared fleet of proven machines is built into the operating plan, each doing a specific job in a specific place. Operators keep the systems they already know, and everything runs through a single platform.</p>
       </div>
       <a class="site" href="https://rubiqos.com/" target="_blank" rel="noopener">rubiqos.com ↗</a>
     </li>
   </ul>
   </section>
 
-</div>
-</div>
-<div class="zone past">
-<div class="sheet">
-
   <section>
   <h2>Past:</h2>
   <ul>
 
-    <li class="case">
+    <!-- Параметры окна Details: data-location, data-year, data-role, data-image. Пустое поле в окне не показывается. -->
+    <li class="case" data-location="Caribbean" data-year="" data-role="Lead Masterplan Architect" data-image="">
       <h3>Private island development</h3>
       <p>Masterplan for a $1B resort on a private island in the Caribbean.</p>
-      <button class="more" aria-expanded="false">more</button>
+      <button class="more" aria-haspopup="dialog">details</button>
       <div class="content">
         <p>My concept won a <a href="https://www.ribacompetitions.com/" target="_blank" rel="noopener">RIBA competition</a>, and I was invited to join the project as Lead Masterplan Architect. I was the third member of the team and helped shape the initial vision, the masterplan and the overall development concept.</p>
         <p>My scope covered the architectural and development concept of the island, strategic planning and cross-disciplinary coordination.</p>
       </div>
     </li>
 
-    <li class="case">
+    <li class="case" data-location="Geneva, Switzerland" data-year="" data-role="" data-image="">
       <h3>CERN lab building</h3>
       <p>Concept development for a laboratory complex on the CERN campus.</p>
-      <button class="more" aria-expanded="false">more</button>
+      <button class="more" aria-haspopup="dialog">details</button>
       <div class="content">
         <p>Our team helped shape the concept for a complex of administrative buildings and laboratories at CERN. We ran several strategy sessions with the architectural teams and laboratory representatives to define clear requirements for the architectural design.</p>
         <p>In collaboration with <a href="https://home.cern/" target="_blank" rel="noopener">CERN</a> and <a href="https://www.nickl-partner.com/en/" target="_blank" rel="noopener">Nickl &amp; Partner</a></p>
       </div>
     </li>
 
-    <li class="case">
+    <li class="case" data-location="" data-year="" data-role="" data-image="">
       <h3>Easyinn</h3>
       <p>Platform for automated property management.</p>
-      <button class="more" aria-expanded="false">more</button>
+      <button class="more" aria-haspopup="dialog">details</button>
       <div class="content">
         <p>Easyinn started as an internal tool for running our own network of hotels with 280 units in total. It included a keyless access system and a guest app with a marketplace of local services.</p>
         <p>It was later spun off as a standalone product and launched in several countries.</p>
       </div>
     </li>
 
-    <li class="case">
+    <li class="case" data-location="Koh Samui, Thailand" data-year="" data-role="" data-image="">
       <h3>Habithai</h3>
       <p>Gated community development on Koh Samui, Thailand.</p>
-      <button class="more" aria-expanded="false">more</button>
+      <button class="more" aria-haspopup="dialog">details</button>
       <div class="content">
         <p>Masterplan and product concept for a gated community of 11 premium villas on Koh Samui, Thailand — plus fundraising, marketing and sales.</p>
       </div>
     </li>
 
-    <li class="case">
+    <li class="case" data-location="Moscow, Russia" data-year="" data-role="" data-image="">
       <h3>Foresight Moscow-2050</h3>
       <p>The largest foresight study for the Moscow masterplan.</p>
-      <button class="more" aria-expanded="false">more</button>
+      <button class="more" aria-haspopup="dialog">details</button>
       <div class="content">
         <p>I was part of the team that developed the methodology, strategy and overall structure of the study for the Moscow masterplan — a joint effort of three universities and research institutions and more than 2,000 experts from business, government and academia.</p>
         <p>The project shaped the long-term development strategy of the Moscow masterplan and made several landmark projects possible, including:</p>
@@ -186,22 +191,19 @@
       </div>
     </li>
 
-    <li class="case">
+    <li class="case" data-location="Saint Petersburg, Russia" data-year="" data-role="" data-image="">
       <h3>Nikolskiy market</h3>
       <p>Redevelopment of a cluster of historic buildings in Saint Petersburg.</p>
-      <button class="more" aria-expanded="false">more</button>
+      <button class="more" aria-haspopup="dialog">details</button>
       <div class="content">
         <p>The goal was to increase the value of a restored 40,000 m² historic building fivefold within five years.</p>
-        <p>The overall development strategy was to create an attractive public space, fill it with hospitality operators, and acquire and redevelop the neighboring buildings in the block.</p>
-        <p>As a result, Saint Petersburg gained another informal center of attraction in the heart of the city.</p>
-        <p>In collaboration with <a href="https://milesandyards.com/" target="_blank" rel="noopener">Miles &amp; Yards</a> and <a href="https://arch-katarsis.com/" target="_blank" rel="noopener">Katarsis Architects</a></p>
       </div>
     </li>
 
-    <li class="case">
+    <li class="case" data-location="" data-year="" data-role="" data-image="">
       <h3>Aircraft manufacturing facility</h3>
       <p>Development and optimization of the masterplan for a high-tech manufacturing center.</p>
-      <button class="more" aria-expanded="false">more</button>
+      <button class="more" aria-haspopup="dialog">details</button>
       <div class="content">
         <p>The facility builds civil aircraft as well as fourth- and fifth-generation fighter jets.</p>
         <p>Our task was to expand and partially redesign the site to make room for new production facilities.</p>
@@ -229,9 +231,21 @@
 
   <p class="muted">©2026 Aleks Barinov</p>
 
-</div>
-</div>
 </main>
+
+<dialog id="details" aria-labelledby="d-title">
+  <img class="d-img" id="d-img" alt="" hidden>
+  <div class="d-ph" id="d-ph">Image</div>
+  <div class="d-in">
+    <div class="d-head">
+      <h3 id="d-title"></h3>
+      <button class="d-close" id="d-close">close ×</button>
+    </div>
+    <p id="d-sub"></p>
+    <dl class="d-meta" id="d-meta"></dl>
+    <div class="content open d-text" id="d-text"></div>
+  </div>
+</dialog>
 
 <script>
   /* ——— Вставь адреса, когда будут. Пустая строка = без ссылки. ——— */
@@ -251,13 +265,39 @@
     li.replaceChildren(a);
   });
 
+  var dlg = document.getElementById('details');
+  var byId = function (id) { return document.getElementById(id); };
+
   document.querySelectorAll('.more').forEach(function (btn) {
     btn.addEventListener('click', function () {
-      var open = btn.closest('.case').querySelector('.content').classList.toggle('open');
-      btn.setAttribute('aria-expanded', open);
-      btn.textContent = open ? 'less' : 'more';
+      var c = btn.closest('.case');
+      byId('d-title').textContent = c.querySelector('h3').textContent;
+      byId('d-sub').textContent = c.querySelector('h3 + p').textContent;
+
+      var img = byId('d-img');
+      if (c.dataset.image) { img.src = c.dataset.image; img.hidden = false; }
+      else { img.hidden = true; img.removeAttribute('src'); }
+      byId('d-ph').hidden = !img.hidden;
+
+      var meta = byId('d-meta');
+      meta.innerHTML = '';
+      [['Location', 'location'], ['Year', 'year'], ['Role', 'role']].forEach(function (m) {
+        var v = c.dataset[m[1]];
+        if (!v) return;
+        var dt = document.createElement('dt'); dt.textContent = m[0];
+        var dd = document.createElement('dd'); dd.textContent = v;
+        meta.append(dt, dd);
+      });
+      meta.hidden = !meta.children.length;
+
+      byId('d-text').innerHTML = c.querySelector('.content').innerHTML;
+      dlg.showModal();
+      dlg.scrollTop = 0;
     });
   });
+
+  byId('d-close').addEventListener('click', function () { dlg.close(); });
+  dlg.addEventListener('click', function (e) { if (e.target === dlg) dlg.close(); });
 
   if (LINKS.calendly) {
     var box = document.getElementById('calendly');
