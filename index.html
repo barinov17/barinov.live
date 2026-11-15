@@ -355,116 +355,126 @@
   }
 </script>
 <script>
-  /* ——— Фон: генплан ———
-     Тонкий чертёж территории: участок последовательно делится на кварталы и участки (так строится
-     мастерплан). При загрузке линии прочерчиваются одна за другой, дальше чертёж неподвижен,
-     а по его улицам медленно движутся несколько точек — люди и машины, работающие на территории. */
+  /* ——— Фон: генплан на модульной сетке ———
+     Территория разбита на кварталы по модулю: крупный блок либо остаётся целым, либо делится
+     на четыре, те — ещё на четыре, и так до мелкой сетки (модуль, /2, /4, /8). Узлы сетки
+     отмечены крестами. Отдельные кварталы медленно загораются и гаснут; по линиям сетки
+     ходят несколько точек. Чертёж неподвижен и хранится готовой картинкой. */
   (function () {
     var c = document.getElementById('bg'), x = c.getContext('2d');
     var still = matchMedia('(prefers-reduced-motion: reduce)').matches;
-    var W, H, DPR, lines, fills, agents, cache = null, t0 = null, last = 0, raf = 0, tick = 0;
-    var ANG = -12 * Math.PI / 180, INK = '#E9EAEE', ACC = '#EF4F7B';
-    var DRAW = 3.2;                             /* сколько секунд чертёж прорисовывается при загрузке */
+    var W, H, DPR, M, SM, ox, oy, leaves, cache, glows, agents, R, t0 = null, last = 0, next = 0, raf = 0, tick = 0;
+    var INK = '#E9EAEE', ACC = '#EF4F7B';
 
     function rng(seed) { return function () { seed = seed + 0x6D2B79F5 | 0; var t = Math.imul(seed ^ seed >>> 15, 1 | seed); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; }; }
-
-    /* отрезок, обрезанный по экрану: по нему ходят точки */
-    function clip(l) {
-      var ta = 0, tb = 1, dx = l.x1 - l.x0, dy = l.y1 - l.y0, m = 24;
-      var p = [-dx, dx, -dy, dy], q = [l.x0 + m, W + m - l.x0, l.y0 + m, H + m - l.y0];
-      for (var i = 0; i < 4; i++) {
-        if (p[i] === 0) { if (q[i] < 0) return false; continue; }
-        var r = q[i] / p[i];
-        if (p[i] < 0) { if (r > tb) return false; if (r > ta) ta = r; } else { if (r < ta) return false; if (r < tb) tb = r; }
-      }
-      l.ta = ta; l.tb = tb; l.vis = (tb - ta) * l.len;
-      return l.vis > 0;
-    }
 
     function setup() {
       DPR = Math.min(window.devicePixelRatio || 1, 2);
       W = innerWidth; H = innerHeight;
       c.width = W * DPR; c.height = H * DPR;
-      var m = W < 720, R = rng(11), min = m ? 64 : 92, ca = Math.cos(ANG), sa = Math.sin(ANG);
-      var cx = W * (m ? .5 : .6), cy = H * .5, S = Math.hypot(W, H) * .62, raw = [];
-      lines = []; fills = []; cache = null;
-      function pt(u, v) { return [cx + u * ca - v * sa, cy + u * sa + v * ca]; }
-      /* деление: участок режется улицей на два, каждый — дальше, пока не станет размером с квартал */
-      (function split(x0, y0, x1, y1, d) {
-        var w = x1 - x0, h = y1 - y0;
-        if (d > 8 || (w < min * 2 && h < min * 2) || (d > 3 && R() < .1)) { if (R() < .13) fills.push([pt(x0, y0), pt(x1, y0), pt(x1, y1), pt(x0, y1)]); return; }
-        var vert = w > h ? R() < .82 : R() < .18;
-        if (vert && w < min * 2) vert = false; else if (!vert && h < min * 2) vert = true;
-        var r = .32 + R() * .36;
-        if (vert) { var xm = x0 + w * r; raw.push([xm, y0, xm, y1, d]); split(x0, y0, xm, y1, d + 1); split(xm, y0, x1, y1, d + 1); }
-        else { var ym = y0 + h * r; raw.push([x0, ym, x1, ym, d]); split(x0, y0, x1, ym, d + 1); split(x0, ym, x1, y1, d + 1); }
-      })(-S, -S, S, S, 0);
-      raw.forEach(function (r) {
-        var a = pt(r[0], r[1]), b = pt(r[2], r[3]);
-        var l = { x0: a[0], y0: a[1], x1: b[0], y1: b[1], d: r[4], len: Math.hypot(b[0] - a[0], b[1] - a[1]), delay: r[4] * .28 + R() * .35 };
-        if (clip(l)) lines.push(l);
-      });
-      /* точки ходят по улицам покрупнее */
-      var roads = lines.filter(function (l) { return l.d <= 5 && l.vis > 140; });
+      var m = W < 720;
+      M = m ? 80 : 128; SM = M * 2;             /* модуль и крупный блок (два модуля) */
+      ox = (W % SM) / 2 - SM; oy = (H % SM) / 2 - SM;
+      R = rng(23); leaves = []; glows = [];
+      /* деление: вероятность разбить блок падает с глубиной — отсюда контраст крупных и мелких кварталов */
+      var P = [.7, .5, .42, .3];
+      function split(px, py, s, d) {
+        if (d < P.length && R() < P[d]) { var h = s / 2; split(px, py, h, d + 1); split(px + h, py, h, d + 1); split(px, py + h, h, d + 1); split(px + h, py + h, h, d + 1); }
+        else leaves.push({ x: px, y: py, s: s, d: d });
+      }
+      for (var gy = oy; gy < H; gy += SM) for (var gx = ox; gx < W; gx += SM) split(gx, gy, SM, 0);
+
+      /* чертёж рисуется один раз */
+      cache = document.createElement('canvas'); cache.width = c.width; cache.height = c.height;
+      var g = cache.getContext('2d'), k = m ? .85 : 1, i, l;
+      g.setTransform(DPR, 0, 0, DPR, 0, 0);
+      g.strokeStyle = INK; g.lineWidth = 1;
+      for (var pass = 0; pass < 2; pass++) {
+        g.globalAlpha = (pass ? .095 : .16) * k;
+        g.beginPath();
+        for (i = 0; i < leaves.length; i++) {
+          l = leaves[i];
+          if ((l.d >= 3) !== !!pass) continue;
+          var ax = Math.round(l.x) + .5, ay = Math.round(l.y) + .5;
+          g.moveTo(ax + l.s, ay); g.lineTo(ax, ay); g.lineTo(ax, ay + l.s);
+        }
+        g.stroke();
+      }
+      /* кресты в узлах: крупные — на сетке блоков, мелкие — на модуле */
+      for (var size = 0; size < 2; size++) {
+        var step = size ? M : SM, arm = size ? 3 : 6;
+        g.globalAlpha = (size ? .22 : .5) * k; g.lineWidth = size ? 1 : 1.2;
+        g.beginPath();
+        for (var ny = oy; ny <= H + step; ny += step) for (var nx = ox; nx <= W + step; nx += step) {
+          if (size && (Math.round((nx - ox) / M) % 2 === 0) && (Math.round((ny - oy) / M) % 2 === 0)) continue;
+          var cx = Math.round(nx) + .5, cy = Math.round(ny) + .5;
+          g.moveTo(cx - arm, cy); g.lineTo(cx + arm, cy); g.moveTo(cx, cy - arm); g.lineTo(cx, cy + arm);
+        }
+        g.stroke();
+      }
+
+      /* точки ходят по линиям модуля от узла к узлу */
       agents = [];
-      for (var i = 0; i < (m ? 5 : 11) && roads.length; i++) {
-        var a = { acc: i % 4 === 0, v: 14 + R() * 14 };
-        place(a, roads, R, true); agents.push(a);
+      var nxn = Math.ceil((W - ox) / M), nyn = Math.ceil((H - oy) / M);
+      for (i = 0; i < (m ? 3 : 7); i++) {
+        var a = { ix: 1 + Math.floor(R() * (nxn - 1)), iy: 1 + Math.floor(R() * (nyn - 1)), dx: 0, dy: 0, p: 0, v: .16 + R() * .12, acc: i % 3 === 0 };
+        turn(a, nxn, nyn); agents.push(a);
       }
-      agents.roads = roads; agents.R = R;
+      agents.nx = nxn; agents.ny = nyn;
+      next = 0;
     }
 
-    function place(a, roads, R, anywhere) {
-      a.l = roads[Math.floor(R() * roads.length)];
-      a.dir = R() < .5 ? 1 : -1;
-      a.s = anywhere ? R() * a.l.vis : (a.dir > 0 ? 0 : a.l.vis);
+    function turn(a, nxn, nyn) {
+      var opts = [[1, 0], [-1, 0], [0, 1], [0, -1]].filter(function (o) {
+        var tx = a.ix + o[0], ty = a.iy + o[1];
+        return tx >= 0 && ty >= 0 && tx <= nxn && ty <= nyn && !(o[0] === -a.dx && o[1] === -a.dy);
+      });
+      var straight = opts.filter(function (o) { return o[0] === a.dx && o[1] === a.dy; })[0];
+      var o = straight && R() < .62 ? straight : opts[Math.floor(R() * opts.length)] || [-a.dx, -a.dy];
+      a.dx = o[0]; a.dy = o[1];
     }
 
-    function plan(g, t) {
-      var m = W < 720 ? .8 : 1, i;
-      g.fillStyle = INK; g.globalAlpha = .028 * m * Math.min(1, t / DRAW);
-      for (i = 0; i < fills.length; i++) {
-        var f = fills[i];
-        g.beginPath(); g.moveTo(f[0][0], f[0][1]); g.lineTo(f[1][0], f[1][1]); g.lineTo(f[2][0], f[2][1]); g.lineTo(f[3][0], f[3][1]); g.fill();
+    function spawn(t) {
+      /* загораются чаще кварталы справа, где нет текста; изредка — акцентным цветом */
+      for (var tries = 0; tries < 12; tries++) {
+        /* сначала выбирается размер квартала, потом сам квартал — иначе загорались бы почти одни мелкие */
+        var want = Math.floor(R() * 5), pool = leaves.filter(function (q) { return q.d === want; });
+        if (!pool.length) continue;
+        var l = pool[Math.floor(R() * pool.length)];
+        if (l.x + l.s < 0 || l.y + l.s < 0 || l.x > W || l.y > H) continue;
+        if (W >= 720 && l.x < W * .42 && R() < .75) continue;
+        glows.push({ l: l, t: t, dur: 3.5 + R() * 4, acc: R() < .22 });
+        return;
       }
-      g.strokeStyle = INK;
-      for (i = 0; i < lines.length; i++) {
-        var l = lines[i], p = Math.min(1, Math.max(0, (t - l.delay) / .9));
-        if (p <= 0) continue;
-        p = 1 - (1 - p) * (1 - p);
-        g.globalAlpha = (l.d <= 1 ? .24 : l.d <= 3 ? .15 : l.d <= 5 ? .1 : .075) * m;
-        g.lineWidth = l.d <= 1 ? 1.2 : 1;
-        g.setLineDash(l.d >= 6 ? [2, 5] : []);
-        g.beginPath(); g.moveTo(l.x0, l.y0); g.lineTo(l.x0 + (l.x1 - l.x0) * p, l.y0 + (l.y1 - l.y0) * p); g.stroke();
-      }
-      g.setLineDash([]); g.globalAlpha = 1;
     }
 
     function draw(ms) {
       if (t0 === null) { t0 = ms; last = ms; }
-      var t = still ? 99 : Math.max(0, (ms - t0) / 1000), dt = Math.max(0, Math.min(.1, (ms - last) / 1000)); last = ms;
+      var t = Math.max(0, (ms - t0) / 1000), dt = Math.max(0, Math.min(.1, (ms - last) / 1000)), i, k = W < 720 ? .85 : 1; last = ms;
+      var intro = still ? 1 : Math.min(1, t / 1.6); intro = intro * intro * (3 - 2 * intro);
+      x.setTransform(1, 0, 0, 1, 0, 0);
+      x.clearRect(0, 0, c.width, c.height);
+      x.globalAlpha = intro; x.drawImage(cache, 0, 0);
       x.setTransform(DPR, 0, 0, DPR, 0, 0);
-      x.clearRect(0, 0, W, H);
-      if (t < DRAW + 2.6) plan(x, t);
-      else {
-        /* чертёж дорисован — дальше он берётся готовой картинкой, каждый кадр рисуются только точки */
-        if (!cache) { cache = document.createElement('canvas'); cache.width = c.width; cache.height = c.height; var g = cache.getContext('2d'); g.setTransform(DPR, 0, 0, DPR, 0, 0); plan(g, 99); }
-        x.setTransform(1, 0, 0, 1, 0, 0); x.drawImage(cache, 0, 0); x.setTransform(DPR, 0, 0, DPR, 0, 0);
+
+      if (!still && t >= next) { spawn(t); next = t + .45 + R() * .7; }
+      if (still && !glows.length) for (i = 0; i < 6; i++) { spawn(-2); }
+      for (i = glows.length - 1; i >= 0; i--) {
+        var gl = glows[i], q = still ? .5 : (t - gl.t) / gl.dur;
+        if (q >= 1) { glows.splice(i, 1); continue; }
+        var e = Math.sin(Math.PI * q); e = e * e * k * intro;
+        var l = gl.l;
+        x.fillStyle = x.strokeStyle = gl.acc ? ACC : INK;
+        x.globalAlpha = (gl.acc ? .22 : .13) * e; x.fillRect(l.x + 1, l.y + 1, l.s - 1, l.s - 1);
+        x.globalAlpha = (gl.acc ? .8 : .55) * e; x.lineWidth = 1; x.strokeRect(Math.round(l.x) + .5, Math.round(l.y) + .5, l.s, l.s);
       }
-      var show = Math.min(1, Math.max(0, (t - DRAW * .6) / 1.5)), m = W < 720 ? .8 : 1;
-      x.lineCap = 'round';
-      for (var i = 0; i < agents.length; i++) {
-        var a = agents[i], l = a.l;
-        if (!still) { a.s += a.dir * a.v * dt; if (a.s < 0 || a.s > l.vis) { place(a, agents.roads, agents.R, false); l = a.l; } }
-        var fade = Math.min(1, a.s / 40, (l.vis - a.s) / 40) * show * m;
-        if (fade <= 0) continue;
-        var ux = (l.x1 - l.x0) / l.len, uy = (l.y1 - l.y0) / l.len, s = l.ta * l.len + a.s;
-        var px = l.x0 + ux * s, py = l.y0 + uy * s, tail = 34 * a.dir;
-        x.strokeStyle = x.fillStyle = a.acc ? ACC : INK;
-        x.lineWidth = 1.2;
-        x.globalAlpha = .28 * fade; x.beginPath(); x.moveTo(px, py); x.lineTo(px - ux * tail, py - uy * tail); x.stroke();
-        x.globalAlpha = .5 * fade; x.beginPath(); x.moveTo(px, py); x.lineTo(px - ux * tail * .4, py - uy * tail * .4); x.stroke();
-        x.globalAlpha = (a.acc ? .95 : .8) * fade; x.beginPath(); x.arc(px, py, a.acc ? 2.2 : 1.8, 0, 6.2832); x.fill();
+
+      for (i = 0; i < agents.length; i++) {
+        var a = agents[i];
+        if (!still) { a.p += a.v * dt * (128 / M); if (a.p >= 1) { a.p -= 1; a.ix += a.dx; a.iy += a.dy; turn(a, agents.nx, agents.ny); } }
+        var px = ox + (a.ix + a.dx * a.p) * M, py = oy + (a.iy + a.dy * a.p) * M;
+        x.fillStyle = a.acc ? ACC : INK;
+        x.globalAlpha = (a.acc ? .95 : .8) * k * intro; x.fillRect(Math.round(px) - 1.5, Math.round(py) - 1.5, 4, 4);
       }
       x.globalAlpha = 1;
     }
