@@ -209,6 +209,7 @@
 </head>
 <body>
 <div class="grad" aria-hidden="true"><i class="b1"></i><i class="b2"></i><i class="b3"></i><i class="b4"></i><i class="b5"></i><b class="shade"></b><b class="grain"></b></div>
+<canvas id="bg" aria-hidden="true"></canvas>
 <main>
 <div class="zone top">
 <div class="sheet">
@@ -415,6 +416,131 @@
       tx = e.clientX / innerWidth * 2 - 1; ty = e.clientY / innerHeight * 2 - 1;
       if (!raf) raf = requestAnimationFrame(step);
     }, { passive: true });
+  })();
+</script>
+<script>
+  /* ——— Фон: облако точек на «дышащей» сфере, медленно вращается ———
+     Часть точек соединена с ближайшими соседями тонкими линиями — получается граф.
+     Все настройки собраны в D (десктоп) и MOB (поправки для телефона). */
+  (function () {
+    var c = document.getElementById('bg'), x = c.getContext('2d');
+    var still = matchMedia('(prefers-reduced-motion: reduce)').matches;
+    var W, H, PTS = [], EDGES, SX, SY, NR, raf = 0, clock = 0, last = null;
+    var D = {
+      size: .75,       /* радиус сферы в долях высоты экрана */
+      x: .84,          /* центр по горизонтали, в долях ширины */
+      y: .68,          /* центр по вертикали, в долях высоты */
+      speed: .31,      /* скорость вращения и «дыхания» */
+      count: 5100,     /* число точек */
+      dot: .9,         /* размер точки */
+      alpha: .54,      /* яркость */
+      breathe: 1.4,    /* насколько сильно сфера меняет форму */
+      accent: 10,      /* доля акцентных точек, % */
+      links: 0         /* связи между соседними точками выключены (доля точек со связью, %) */
+    };
+    var MOB = { size: .48, x: 1.05, y: .34, count: 2600 };
+    var P = {};
+    /* соседи точки на такой сфере стоят через эти шаги по номеру */
+    var OFF = [1, 2, 3, 5, 8, 13, 21, 34, 55, 89, 144];
+
+    function defaults() {
+      var k;
+      for (k in D) P[k] = D[k];
+      if (innerWidth < 720) for (k in MOB) P[k] = MOB[k];
+    }
+
+    function rnd(i, s) { var v = Math.sin(i * 12.9898 + s * 78.233) * 43758.5453; return v - Math.floor(v); }
+
+    function build() {
+      var n = Math.max(1, Math.round(P.count)), g = Math.PI * (3 - Math.sqrt(5)), i;
+      PTS = [];
+      for (i = 0; i < n; i++) {
+        var y = 1 - 2 * (i + .5) / n, r = Math.sqrt(1 - y * y), a = i * g;
+        PTS.push([Math.cos(a) * r, y, Math.sin(a) * r, (i * 7919 % 1000) < P.accent * 10]);
+      }
+      SX = new Float32Array(n); SY = new Float32Array(n); NR = new Float32Array(n);
+      /* связи: случайная часть точек соединяется с ближайшим соседом, некоторые — ещё и со вторым */
+      var list = [];
+      for (i = 0; i < n; i++) {
+        if (rnd(i, 1) * 100 >= P.links) continue;
+        var best = -1, bd = 9, second = -1, sd = 9, p = PTS[i];
+        for (var o = 0; o < OFF.length; o++) for (var sg = -1; sg <= 1; sg += 2) {
+          var j = i + sg * OFF[o];
+          if (j < 0 || j >= n) continue;
+          var q = PTS[j], dx = p[0] - q[0], dy = p[1] - q[1], dz = p[2] - q[2], dd = dx * dx + dy * dy + dz * dz;
+          if (dd < bd) { second = best; sd = bd; best = j; bd = dd; } else if (dd < sd) { second = j; sd = dd; }
+        }
+        if (best >= 0) list.push(i, best);
+        if (second >= 0 && rnd(i, 2) < .55) list.push(i, second);
+      }
+      EDGES = new Int32Array(list);
+    }
+
+    function setup() {
+      var d = Math.min(window.devicePixelRatio || 1, 2);
+      W = innerWidth; H = innerHeight;
+      c.width = W * d; c.height = H * d;
+      x.setTransform(d, 0, 0, d, 0, 0);
+      build();
+    }
+
+    function draw(ms) {
+      if (last === null) last = ms;
+      clock += Math.max(0, Math.min(.1, (ms - last) / 1000)) * P.speed; last = ms;
+      var t = clock, k = W < 720 ? .85 : 1, i;
+      var cx = W * P.x, cy = H * P.y, R = H * P.size, b = P.breathe;
+      var ry = t * .12, rx = .35 + Math.sin(t * .07) * .2;
+      var cY = Math.cos(ry), sY = Math.sin(ry), cX = Math.cos(rx), sX = Math.sin(rx);
+      /* положение каждой точки на экране */
+      for (i = 0; i < PTS.length; i++) {
+        var p = PTS[i];
+        var d = 1 + b * (.16 * Math.sin(3 * p[0] + t * .6) * Math.sin(3 * p[1] + t * .45) + .1 * Math.sin(4 * p[2] - t * .5 + 2 * p[0]));
+        var px = p[0] * d, py = p[1] * d, pz = p[2] * d;
+        var x1 = px * cY + pz * sY, z1 = pz * cY - px * sY;
+        var y1 = py * cX - z1 * sX, z2 = py * sX + z1 * cX;
+        var f = 3 / (3 + z2);
+        SX[i] = cx + x1 * R * f; SY[i] = cy + y1 * R * f; NR[i] = 1 - (z2 + 1.3) / 2.6;
+      }
+      x.clearRect(0, 0, W, H);
+      /* связи: три слоя по глубине, ближние ярче */
+      if (EDGES.length) {
+        x.strokeStyle = '#F3EEE8'; x.lineWidth = .7;
+        for (var band = 0; band < 3; band++) {
+          x.globalAlpha = Math.min(1, (.05 + .16 * band) * k * P.alpha);
+          x.beginPath();
+          for (i = 0; i < EDGES.length; i += 2) {
+            var a = EDGES[i], e = EDGES[i + 1], nr = (NR[a] + NR[e]) / 2;
+            if ((nr < .36 ? 0 : nr < .62 ? 1 : 2) !== band) continue;
+            x.moveTo(SX[a], SY[a]); x.lineTo(SX[e], SY[e]);
+          }
+          x.stroke();
+        }
+      }
+      /* точки */
+      for (var pass = 0; pass < 2; pass++) {
+        x.fillStyle = pass ? '#F4A982' : '#F3EEE8';
+        for (i = 0; i < PTS.length; i++) {
+          if (PTS[i][3] != !!pass) continue;
+          var near = NR[i], al = (.1 + .55 * near) * k * P.alpha * (pass ? 1.5 : 1);
+          if (al <= .004) continue;
+          x.globalAlpha = al > 1 ? 1 : al;
+          var s = (near > .55 ? 2.2 : 1.4) * P.dot;
+          x.fillRect(SX[i], SY[i], s, s);
+        }
+      }
+      x.globalAlpha = 1;
+    }
+
+    function frame(ms) { draw(ms); raf = requestAnimationFrame(frame); }
+    function start() { if (still) { clock = 20; draw(0); } else if (!raf) raf = requestAnimationFrame(frame); }
+    function stop() { cancelAnimationFrame(raf); raf = 0; last = null; }
+
+    defaults(); setup(); start();
+    addEventListener('resize', function () { setup(); if (still) draw(0); });
+    document.addEventListener('visibilitychange', function () { document.hidden ? stop() : start(); });
+
+    /* для страницы настройки: доступ к параметрам снаружи */
+    window.sphere = { P: P, reset: function () { defaults(); build(); }, build: build, redraw: function () { if (still) draw(0); } };
   })();
 </script>
 </body>
