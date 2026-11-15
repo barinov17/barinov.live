@@ -4,11 +4,12 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="theme-color" content="#22262E">
-<title>Aleks Barinov — lab: fonts</title>
-<meta name="description" content="Aleks Barinov — real estate professional and urban planner. Development concepts, masterplans and proptech.">
+<title>Aleksandr Barinov — lab: sphere</title>
+<meta name="robots" content="noindex">
+<meta name="description" content="Aleksandr Barinov — real estate professional and urban planner. Development concepts, masterplans and proptech.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&family=Space+Grotesk:wght@400;500&family=Geist:wght@400;500&family=Sofia+Sans:wght@400;500&family=Archivo:wght@400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500&display=swap" rel="stylesheet">
 <script>document.documentElement.classList.add('js')</script>
 <style>
   :root {
@@ -18,9 +19,9 @@
     --muted: #9198A6;
     --hair: #343944;
     --accent: #EF4F7B;
-    --sans: "JetBrains Mono", ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+    --sans: "Geist", system-ui, -apple-system, "Segoe UI", sans-serif;
     /* один шрифт, два начертания, четыре кегля: 13 / 15 / 17 / до 30 */
-    --small: 13px;
+    --small: 14px;
   }
   * { box-sizing: border-box; }
   html { -webkit-text-size-adjust: 100%; }
@@ -74,7 +75,8 @@
   .site { display: inline-block; margin-top: 10px; }
   .case h3, dialog h3 { color: var(--accent); font-size: 17px; line-height: 1.3; margin-bottom: 2px; }
   .more { display: inline-block; margin: 6px 0 0; padding: 0; border: 0; background: none; font-family: inherit; color: var(--muted); cursor: pointer; }
-  .more::after { content: " →"; }
+  .more::after { content: " ↓"; }
+  .more[aria-expanded="true"]::after { content: " ↑"; }
   .more:hover { color: #8FB3D1; }
   .content { padding: 10px 0 6px; color: var(--muted); font-size: var(--small); line-height: 1.5; }
   .js .content { display: none; }
@@ -105,8 +107,6 @@
   /* фон-анимация: холст под содержимым, зоны полупрозрачные */
   #bg { position: fixed; inset: 0; width: 100%; height: 100%; z-index: 0; pointer-events: none; }
   /* на широком экране линии под текстом слева приглушены */
-  @media (min-width: 721px) { #bg { -webkit-mask-image: linear-gradient(to right, rgba(0,0,0,.16), rgba(0,0,0,.26) 40%, #000 72%); mask-image: linear-gradient(to right, rgba(0,0,0,.16), rgba(0,0,0,.26) 40%, #000 72%); } }
-  @media (max-width: 720px) { #bg { opacity: .4; } }
   main { position: relative; z-index: 1; }
   .zone { background: transparent; }
 
@@ -118,33 +118,44 @@
     .sheet > p { padding-left: 0; }
   }
 
-  /* ——— lab: сравнение шрифтов ——— */
-  html[data-font="space"]   { --sans: "Space Grotesk", system-ui, sans-serif; }
-  html[data-font="geist"]   { --sans: "Geist", system-ui, sans-serif; }
-  html[data-font="sofia"]   { --sans: "Sofia Sans", system-ui, sans-serif; }
-  html[data-font="archivo"] { --sans: "Archivo", system-ui, sans-serif; }
-  /* пропорциональные шрифты уже моноширинного — им нужен кегль на ступень больше */
-  html[data-font]:not([data-font="mono"]) { --small: 14px; }
-  html[data-font]:not([data-font="mono"]) body { font-size: 16.5px; line-height: 1.5; }
-  html[data-font]:not([data-font="mono"]) .me h1 { font-size: clamp(25px, 3vw, 34px); letter-spacing: -0.015em; }
-  html[data-font]:not([data-font="mono"]) .me p { font-size: 19.5px; line-height: 1.42; }
-  html[data-font]:not([data-font="mono"]) .case h3, html[data-font]:not([data-font="mono"]) dialog h3 { font-size: 19.5px; }
-  html[data-font]:not([data-font="mono"]) h2 { letter-spacing: 0.06em; }
-  html[data-font="sofia"] body { font-size: 17.5px; }
-  html[data-font="sofia"] .me p, html[data-font="sofia"] .case h3 { font-size: 21px; }
-  .fonts { position: fixed; left: 0; right: 0; bottom: 0; z-index: 5; display: flex; flex-wrap: wrap; gap: 4px 6px; align-items: center; padding: 10px clamp(16px, 2.5vw, 28px); background: #171A20; border-top: 1px solid var(--hair); font: 400 12px/1.4 "JetBrains Mono", monospace; color: var(--muted); }
-  .fonts button { padding: 4px 9px; border: 1px solid var(--hair); background: none; font: inherit; color: var(--ink); cursor: pointer; }
-  .fonts button[aria-pressed="true"] { border-color: var(--accent); color: var(--accent); }
-  body { padding-bottom: 56px; }
+  /* гротеск вместо моноширинного: кегли на ступень крупнее */
+  body { font-size: 16.5px; line-height: 1.5; }
+  .me { max-width: 720px; }
+  .me h1 { font-size: 16.5px; line-height: 1.4; letter-spacing: 0; margin-bottom: 14px; }
+  .me p { font-size: clamp(23px, 2.5vw, 31px); line-height: 1.26; letter-spacing: -0.015em; }
+  .case h3, dialog h3 { font-size: 19.5px; }
+  h2 { letter-spacing: 0.06em; }
+  .d-text { font-size: 16px; }
+
+  .case .content { font-size: 15px; line-height: 1.55; max-width: 34em; }
+  .case .content a:hover { color: var(--accent); }
+
+  /* ——— lab: панель настройки ——— */
+  .panel { position: fixed; right: 16px; bottom: 16px; z-index: 5; width: 320px; max-width: calc(100vw - 32px); padding: 14px 16px 16px; background: rgba(23, 26, 32, .94); border: 1px solid var(--hair); font-size: 13px; line-height: 1.4; color: var(--ink); }
+  .panel-head, .panel-foot { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; }
+  .panel-head b { font-weight: 500; }
+  .panel button { padding: 0; border: 0; background: none; font: inherit; color: var(--muted); cursor: pointer; text-decoration: underline; text-underline-offset: 3px; }
+  .panel button:hover, .panel a:hover { color: var(--ink); }
+  .panel-head button + button { margin-left: 12px; }
+  .panel-body { margin: 12px 0 14px; }
+  .panel label { display: grid; grid-template-columns: 1fr 44px; align-items: baseline; column-gap: 8px; margin-top: 9px; }
+  .panel label span { color: var(--muted); }
+  .panel output { text-align: right; font-variant-numeric: tabular-nums; }
+  .panel input[type=range] { grid-column: 1 / -1; width: 100%; margin: 4px 0 0; accent-color: var(--accent); }
+  .panel a { color: var(--muted); }
+  .panel textarea { display: block; width: 100%; margin-top: 12px; padding: 8px; border: 1px solid var(--hair); background: transparent; color: var(--muted); font: 12px/1.4 ui-monospace, Consolas, monospace; resize: none; }
+  .panel.folded .panel-body, .panel.folded .panel-foot, .panel.folded textarea { display: none; }
+  @media (max-width: 720px) { .panel { right: 8px; bottom: 8px; left: 8px; width: auto; max-height: 60vh; overflow: auto; } }
 </style>
 </head>
 <body>
+<canvas id="bg" aria-hidden="true"></canvas>
 <main>
 <div class="zone top">
 <div class="sheet">
 
   <div class="me">
-    <h1>Aleks Barinov</h1>
+    <h1>Aleksandr Barinov</h1>
     <p>I specialize in <b>masterplanning</b>, <b>development concepts</b> and <b>technological solutions</b> for <em><span style="white-space:nowrap">large-scale</span> development projects</em>.</p>
   </div>
 
@@ -174,7 +185,7 @@
     <li class="case">
       <h3>Private island development</h3>
       <p>Masterplan for a $1B resort on a private island in the Caribbean.</p>
-      <button class="more" aria-haspopup="dialog">details</button>
+      <button class="more" aria-expanded="false">more</button>
       <div class="content">
         <p>My concept won a <a href="https://www.ribacompetitions.com/" target="_blank" rel="noopener">RIBA competition</a>, and I was invited to join the project as Lead Masterplan Architect. I was the third member of the team and helped shape the initial vision, the masterplan and the overall development concept.</p>
         <p>My scope covered the architectural and development concept of the island, strategic planning and cross-disciplinary coordination.</p>
@@ -184,7 +195,7 @@
     <li class="case">
       <h3>CERN lab building</h3>
       <p>Concept development for a laboratory complex on the CERN campus.</p>
-      <button class="more" aria-haspopup="dialog">details</button>
+      <button class="more" aria-expanded="false">more</button>
       <div class="content">
         <p>Our team helped shape the concept for a complex of administrative buildings and laboratories at CERN. We ran several strategy sessions with the architectural teams and laboratory representatives to define clear requirements for the architectural design.</p>
         <p>In collaboration with <a href="https://home.cern/" target="_blank" rel="noopener">CERN</a> and <a href="https://www.nickl-partner.com/en/" target="_blank" rel="noopener">Nickl &amp; Partner</a></p>
@@ -194,7 +205,7 @@
     <li class="case">
       <h3>Easyinn</h3>
       <p>Platform for automated property management.</p>
-      <button class="more" aria-haspopup="dialog">details</button>
+      <button class="more" aria-expanded="false">more</button>
       <div class="content">
         <p>Easyinn started as an internal tool for running our own network of hotels with 280 units in total. It included a keyless access system and a guest app with a marketplace of local services.</p>
         <p>It was later spun off as a standalone product and launched in several countries.</p>
@@ -204,7 +215,7 @@
     <li class="case">
       <h3>Habithai</h3>
       <p>Gated community development on Koh Samui, Thailand.</p>
-      <button class="more" aria-haspopup="dialog">details</button>
+      <button class="more" aria-expanded="false">more</button>
       <div class="content">
         <p>Masterplan and product concept for a gated community of 11 premium villas on Koh Samui, Thailand — plus fundraising, marketing and sales.</p>
       </div>
@@ -213,7 +224,7 @@
     <li class="case">
       <h3>Foresight Moscow-2050</h3>
       <p>The largest foresight study for the Moscow masterplan.</p>
-      <button class="more" aria-haspopup="dialog">details</button>
+      <button class="more" aria-expanded="false">more</button>
       <div class="content">
         <p>I was part of the team that developed the methodology, strategy and overall structure of the study for the Moscow masterplan — a joint effort of three universities and research institutions and more than 2,000 experts from business, government and academia.</p>
         <p>The project shaped the long-term development strategy of the Moscow masterplan and made several landmark projects possible, including:</p>
@@ -229,7 +240,7 @@
     <li class="case">
       <h3>Nikolskiy market</h3>
       <p>Redevelopment of a cluster of historic buildings in Saint Petersburg.</p>
-      <button class="more" aria-haspopup="dialog">details</button>
+      <button class="more" aria-expanded="false">more</button>
       <div class="content">
         <p>The goal was to increase the value of a restored 40,000 m² historic building fivefold within five years.</p>
         <p>The overall development strategy was to create an attractive public space, fill it with hospitality operators, and acquire and redevelop the neighboring buildings in the block.</p>
@@ -241,7 +252,7 @@
     <li class="case">
       <h3>Aircraft manufacturing facility</h3>
       <p>Development and optimization of the masterplan for a high-tech manufacturing center.</p>
-      <button class="more" aria-haspopup="dialog">details</button>
+      <button class="more" aria-expanded="false">more</button>
       <div class="content">
         <p>The facility builds civil aircraft as well as fourth- and fifth-generation fighter jets.</p>
         <p>Our task was to expand and partially redesign the site to make room for new production facilities.</p>
@@ -267,38 +278,14 @@
 
   </section>
 
-  <p class="muted">©2026 Aleks Barinov</p>
+  <p class="muted">©2026 Aleksandr Barinov</p>
 
 </div>
 </div>
 </main>
 
-<dialog id="details" aria-labelledby="d-title">
-  <img class="d-img" id="d-img" alt="" hidden>
-  <div class="d-ph" id="d-ph">Image</div>
-  <div class="d-in">
-    <div class="d-head">
-      <h3 id="d-title"></h3>
-      <button class="d-close" id="d-close">close ×</button>
-    </div>
-    <p id="d-sub"></p>
-    <dl class="d-meta" id="d-meta"></dl>
-    <div class="content open d-text" id="d-text"></div>
-  </div>
-</dialog>
 
 <script>
-  /* ——— Параметры окна Details по названию проекта. Пустое поле не показывается; без image стоит заглушка. ——— */
-  var META = {
-    "Private island development":      { location: "Caribbean",                year: "", role: "Lead Masterplan Architect", image: "" },
-    "CERN lab building":               { location: "Geneva, Switzerland",      year: "", role: "", image: "" },
-    "Easyinn":                         { location: "",                         year: "", role: "", image: "" },
-    "Habithai":                        { location: "Koh Samui, Thailand",      year: "", role: "", image: "" },
-    "Foresight Moscow-2050":           { location: "Moscow, Russia",           year: "", role: "", image: "" },
-    "Nikolskiy market":                { location: "Saint Petersburg, Russia", year: "", role: "", image: "" },
-    "Aircraft manufacturing facility": { location: "",                         year: "", role: "", image: "" }
-  };
-
   /* ——— Вставь адреса, когда будут. Пустая строка = без ссылки. ——— */
   var LINKS = {
     x:        "https://x.com/BarinovLive",
@@ -316,40 +303,14 @@
     li.replaceChildren(a);
   });
 
-  var dlg = document.getElementById('details');
-  var byId = function (id) { return document.getElementById(id); };
-
+  /* описание проекта раскрывается под ним */
   document.querySelectorAll('.more').forEach(function (btn) {
     btn.addEventListener('click', function () {
-      var c = btn.closest('.case');
-      var title = c.querySelector('h3').textContent;
-      var m = META[title] || {};
-      byId('d-title').textContent = title;
-      byId('d-sub').textContent = c.querySelector('h3 + p').textContent;
-
-      var img = byId('d-img');
-      if (m.image) { img.src = m.image; img.hidden = false; }
-      else { img.hidden = true; img.removeAttribute('src'); }
-      byId('d-ph').hidden = !img.hidden;
-
-      var meta = byId('d-meta');
-      meta.innerHTML = '';
-      [['Location', 'location'], ['Year', 'year'], ['Role', 'role']].forEach(function (f) {
-        if (!m[f[1]]) return;
-        var dt = document.createElement('dt'); dt.textContent = f[0];
-        var dd = document.createElement('dd'); dd.textContent = m[f[1]];
-        meta.append(dt, dd);
-      });
-      meta.hidden = !meta.children.length;
-
-      byId('d-text').innerHTML = c.querySelector('.content').innerHTML;
-      dlg.showModal();
-      dlg.scrollTop = 0;
+      var open = btn.closest('.case').querySelector('.content').classList.toggle('open');
+      btn.setAttribute('aria-expanded', open);
+      btn.textContent = open ? 'less' : 'more';
     });
   });
-
-  byId('d-close').addEventListener('click', function () { dlg.close(); });
-  dlg.addEventListener('click', function (e) { if (e.target === dlg) dlg.close(); });
 
   if (LINKS.calendly) {
     var box = document.getElementById('calendly');
@@ -363,25 +324,158 @@
     document.getElementById('calendly').remove();
   }
 </script>
-<div class="fonts" role="group" aria-label="Font"><span>font:</span>
-  <button data-f="mono">JetBrains Mono (now)</button>
-  <button data-f="space">Space Grotesk</button>
-  <button data-f="geist">Geist</button>
-  <button data-f="sofia">Sofia Sans</button>
-  <button data-f="archivo">Archivo</button>
-  <a href="/" style="margin-left:auto">main</a>
+<script>
+  /* ——— Фон: облако точек на «дышащей» сфере, медленно вращается ———
+     Все настройки собраны в D (десктоп) и MOB (поправки для телефона). */
+  (function () {
+    var c = document.getElementById('bg'), x = c.getContext('2d');
+    var still = matchMedia('(prefers-reduced-motion: reduce)').matches;
+    var W, H, PTS = [], raf = 0, clock = 0, last = null;
+    var D = {
+      size: .7,        /* радиус сферы в долях высоты экрана */
+      x: .86,          /* центр по горизонтали, в долях ширины */
+      y: .56,          /* центр по вертикали, в долях высоты */
+      speed: .55,      /* скорость вращения и «дыхания» */
+      count: 5200,     /* число точек */
+      dot: 1,          /* размер точки */
+      alpha: .5,       /* яркость */
+      breathe: 1,      /* насколько сильно сфера меняет форму */
+      accent: 5        /* доля акцентных точек, % */
+    };
+    var MOB = { size: .48, x: 1.05, y: .34, count: 2600 };
+    var P = {};
+
+    function defaults() {
+      var k;
+      for (k in D) P[k] = D[k];
+      if (innerWidth < 720) for (k in MOB) P[k] = MOB[k];
+    }
+
+    function build() {
+      var n = Math.max(1, Math.round(P.count)), g = Math.PI * (3 - Math.sqrt(5));
+      PTS = [];
+      for (var i = 0; i < n; i++) {
+        var y = 1 - 2 * (i + .5) / n, r = Math.sqrt(1 - y * y), a = i * g;
+        PTS.push([Math.cos(a) * r, y, Math.sin(a) * r, (i * 7919 % 1000) < P.accent * 10]);
+      }
+    }
+
+    function setup() {
+      var d = Math.min(window.devicePixelRatio || 1, 2);
+      W = innerWidth; H = innerHeight;
+      c.width = W * d; c.height = H * d;
+      x.setTransform(d, 0, 0, d, 0, 0);
+      build();
+    }
+
+    function draw(ms) {
+      if (last === null) last = ms;
+      clock += Math.max(0, Math.min(.1, (ms - last) / 1000)) * P.speed; last = ms;
+      var t = clock, k = W < 720 ? .85 : 1;
+      var cx = W * P.x, cy = H * P.y, R = H * P.size, b = P.breathe;
+      var ry = t * .12, rx = .35 + Math.sin(t * .07) * .2;
+      var cY = Math.cos(ry), sY = Math.sin(ry), cX = Math.cos(rx), sX = Math.sin(rx);
+      x.clearRect(0, 0, W, H);
+      for (var pass = 0; pass < 2; pass++) {
+        x.fillStyle = pass ? '#EF4F7B' : '#E9EAEE';
+        for (var i = 0; i < PTS.length; i++) {
+          var p = PTS[i];
+          if (p[3] != !!pass) continue;
+          var d = 1 + b * (.16 * Math.sin(3 * p[0] + t * .6) * Math.sin(3 * p[1] + t * .45) + .1 * Math.sin(4 * p[2] - t * .5 + 2 * p[0]));
+          var px = p[0] * d, py = p[1] * d, pz = p[2] * d;
+          var x1 = px * cY + pz * sY, z1 = pz * cY - px * sY;
+          var y1 = py * cX - z1 * sX, z2 = py * sX + z1 * cX;
+          var f = 3 / (3 + z2), near = 1 - (z2 + 1.3) / 2.6;
+          var a = (.1 + .55 * near) * k * P.alpha * (pass ? 1.5 : 1);
+          if (a <= .004) continue;
+          x.globalAlpha = a > 1 ? 1 : a;
+          var s = (near > .55 ? 2.2 : 1.4) * P.dot;
+          x.fillRect(cx + x1 * R * f, cy + y1 * R * f, s, s);
+        }
+      }
+      x.globalAlpha = 1;
+    }
+
+    function frame(ms) { draw(ms); raf = requestAnimationFrame(frame); }
+    function start() { if (still) { clock = 20; draw(0); } else if (!raf) raf = requestAnimationFrame(frame); }
+    function stop() { cancelAnimationFrame(raf); raf = 0; last = null; }
+
+    defaults(); setup(); start();
+    addEventListener('resize', function () { setup(); if (still) draw(0); });
+    document.addEventListener('visibilitychange', function () { document.hidden ? stop() : start(); });
+
+    /* для страницы настройки: доступ к параметрам снаружи */
+    window.sphere = { P: P, reset: function () { defaults(); build(); }, build: build, redraw: function () { if (still) draw(0); } };
+  })();
+</script>
+<div class="panel" id="panel">
+  <div class="panel-head">
+    <b>Сфера</b>
+    <span>
+      <button id="p-reset" type="button">сброс</button>
+      <button id="p-fold" type="button">свернуть</button>
+    </span>
+  </div>
+  <div class="panel-body" id="p-body"></div>
+  <div class="panel-foot">
+    <button id="p-copy" type="button">скопировать значения</button>
+    <a href="/">main</a>
+  </div>
+  <textarea id="p-out" readonly rows="2" aria-label="Текущие значения"></textarea>
 </div>
 <script>
+  /* ——— lab: бегунки параметров сферы. Значения запоминаются в браузере. ——— */
   (function () {
-    var root = document.documentElement, btns = document.querySelectorAll(".fonts button");
-    function set(f) {
-      root.dataset.font = f;
-      btns.forEach(function (b) { b.setAttribute("aria-pressed", b.dataset.f === f); });
-      try { localStorage.setItem("lab-font", f); } catch (e) {}
+    var S = window.sphere, P = S.P;
+    var CTRL = [
+      ['size',    'Размер',            .15, 1.8,   .01],
+      ['x',       'Позиция по X',     -.3,  1.3,   .01],
+      ['y',       'Позиция по Y',     -.3,  1.3,   .01],
+      ['speed',   'Скорость',          0,   2.5,   .01],
+      ['count',   'Число точек',       300, 14000, 100],
+      ['dot',     'Размер точки',      .3,  3.5,   .05],
+      ['alpha',   'Яркость',           0,   1.6,   .01],
+      ['breathe', '«Дыхание» формы',   0,   3,     .05],
+      ['accent',  'Малиновых точек, %', 0,  40,    1]
+    ];
+    var body = document.getElementById('p-body'), out = document.getElementById('p-out'), rows = {};
+
+    function fmt(v, step) { return step >= 1 ? String(Math.round(v)) : (+v).toFixed(2); }
+    function show() {
+      var o = {}, parts = [];
+      CTRL.forEach(function (c) { rows[c[0]].input.value = P[c[0]]; rows[c[0]].val.textContent = fmt(P[c[0]], c[4]); o[c[0]] = +fmt(P[c[0]], c[4]); parts.push(c[0] + ': ' + fmt(P[c[0]], c[4])); });
+      out.value = parts.join(', ');
+      try { localStorage.setItem('lab-sphere', JSON.stringify(o)); } catch (e) {}
     }
-    btns.forEach(function (b) { b.addEventListener("click", function () { set(b.dataset.f); }); });
-    var saved = null; try { saved = localStorage.getItem("lab-font"); } catch (e) {}
-    set(saved || "space");
+
+    CTRL.forEach(function (c) {
+      var label = document.createElement('label'), name = document.createElement('span'), input = document.createElement('input'), val = document.createElement('output');
+      name.textContent = c[1];
+      input.type = 'range'; input.min = c[2]; input.max = c[3]; input.step = c[4];
+      input.addEventListener('input', function () {
+        P[c[0]] = +input.value;
+        if (c[0] === 'count' || c[0] === 'accent') S.build();
+        S.redraw(); show();
+      });
+      label.append(name, input, val); body.append(label);
+      rows[c[0]] = { input: input, val: val };
+    });
+
+    var saved = null; try { saved = JSON.parse(localStorage.getItem('lab-sphere')); } catch (e) {}
+    if (saved) { for (var k in saved) if (k in P && isFinite(saved[k])) P[k] = +saved[k]; S.build(); }
+    show();
+
+    document.getElementById('p-reset').addEventListener('click', function () { S.reset(); S.redraw(); show(); });
+    document.getElementById('p-fold').addEventListener('click', function () {
+      var f = document.getElementById('panel').classList.toggle('folded');
+      this.textContent = f ? 'развернуть' : 'свернуть';
+    });
+    document.getElementById('p-copy').addEventListener('click', function () {
+      var b = this;
+      out.select();
+      (navigator.clipboard ? navigator.clipboard.writeText(out.value) : Promise.reject()).then(function () { b.textContent = 'скопировано'; }, function () { try { document.execCommand('copy'); b.textContent = 'скопировано'; } catch (e) { b.textContent = 'выдели и скопируй текст ниже'; } });
+      setTimeout(function () { b.textContent = 'скопировать значения'; }, 1800);
+    });
   })();
 </script>
 </body>
