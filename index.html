@@ -74,7 +74,8 @@
   .site { display: inline-block; margin-top: 10px; }
   .case h3, dialog h3 { color: var(--accent); font-size: 17px; line-height: 1.3; margin-bottom: 2px; }
   .more { display: inline-block; margin: 6px 0 0; padding: 0; border: 0; background: none; font-family: inherit; color: var(--muted); cursor: pointer; }
-  .more::after { content: " ↗"; }
+  .more::after { content: " ↓"; }
+  .more[aria-expanded="true"]::after { content: " ↑"; }
   .more:hover { color: #8FB3D1; }
   .content { padding: 10px 0 6px; color: var(--muted); font-size: var(--small); line-height: 1.5; }
   .js .content { display: none; }
@@ -125,20 +126,8 @@
   h2 { letter-spacing: 0.06em; }
   .d-text { font-size: 16px; }
 
-  /* ——— окно Details: тот же строй, что на главной — мелкая подпись, крупная фраза, ровный текст ——— */
-  dialog { width: min(720px, calc(100vw - 32px)); background: #F3F2EE; }
-  .d-ph { background: #E4E2DC; text-transform: none; letter-spacing: 0; }
-  .d-in { padding: 30px 36px 44px; }
-  .d-head { align-items: flex-start; }
-  dialog h3 { color: var(--ink); font-size: clamp(24px, 2.6vw, 30px); line-height: 1.15; letter-spacing: -0.02em; font-weight: 500; margin: 0; }
-  .d-close { font-size: 14px; line-height: 2; }
-  #d-sub { margin-top: 10px; max-width: 30em; font-size: 19.5px; line-height: 1.4; letter-spacing: -0.01em; color: var(--muted); }
-  .d-meta { grid-template-columns: 120px minmax(0, 1fr); gap: 0; margin-top: 30px; border-top: 1px solid var(--hair); }
-  .d-meta dt, .d-meta dd { padding: 10px 0; border-bottom: 1px solid var(--hair); }
-  .d-meta dt { font-size: 14px; line-height: 1.75; text-transform: none; letter-spacing: 0; align-self: stretch; }
-  .d-text { padding-top: 30px; max-width: 34em; font-size: 16.5px; line-height: 1.55; }
-  .d-text a:hover { color: var(--accent); }
-  @media (max-width: 720px) { .d-in { padding: 22px 20px 30px; } }
+  .case .content { font-size: 15px; line-height: 1.55; max-width: 34em; }
+  .case .content a:hover { color: var(--accent); }
 </style>
 </head>
 <body>
@@ -178,7 +167,7 @@
     <li class="case">
       <h3>Private island development</h3>
       <p>Masterplan for a $1B resort on a private island in the Caribbean.</p>
-      <button class="more" aria-haspopup="dialog">details</button>
+      <button class="more" aria-expanded="false">more</button>
       <div class="content">
         <p>My concept won a <a href="https://www.ribacompetitions.com/" target="_blank" rel="noopener">RIBA competition</a>, and I was invited to join the project as Lead Masterplan Architect. I was the third member of the team and helped shape the initial vision, the masterplan and the overall development concept.</p>
         <p>My scope covered the architectural and development concept of the island, strategic planning and cross-disciplinary coordination.</p>
@@ -188,7 +177,7 @@
     <li class="case">
       <h3>CERN lab building</h3>
       <p>Concept development for a laboratory complex on the CERN campus.</p>
-      <button class="more" aria-haspopup="dialog">details</button>
+      <button class="more" aria-expanded="false">more</button>
       <div class="content">
         <p>Our team helped shape the concept for a complex of administrative buildings and laboratories at CERN. We ran several strategy sessions with the architectural teams and laboratory representatives to define clear requirements for the architectural design.</p>
         <p>In collaboration with <a href="https://home.cern/" target="_blank" rel="noopener">CERN</a> and <a href="https://www.nickl-partner.com/en/" target="_blank" rel="noopener">Nickl &amp; Partner</a></p>
@@ -198,7 +187,7 @@
     <li class="case">
       <h3>Easyinn</h3>
       <p>Platform for automated property management.</p>
-      <button class="more" aria-haspopup="dialog">details</button>
+      <button class="more" aria-expanded="false">more</button>
       <div class="content">
         <p>Easyinn started as an internal tool for running our own network of hotels with 280 units in total. It included a keyless access system and a guest app with a marketplace of local services.</p>
         <p>It was later spun off as a standalone product and launched in several countries.</p>
@@ -208,7 +197,7 @@
     <li class="case">
       <h3>Habithai</h3>
       <p>Gated community development on Koh Samui, Thailand.</p>
-      <button class="more" aria-haspopup="dialog">details</button>
+      <button class="more" aria-expanded="false">more</button>
       <div class="content">
         <p>Masterplan and product concept for a gated community of 11 premium villas on Koh Samui, Thailand — plus fundraising, marketing and sales.</p>
       </div>
@@ -217,7 +206,7 @@
     <li class="case">
       <h3>Foresight Moscow-2050</h3>
       <p>The largest foresight study for the Moscow masterplan.</p>
-      <button class="more" aria-haspopup="dialog">details</button>
+      <button class="more" aria-expanded="false">more</button>
       <div class="content">
         <p>I was part of the team that developed the methodology, strategy and overall structure of the study for the Moscow masterplan — a joint effort of three universities and research institutions and more than 2,000 experts from business, government and academia.</p>
         <p>The project shaped the long-term development strategy of the Moscow masterplan and made several landmark projects possible, including:</p>
@@ -233,7 +222,7 @@
     <li class="case">
       <h3>Nikolskiy market</h3>
       <p>Redevelopment of a cluster of historic buildings in Saint Petersburg.</p>
-      <button class="more" aria-haspopup="dialog">details</button>
+      <button class="more" aria-expanded="false">more</button>
       <div class="content">
         <p>The goal was to increase the value of a restored 40,000 m² historic building fivefold within five years.</p>
         <p>The overall development strategy was to create an attractive public space, fill it with hospitality operators, and acquire and redevelop the neighboring buildings in the block.</p>
@@ -245,7 +234,7 @@
     <li class="case">
       <h3>Aircraft manufacturing facility</h3>
       <p>Development and optimization of the masterplan for a high-tech manufacturing center.</p>
-      <button class="more" aria-haspopup="dialog">details</button>
+      <button class="more" aria-expanded="false">more</button>
       <div class="content">
         <p>The facility builds civil aircraft as well as fourth- and fifth-generation fighter jets.</p>
         <p>Our task was to expand and partially redesign the site to make room for new production facilities.</p>
@@ -277,32 +266,8 @@
 </div>
 </main>
 
-<dialog id="details" aria-labelledby="d-title">
-  <img class="d-img" id="d-img" alt="" hidden>
-  <div class="d-ph" id="d-ph">Image</div>
-  <div class="d-in">
-    <div class="d-head">
-      <h3 id="d-title"></h3>
-      <button class="d-close" id="d-close">Close</button>
-    </div>
-    <p id="d-sub"></p>
-    <dl class="d-meta" id="d-meta"></dl>
-    <div class="content open d-text" id="d-text"></div>
-  </div>
-</dialog>
 
 <script>
-  /* ——— Параметры окна Details по названию проекта. Пустое поле не показывается; без image стоит заглушка. ——— */
-  var META = {
-    "Private island development":      { location: "Caribbean",                year: "", role: "Lead Masterplan Architect", image: "" },
-    "CERN lab building":               { location: "Geneva, Switzerland",      year: "", role: "", image: "" },
-    "Easyinn":                         { location: "",                         year: "", role: "", image: "" },
-    "Habithai":                        { location: "Koh Samui, Thailand",      year: "", role: "", image: "" },
-    "Foresight Moscow-2050":           { location: "Moscow, Russia",           year: "", role: "", image: "" },
-    "Nikolskiy market":                { location: "Saint Petersburg, Russia", year: "", role: "", image: "" },
-    "Aircraft manufacturing facility": { location: "",                         year: "", role: "", image: "" }
-  };
-
   /* ——— Вставь адреса, когда будут. Пустая строка = без ссылки. ——— */
   var LINKS = {
     x:        "https://x.com/BarinovLive",
@@ -320,40 +285,14 @@
     li.replaceChildren(a);
   });
 
-  var dlg = document.getElementById('details');
-  var byId = function (id) { return document.getElementById(id); };
-
+  /* описание проекта раскрывается под ним */
   document.querySelectorAll('.more').forEach(function (btn) {
     btn.addEventListener('click', function () {
-      var c = btn.closest('.case');
-      var title = c.querySelector('h3').textContent;
-      var m = META[title] || {};
-      byId('d-title').textContent = title;
-      byId('d-sub').textContent = c.querySelector('h3 + p').textContent;
-
-      var img = byId('d-img');
-      if (m.image) { img.src = m.image; img.hidden = false; }
-      else { img.hidden = true; img.removeAttribute('src'); }
-      byId('d-ph').hidden = !img.hidden;
-
-      var meta = byId('d-meta');
-      meta.innerHTML = '';
-      [['Location', 'location'], ['Year', 'year'], ['Role', 'role']].forEach(function (f) {
-        if (!m[f[1]]) return;
-        var dt = document.createElement('dt'); dt.textContent = f[0];
-        var dd = document.createElement('dd'); dd.textContent = m[f[1]];
-        meta.append(dt, dd);
-      });
-      meta.hidden = !meta.children.length;
-
-      byId('d-text').innerHTML = c.querySelector('.content').innerHTML;
-      dlg.showModal();
-      dlg.scrollTop = 0;
+      var open = btn.closest('.case').querySelector('.content').classList.toggle('open');
+      btn.setAttribute('aria-expanded', open);
+      btn.textContent = open ? 'less' : 'more';
     });
   });
-
-  byId('d-close').addEventListener('click', function () { dlg.close(); });
-  dlg.addEventListener('click', function (e) { if (e.target === dlg) dlg.close(); });
 
   if (LINKS.calendly) {
     var box = document.getElementById('calendly');
