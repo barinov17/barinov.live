@@ -346,27 +346,40 @@
   }
 </script>
 <script>
-  /* ——— Фон: полёт вперёд над ландшафтом из точек ———
-     Рельеф — фрактальный шум (естественные холмы, без повторов). Поверхность собрана из точек,
-     стоящих на местности в шахматном порядке; дальние за холмами скрыты. Камера смотрит сверху вниз. */
+  /* ——— Фон: полёт над рельефом, нарисованным топографическими линиями ———
+     Рельеф — фрактальный шум. Рисуются его горизонтали (линии равной высоты), лежащие на самой
+     поверхности, в перспективе: камера смотрит сверху вниз и движется вперёд, горизонт за кадром. */
   (function () {
     var c = document.getElementById('bg'), x = c.getContext('2d');
     var still = matchMedia('(prefers-reduced-motion: reduce)').matches;
-    var W, H, f, NS, STEP, YM, raf = 0, tick = 0;
-    var NZ = 124, DZ = .25, PX = .3;          /* число рядов, шаг между рядами, шаг точек в ряду */
-    var CAM = 5.5, NEAR = 1.2, SPEED = 1.3;    /* высота камеры, ближняя граница, скорость (ед./с) */
+    var W, H, f, NX, NZ, N1, F, I0, I1, BUF, CNT = [0, 0, 0], raf = 0, tick = 0, lastBase = null;
+    var G = .27;                               /* шаг расчётной сетки рельефа */
+    var D = .15;                               /* шаг горизонталей по высоте */
+    var CAM = 5.5, NEAR = 1.2, DEPTH = 31, SPEED = 1.3;   /* высота камеры, ближняя граница, глубина, скорость */
     var PITCH = 42 * Math.PI / 180, CT = Math.cos(PITCH), ST = Math.sin(PITCH);   /* наклон камеры вниз */
-    var FAR = NEAR + NZ * DZ;
+    var FAR = NEAR + DEPTH;
+    /* пары рёбер ячейки для каждого из 16 случаев: 0 ближнее, 1 правое, 2 дальнее, 3 левое */
+    var SEG = [[], [3, 0], [0, 1], [3, 1], [1, 2], [3, 0, 1, 2], [0, 2], [3, 2], [2, 3], [0, 2], [0, 1, 2, 3], [1, 2], [1, 3], [0, 1], [3, 0], []];
 
     function setup() {
-      var d = Math.min(window.devicePixelRatio || 1, 2);
+      var d = Math.min(window.devicePixelRatio || 1, 1.5);
       W = innerWidth; H = innerHeight;
       c.width = W * d; c.height = H * d;
       x.setTransform(d, 0, 0, d, 0, 0);
+      x.lineJoin = x.lineCap = 'round';
       f = H * .9;
-      STEP = 8;                                /* шаг проверки заслонения по экрану, px */
-      NS = Math.ceil(W / STEP) + 1;
-      YM = new Float32Array(NS);
+      NZ = Math.ceil(DEPTH / G);
+      var halfFar = (W / 2) * (FAR * CT + CAM * ST) / f * 1.1 + 1;
+      NX = 2 * Math.ceil(halfFar / G); N1 = NX + 1;
+      F = new Float32Array(N1 * (NZ + 2));
+      I0 = new Int32Array(NZ + 2); I1 = new Int32Array(NZ + 2);
+      BUF = [new Float32Array(NX * 64), new Float32Array(NX * 64), new Float32Array(NX * 64)];
+      /* ширина ряда, попадающая в кадр (с запасом на сдвиг внутри шага) */
+      for (var j = 0; j <= NZ + 1; j++) {
+        var half = (W / 2) * ((NEAR + (j + 2) * G) * CT + CAM * ST) / f * 1.08 + 2 * G;
+        I0[j] = Math.max(0, Math.floor(NX / 2 - half / G)); I1[j] = Math.min(NX, Math.ceil(NX / 2 + half / G));
+      }
+      lastBase = null;
     }
 
     /* шум: значение в узлах решётки по хешу, между узлами — гладкая интерполяция */
@@ -381,45 +394,65 @@
       var a = hash(iu, iv), b = hash(iu + 1, iv), cc = hash(iu, iv + 1), dd = hash(iu + 1, iv + 1);
       return a + (b - a) * fu + (cc - a) * fv + (a - b - cc + dd) * fu * fv;
     }
-    /* три октавы: крупные пологие формы + мелкая складка */
+    /* крупные пологие формы + средняя складка; мелкой ряби нет, чтобы горизонтали были плавными */
     function height(u, v) {
-      return 3.6 * (noise(u * .085, v * .085) - .5)
-           + 1.2 * (noise(u * .21 + 40, v * .21 + 17) - .5)
-           + .35 * (noise(u * .55 + 9, v * .55 + 71) - .5);
+      return 4.2 * (noise(u * .085, v * .085) - .5) + 1.3 * (noise(u * .2 + 40, v * .2 + 17) - .5);
     }
-    /* экранная высота точки рельефа на глубине zc */
-    function sy(h, zc) { var d = CAM - h; return H / 2 + (d * CT - zc * ST) * f / (zc * CT + d * ST); }
 
     function draw(ms) {
-      var travel = ms / 1000 * SPEED, base = Math.floor(travel / DZ), frac = travel - base * DZ;
-      var m = W < 720, j, s, i, zc, a, inv, wz, y;
+      var travel = ms / 1000 * SPEED, base = Math.floor(travel / G), frac = travel - base * G;
+      var m = W < 720, i, j, k, e, zc, a, hx = NX / 2;
+      /* высоты рельефа считаются один раз на ряд: при движении ряды сдвигаются, досчитываются только новые */
+      var from = 0;
+      if (lastBase !== null && base > lastBase && base - lastBase <= NZ) { F.copyWithin(0, (base - lastBase) * N1); from = NZ + 2 - (base - lastBase); }
+      else if (lastBase === base) from = NZ + 2;
+      for (j = from; j <= NZ + 1; j++) {
+        var wz = (base + j) * G, o = j * N1;
+        for (i = I0[j]; i <= I1[j]; i++) F[o + i] = height((i - hx) * G, wz);
+      }
+      lastBase = base;
       x.clearRect(0, 0, W, H);
-      for (s = 0; s < NS; s++) YM[s] = H + 2;
-      /* от ближних рядов к дальним: YM хранит, что уже закрыто более близким рельефом */
       for (j = 0; j <= NZ; j++) {
-        zc = NEAR + j * DZ - frac;
-        if (zc < .45) continue;
-        var z0 = zc * CT + CAM * ST, row = base + j;
-        a = Math.pow(1 - zc / FAR, 1.4) * (m ? .85 : 1);
-        inv = f / z0; wz = row * DZ;
-        /* силуэт ряда — только для заслонения, сам не рисуется */
-        for (s = 0; s < NS; s++) {
-          y = sy(height((s * STEP - W / 2) / inv, wz), zc);
-          if (y < YM[s]) YM[s] = y;
+        zc = NEAR + j * G - frac;
+        if (zc < .3) continue;
+        a = Math.pow(Math.max(0, 1 - zc / FAR), 1.4) * (m ? .85 : 1);
+        if (a < .015) continue;
+        CNT[0] = CNT[1] = CNT[2] = 0;
+        var p0 = j * N1, p1 = p0 + N1;
+        for (i = I0[j]; i < I1[j]; i++) {
+          var h0 = F[p0 + i], h1 = F[p0 + i + 1], h2 = F[p1 + i + 1], h3 = F[p1 + i];
+          var mn = Math.min(h0, h1, h2, h3), mx = Math.max(h0, h1, h2, h3);
+          if (mx - mn < 1e-6) continue;
+          for (k = Math.ceil(mn / D); k <= Math.floor(mx / D); k++) {
+            var l = k * D;
+            var s = SEG[(h0 > l ? 1 : 0) | (h1 > l ? 2 : 0) | (h2 > l ? 4 : 0) | (h3 > l ? 8 : 0)];
+            if (!s.length) continue;
+            /* класс линии: обычная, утолщённая (каждая четвёртая), акцентная (одна высота) */
+            var cls = k === 5 ? 2 : (k & 3) === 0 ? 1 : 0, B = BUF[cls], n = CNT[cls];
+            var dh = CAM - l;
+            for (e = 0; e < s.length; e++) {
+              var ed = s[e], px, pz;
+              if (ed === 0) { px = i + (l - h0) / (h1 - h0); pz = j; }
+              else if (ed === 1) { px = i + 1; pz = j + (l - h1) / (h2 - h1); }
+              else if (ed === 2) { px = i + (l - h3) / (h2 - h3); pz = j + 1; }
+              else { px = i; pz = j + (l - h0) / (h3 - h0); }
+              var z = NEAR + pz * G - frac, zz = z * CT + dh * ST;
+              B[n++] = W / 2 + (px - hx) * G * f / zz;
+              B[n++] = H / 2 + (dh * CT - z * ST) * f / zz;
+            }
+            CNT[cls] = n;
+          }
         }
-        if (a < .02) continue;
-        /* точки ряда; чётные и нечётные ряды сдвинуты на полшага */
-        var half = (W / 2) / inv, off = (row & 1) * .5;
-        var i0 = Math.floor(-half / PX) - 1, i1 = Math.ceil(half / PX) + 1;
-        var sz = Math.max(1, Math.min(2.6, 11 / z0)), acc = row % 20 === 0;
-        x.fillStyle = acc ? '#F0507F' : '#E6E8EE';
-        x.globalAlpha = Math.min(1, a * (acc ? 1.25 : .78));
-        for (i = i0; i <= i1; i++) {
-          var wx = (i + off) * PX, dx = W / 2 + wx * inv, si = Math.round(dx / STEP);
-          if (si < 0 || si >= NS) continue;
-          y = sy(height(wx, wz), zc);
-          if (y > YM[si] + 2) continue;
-          x.fillRect(dx - sz / 2, y - sz / 2, sz, sz);
+        for (var cls2 = 0; cls2 < 3; cls2++) {
+          var cnt = CNT[cls2];
+          if (!cnt) continue;
+          var Q = BUF[cls2];
+          x.strokeStyle = cls2 === 2 ? '#F0507F' : '#E6E8EE';
+          x.globalAlpha = a * (cls2 === 2 ? .85 : cls2 === 1 ? .55 : .3);
+          x.lineWidth = cls2 === 0 ? .8 : 1.1;
+          x.beginPath();
+          for (k = 0; k < cnt; k += 4) { x.moveTo(Q[k], Q[k + 1]); x.lineTo(Q[k + 2], Q[k + 3]); }
+          x.stroke();
         }
       }
       x.globalAlpha = 1;
