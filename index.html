@@ -457,15 +457,15 @@
       x.globalAlpha = intro; x.drawImage(cache, 0, 0);
       x.setTransform(DPR, 0, 0, DPR, 0, 0);
 
-      if (!still && t >= next) { spawn(t); next = t + .45 + R() * .7; }
+      if (!still) { if (next < t - 6) next = t - 6; while (t >= next) { spawn(next); next += .45 + R() * .7; } }
       if (still && !glows.length) for (i = 0; i < 6; i++) { spawn(-2); }
       for (i = glows.length - 1; i >= 0; i--) {
         var gl = glows[i], q = still ? .5 : (t - gl.t) / gl.dur;
         if (q >= 1) { glows.splice(i, 1); continue; }
-        var e = Math.sin(Math.PI * q); e = e * e * k * intro;
+        var e = Math.pow(Math.sin(Math.PI * q), 1.2) * k * intro;
         var l = gl.l;
         x.fillStyle = x.strokeStyle = gl.acc ? ACC : INK;
-        x.globalAlpha = (gl.acc ? .22 : .13) * e; x.fillRect(l.x + 1, l.y + 1, l.s - 1, l.s - 1);
+        x.globalAlpha = (gl.acc ? .28 : .19) * e; x.fillRect(l.x + 1, l.y + 1, l.s - 1, l.s - 1);
         x.globalAlpha = (gl.acc ? .8 : .55) * e; x.lineWidth = 1; x.strokeRect(Math.round(l.x) + .5, Math.round(l.y) + .5, l.s, l.s);
       }
 
