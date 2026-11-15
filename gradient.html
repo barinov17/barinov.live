@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="theme-color" content="#22262E">
+<meta name="theme-color" content="#131218">
 <title>Aleksandr Barinov — lab: gradient</title>
 <meta name="robots" content="noindex">
 <meta name="description" content="Aleksandr Barinov — real estate professional and urban planner. Development concepts, masterplans and proptech.">
@@ -156,6 +156,15 @@
     .grad .shade { background: linear-gradient(to bottom, rgba(19,18,24,.45), rgba(19,18,24,.3) 50%, rgba(19,18,24,.1)); }
   }
   @media (prefers-reduced-motion: reduce) { .grad i { animation: none; } }
+
+  /* ——— Цвета страницы под градиент ———
+     Тёплый почти-чёрный с лиловым подтоном, тёплый белый, серо-лиловый для второстепенного.
+     Акцент — персиковый из верхнего пятна; при наведении — бирюзовый из среднего. */
+  :root { --paper: #131218; --ink: #F3EEE8; --muted: #A69DA8; --hair: #322D3A; --accent: #F4A982; }
+  a:hover { color: #7CC6DC; }
+  .more:hover { color: #7CC6DC; }
+  .case .content a:hover { color: #7CC6DC; }
+  ::selection { background: #F4A982; color: #131218; }
 </style>
 </head>
 <body>
