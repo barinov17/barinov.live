@@ -353,9 +353,9 @@
     var c = document.getElementById('bg'), x = c.getContext('2d');
     var still = matchMedia('(prefers-reduced-motion: reduce)').matches;
     var W, H, f, NS, STEP, YM, raf = 0, tick = 0;
-    var NZ = 158, DZ = .25, PX = .3;          /* число рядов, шаг между рядами, шаг точек в ряду */
-    var CAM = 4.6, NEAR = 2.6, SPEED = 1.3;    /* высота камеры, ближняя граница, скорость (ед./с) */
-    var PITCH = 24 * Math.PI / 180, CT = Math.cos(PITCH), ST = Math.sin(PITCH);   /* наклон камеры вниз */
+    var NZ = 124, DZ = .25, PX = .3;          /* число рядов, шаг между рядами, шаг точек в ряду */
+    var CAM = 5.5, NEAR = 1.2, SPEED = 1.3;    /* высота камеры, ближняя граница, скорость (ед./с) */
+    var PITCH = 42 * Math.PI / 180, CT = Math.cos(PITCH), ST = Math.sin(PITCH);   /* наклон камеры вниз */
     var FAR = NEAR + NZ * DZ;
 
     function setup() {
