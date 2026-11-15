@@ -480,7 +480,7 @@
     var c = document.getElementById('bg'), x = c.getContext('2d');
     var still = matchMedia('(prefers-reduced-motion: reduce)').matches;
     var W, H, PTS = [], EDGES, SX, SY, NR, raf = 0, clock = 0, last = null;
-    var TX, TY, TZ, TD, ARM = null, morph = 0, goal = 0;   /* робо-рука: места точек в 3D, текущая и желаемая степень сборки */
+    var TX, TY, TZ, TD, ARM = null, morph = 0, goal = 0;   /* руки в кольце: места точек в 3D, текущая и желаемая степень сборки */
     var D = {
       size: .91,       /* радиус сферы в долях высоты экрана */
       x: .84,          /* центр по горизонтали, в долях ширины */
@@ -532,9 +532,10 @@
       targets();
     }
 
-    /* ——— Робо-рука: объёмная модель из цилиндров и шаров ———
-       Колонна-основание, плечевой шарнир, плечо, запястье и три пальца. Точки раскладываются
-       по поверхностям пропорционально их площади; у пальцев и поясков точек больше, чтобы они читались. */
+    /* ——— Две руки в кольце: человеческая тянется снизу слева, роботизированная — сверху справа ———
+       Объёмная модель из цилиндров и шаров плюс кольцо-тор. Каждая рука строится в своих осях
+       (x — вдоль пальцев, y — тыльная сторона, z — поперёк ладони) и ставится так, чтобы кончик
+       указательного пальца оказался в заданной точке. У руки робота звенья разделены зазорами и поясками. */
     function arm() {
       if (ARM) return ARM;
       var L = [], tot = 0;
@@ -544,33 +545,54 @@
         L.push({ a: a, b: b, r: r, len: len, capf: caps / (side + caps), w: w }); tot += w;
       }
       function S(c, r, m) { var w = 12.566 * r * r * (m || 1); L.push({ c: c, r: r, w: w }); tot += w; }
+      function T(R, r, m) { var w = 39.478 * R * r * (m || 1); L.push({ R: R, r: r, w: w }); tot += w; }
+      function mix(p, q, t) { return [p[0] + (q[0] - p[0]) * t, p[1] + (q[1] - p[1]) * t, p[2] + (q[2] - p[2]) * t]; }
 
-      /* основание: колонна с двумя поясками */
-      C([0, -1.9, 0], [0, -.62, 0], .23);
-      C([0, -1.22, 0], [0, -1.2, 0], .235, false, 26); C([0, -1.12, 0], [0, -1.1, 0], .235, false, 26);
-      /* изогнутое нижнее звено к плечу */
-      S([0, -.62, 0], .23, .5);
-      C([0, -.62, 0], [.16, -.12, .05], .21);
-      S([.16, -.12, .05], .21, .5);
-      C([.16, -.12, .05], [.14, .22, .2], .2);
-      /* плечевой шарнир: горизонтальный цилиндр с крышками */
-      C([.14, .24, -.46], [.14, .24, .34], .26, true);
-      C([.14, .24, -.1], [.14, .24, -.09], .265, false, 22);
-      /* плечо: толстое звено вверх и в сторону */
-      S([.02, .42, -.24], .21, .6);
-      C([.02, .42, -.24], [.46, 1.02, -.24], .21);
-      S([.46, 1.02, -.24], .21, .6);
-      C([.3, .8, -.24], [.307, .81, -.24], .215, false, 22);
-      /* запястье и ладонь */
-      C([.46, 1.02, -.24], [.62, 1.24, -.24], .13, true, 1.4);
-      S([.66, 1.3, -.24], .12, 1.4);
-      /* три пальца вокруг оси запястья, слегка согнуты внутрь */
-      var d = [.588, .809, 0], us = [[-.809, .588, 0], [.4045, -.294, .866], [.4045, -.294, -.866]];
-      function add(p, k, v) { return [p[0] + v[0] * k, p[1] + v[1] * k, p[2] + v[2] * k]; }
-      for (var q = 0; q < 3; q++) {
-        var u = us[q], p0 = add([.66, 1.3, -.24], .09, u), p1 = add(add(p0, .2, d), .17, u), p2 = add(add(p1, .22, d), .0, u), p3 = add(add(p2, .12, d), -.11, u);
-        C(p0, p1, .04, false, 5); S(p1, .05, 5); C(p1, p2, .036, false, 5); S(p2, .045, 5); C(p2, p3, .032, false, 5); S(p3, .034, 5);
+      /* кольцо и лёгкий ореол вокруг него */
+      T(1.15, .02, 3.4); T(1.15, .07, .28);
+
+      function hand(tip, fw, nrm, roll, robot) {
+        var zx = fw[1] * nrm[2] - fw[2] * nrm[1], zy = fw[2] * nrm[0] - fw[0] * nrm[2], zz = fw[0] * nrm[1] - fw[1] * nrm[0];
+        var cr = Math.cos(roll), sr = Math.sin(roll);
+        var n = [nrm[0] * cr + zx * sr, nrm[1] * cr + zy * sr, nrm[2] * cr + zz * sr];
+        var z = [fw[1] * n[2] - fw[2] * n[1], fw[2] * n[0] - fw[0] * n[2], fw[0] * n[1] - fw[1] * n[0]];
+        var Q = [], O = [0, 0, 0], itip = null, hs = 1.35;   /* hs — во сколько раз рука крупнее базовой */
+        function W(p) { var a = p[0] * hs, b = p[1] * hs, c = p[2] * hs; return [O[0] + fw[0] * a + n[0] * b + z[0] * c, O[1] + fw[1] * a + n[1] * b + z[1] * c, O[2] + fw[2] * a + n[2] * b + z[2] * c]; }
+        function seg(p, q, r, m) {
+          if (robot) { Q.push(['c', mix(p, q, .1), mix(p, q, .9), r * .92, m]); Q.push(['c', mix(p, q, .97), mix(p, q, 1.03), r * 1.3, m * 9]); }
+          else { Q.push(['c', p, q, r, m]); Q.push(['s', q, r, m * .6]); }
+        }
+        function finger(base, len, r, curl, yaw, m) {
+          var p = base, th = 0, parts = [.46, .3, .24];
+          for (var i = 0; i < 3; i++) {
+            th += curl[i];
+            var q = [p[0] + Math.cos(th) * len * parts[i], p[1] - Math.sin(th) * len * parts[i], p[2] + yaw * len * parts[i]];
+            seg(p, q, r * (1 - i * .13), m); p = q;
+          }
+          return p;
+        }
+        /* предплечье и запястье */
+        seg([-.58, 0, 0], [-.06, .0, 0], robot ? .15 : .17, 1);
+        if (robot) { Q.push(['c', [-.42, 0, 0], [-.4, 0, 0], .2, 14]); Q.push(['c', [-.24, 0, 0], [-.22, 0, 0], .2, 14]); }
+        Q.push(['s', [-.04, 0, 0], robot ? .13 : .16, .8]);
+        /* пясть: четыре кости от запястья к костяшкам */
+        var zk = [-.2, -.068, .068, .2], len = [.5, .56, .52, .4];
+        var curl = robot ? [[.1, .14, .1], [.2, .25, .2], [.24, .28, .2], [.3, .3, .22]] : [[.04, .1, .1], [.3, .36, .26], [.4, .42, .3], [.46, .42, .3]];
+        for (var k = 0; k < 4; k++) {
+          var kn = [.42, 0, zk[k]];
+          seg([.0, 0, zk[k] * .55], kn, robot ? .048 : .078, 1.5);
+          var e = finger(kn, len[k], .056, curl[k], (k - 1.5) * .05, 2.4);
+          if (k === 0) itip = e;
+        }
+        /* большой палец */
+        var tb = [.1, -.04, -.2], td = [.62, -.3, -.72], t1 = [tb[0] + td[0] * .22, tb[1] + td[1] * .22, tb[2] + td[2] * .22], t2 = [t1[0] + .19 * .8, t1[1] - .19 * .25, t1[2] - .19 * .5], t3 = [t2[0] + .13 * .92, t2[1] - .13 * .2, t2[2] - .13 * .3];
+        seg([.0, 0, -.1], tb, robot ? .05 : .08, 1.5); seg(tb, t1, .062, 2.4); seg(t1, t2, .056, 2.4); seg(t2, t3, .05, 2.4);
+        /* сдвигаем руку так, чтобы кончик указательного пальца попал в нужную точку */
+        var wt = W(itip); O = [tip[0] - wt[0], tip[1] - wt[1], tip[2] - wt[2]];
+        for (var j = 0; j < Q.length; j++) { var it = Q[j]; if (it[0] === 'c') C(W(it[1]), W(it[2]), it[3] * hs, false, it[4]); else S(W(it[1]), it[2] * hs, it[3]); }
       }
+      hand([-.07, -.06, 0], [.848, .53, 0], [-.53, .848, 0], .85, false);
+      hand([.07, .07, 0], [-.62, -.785, 0], [.785, -.62, 0], -.9, true);
       return (ARM = { L: L, tot: tot });
     }
 
@@ -581,7 +603,10 @@
         var pick = rnd(i, 3) * A.tot, o = 0, P0 = A.L[0];
         for (; o < A.L.length; o++) { P0 = A.L[o]; pick -= P0.w; if (pick <= 0) break; }
         var u1 = rnd(i, 5), u2 = rnd(i, 6), u3 = rnd(i, 8), ph = 6.2832 * u2;
-        if (P0.c) {
+        if (P0.R) {
+          var tu = 6.2832 * u1, tr = P0.R + P0.r * Math.cos(ph);
+          TX[i] = tr * Math.cos(tu); TY[i] = tr * Math.sin(tu); TZ[i] = P0.r * Math.sin(ph);
+        } else if (P0.c) {
           var zz = 1 - 2 * u1, rr = Math.sqrt(1 - zz * zz);
           TX[i] = P0.c[0] + P0.r * rr * Math.cos(ph); TY[i] = P0.c[1] + P0.r * zz; TZ[i] = P0.c[2] + P0.r * rr * Math.sin(ph);
         } else {
@@ -626,10 +651,10 @@
         var f = 3 / (3 + z2);
         SX[i] = cx + x1 * R * f; SY[i] = cy + y1 * R * f; NR[i] = 1 - (z2 + 1.3) / 2.6;
       }
-      /* робо-рука: точки переезжают со сферы на модель, каждая со своей задержкой; модель медленно вращается */
+      /* руки в кольце: точки переезжают со сферы на модель, каждая со своей задержкой; модель медленно вращается */
       if (morph > 0) {
-        var ang = ms / 1000 * .38 + .6, ca = Math.cos(ang), sa = Math.sin(ang), ct = Math.cos(.14), st = Math.sin(.14);
-        var sc = Math.min(H * .29, W * .2), ox = W * .7, oy = H * .63;
+        var ang = ms / 1000 * .2 - .45, ca = Math.cos(ang), sa = Math.sin(ang), ct = Math.cos(.1), st = Math.sin(.1);
+        var sc = Math.min(H * .27, W * .18), ox = W * .74, oy = H * .5;
         for (i = 0; i < PTS.length; i++) {
           var e = morph * 1.6 - TD[i] * .6;
           if (e <= 0) continue;
@@ -637,7 +662,7 @@
           e = e * e * (3 - 2 * e);
           var ax = TX[i] * ca + TZ[i] * sa, az = TZ[i] * ca - TX[i] * sa, ay = -TY[i];
           var ay2 = ay * ct - az * st, az2 = ay * st + az * ct, pf = 3.6 / (3.6 + az2);
-          var tn = .55 - az2 * .75; if (tn < .04) tn = .04; else if (tn > 1) tn = 1;
+          var tn = .56 - az2 * .42; if (tn < .04) tn = .04; else if (tn > 1) tn = 1;
           SX[i] += (ox + ax * sc * pf - SX[i]) * e; SY[i] += (oy + ay2 * sc * pf - SY[i]) * e; NR[i] += (tn - NR[i]) * e;
         }
       }
@@ -683,7 +708,7 @@
     window.sphere = { P: P, reset: function () { defaults(); build(); }, build: build, redraw: function () { if (still) draw(0); },
       morph: function (v) { goal = v ? 1 : 0; if (still) draw(0); } };
 
-    /* наведение на RubiqOS собирает точки в робо-руку; на узких экранах эффект выключен */
+    /* наведение на RubiqOS собирает точки в две руки в кольце; на узких экранах эффект выключен */
     var rq = document.querySelector('.case.main');
     if (rq) {
       rq.addEventListener('pointerenter', function (ev) { if (ev.pointerType !== 'touch' && innerWidth >= 900) window.sphere.morph(1); });
