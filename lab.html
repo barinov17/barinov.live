@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="theme-color" content="#272C37">
-<title>Aleks Barinov — motion</title>
+<title>Aleks Barinov — lab: terrain flight</title>
 <meta name="description" content="Aleks Barinov — real estate professional and urban planner. Development concepts, masterplans and proptech.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -73,10 +73,9 @@
   .case.main .content { padding-bottom: 0; }
   /* текущий проект: шире остального и на чуть более светлой подложке */
   .site { display: inline-block; margin-top: 10px; }
-  .case h3 { color: var(--accent); font-size: 17px; line-height: 1.3; margin-bottom: 2px; }
+  .case h3, dialog h3 { color: var(--accent); font-size: 17px; line-height: 1.3; margin-bottom: 2px; }
   .more { display: inline-block; margin: 6px 0 0; padding: 0; border: 0; background: none; font-family: inherit; color: var(--muted); cursor: pointer; }
-  .more::after { content: " ↓"; }
-  .more[aria-expanded="true"]::after { content: " ↑"; }
+  .more::after { content: " →"; }
   .more:hover { color: #8FB3D1; }
   .content { padding: 10px 0 6px; color: var(--muted); font-size: var(--small); line-height: 1.5; }
   .js .content { display: none; }
@@ -86,6 +85,22 @@
   .content li + li { margin-top: .35em; }
   .content li::before { content: "–"; position: absolute; left: 0; }
 
+  /* окно Details: светлое; картинка, название, параметры, текст */
+  [hidden] { display: none !important; }
+  dialog { width: min(600px, calc(100vw - 32px)); max-height: calc(100vh - 48px); padding: 0; border: 0; --ink: #16171A; --muted: #6E6D68; --hair: #D6D4CD; --accent: #D81E5B; background: #F1F0EC; color: var(--ink); overflow: auto; }
+  dialog::backdrop { background: rgba(8, 10, 15, 0.74); }
+  .d-img { display: block; width: 100%; aspect-ratio: 16 / 9; object-fit: cover; }
+  .d-ph { display: grid; place-items: center; aspect-ratio: 16 / 9; background: repeating-linear-gradient(135deg, #E4E2DC 0 14px, #DCDAD3 14px 28px); font-size: var(--small); color: var(--muted); text-transform: uppercase; letter-spacing: 0.08em; }
+  .d-in { padding: 22px 28px 28px; }
+  .d-head { display: flex; justify-content: space-between; align-items: baseline; gap: 24px; }
+  .d-close { flex: none; padding: 0; border: 0; background: none; font-family: inherit; font-size: var(--small); color: var(--muted); cursor: pointer; }
+  .d-close:hover { color: var(--ink); }
+  .d-meta { display: grid; grid-template-columns: 88px minmax(0, 1fr); gap: 4px 28px; margin: 20px 0 0; }
+  .d-meta dt { font-size: var(--small); color: var(--muted); text-transform: uppercase; letter-spacing: 0.08em; align-self: baseline; }
+  .d-meta dd { margin: 0; }
+  .d-text { padding: 20px 0 0; color: var(--ink); font-size: 15px; line-height: 1.55; }
+  @media (max-width: 720px) { .d-in { padding: 18px 18px 22px; } }
+
   .cal .calendly-inline-widget { min-width: 280px; height: 680px; border: 1px solid var(--hair); margin-top: 12px; }
 
   /* фон-анимация: холст под содержимым, зоны полупрозрачные */
@@ -94,7 +109,6 @@
   @media (min-width: 721px) { #bg { -webkit-mask-image: linear-gradient(to right, rgba(0,0,0,.4), #000 62%); mask-image: linear-gradient(to right, rgba(0,0,0,.4), #000 62%); } }
   main { position: relative; z-index: 1; }
   .zone { background: transparent; }
-  .zone.past { background: rgba(49, 55, 68, .8); }
 
   @media (max-width: 720px) {
     .sheet { row-gap: 40px; }
@@ -109,7 +123,7 @@
 <canvas id="bg" aria-hidden="true"></canvas>
 <main>
 <div class="zone top">
-<a class="alt" href="/">static</a>
+<a class="alt" href="/">main</a>
 <div class="sheet">
 
   <div class="me">
@@ -143,7 +157,7 @@
     <li class="case">
       <h3>Private island development</h3>
       <p>Masterplan for a $1B resort on a private island in the Caribbean.</p>
-      <button class="more" aria-expanded="false">more</button>
+      <button class="more" aria-haspopup="dialog">details</button>
       <div class="content">
         <p>My concept won a <a href="https://www.ribacompetitions.com/" target="_blank" rel="noopener">RIBA competition</a>, and I was invited to join the project as Lead Masterplan Architect. I was the third member of the team and helped shape the initial vision, the masterplan and the overall development concept.</p>
         <p>My scope covered the architectural and development concept of the island, strategic planning and cross-disciplinary coordination.</p>
@@ -153,7 +167,7 @@
     <li class="case">
       <h3>CERN lab building</h3>
       <p>Concept development for a laboratory complex on the CERN campus.</p>
-      <button class="more" aria-expanded="false">more</button>
+      <button class="more" aria-haspopup="dialog">details</button>
       <div class="content">
         <p>Our team helped shape the concept for a complex of administrative buildings and laboratories at CERN. We ran several strategy sessions with the architectural teams and laboratory representatives to define clear requirements for the architectural design.</p>
         <p>In collaboration with <a href="https://home.cern/" target="_blank" rel="noopener">CERN</a> and <a href="https://www.nickl-partner.com/en/" target="_blank" rel="noopener">Nickl &amp; Partner</a></p>
@@ -163,7 +177,7 @@
     <li class="case">
       <h3>Easyinn</h3>
       <p>Platform for automated property management.</p>
-      <button class="more" aria-expanded="false">more</button>
+      <button class="more" aria-haspopup="dialog">details</button>
       <div class="content">
         <p>Easyinn started as an internal tool for running our own network of hotels with 280 units in total. It included a keyless access system and a guest app with a marketplace of local services.</p>
         <p>It was later spun off as a standalone product and launched in several countries.</p>
@@ -173,7 +187,7 @@
     <li class="case">
       <h3>Habithai</h3>
       <p>Gated community development on Koh Samui, Thailand.</p>
-      <button class="more" aria-expanded="false">more</button>
+      <button class="more" aria-haspopup="dialog">details</button>
       <div class="content">
         <p>Masterplan and product concept for a gated community of 11 premium villas on Koh Samui, Thailand — plus fundraising, marketing and sales.</p>
       </div>
@@ -182,7 +196,7 @@
     <li class="case">
       <h3>Foresight Moscow-2050</h3>
       <p>The largest foresight study for the Moscow masterplan.</p>
-      <button class="more" aria-expanded="false">more</button>
+      <button class="more" aria-haspopup="dialog">details</button>
       <div class="content">
         <p>I was part of the team that developed the methodology, strategy and overall structure of the study for the Moscow masterplan — a joint effort of three universities and research institutions and more than 2,000 experts from business, government and academia.</p>
         <p>The project shaped the long-term development strategy of the Moscow masterplan and made several landmark projects possible, including:</p>
@@ -198,7 +212,7 @@
     <li class="case">
       <h3>Nikolskiy market</h3>
       <p>Redevelopment of a cluster of historic buildings in Saint Petersburg.</p>
-      <button class="more" aria-expanded="false">more</button>
+      <button class="more" aria-haspopup="dialog">details</button>
       <div class="content">
         <p>The goal was to increase the value of a restored 40,000 m² historic building fivefold within five years.</p>
         <p>The overall development strategy was to create an attractive public space, fill it with hospitality operators, and acquire and redevelop the neighboring buildings in the block.</p>
@@ -210,7 +224,7 @@
     <li class="case">
       <h3>Aircraft manufacturing facility</h3>
       <p>Development and optimization of the masterplan for a high-tech manufacturing center.</p>
-      <button class="more" aria-expanded="false">more</button>
+      <button class="more" aria-haspopup="dialog">details</button>
       <div class="content">
         <p>The facility builds civil aircraft as well as fourth- and fifth-generation fighter jets.</p>
         <p>Our task was to expand and partially redesign the site to make room for new production facilities.</p>
@@ -242,7 +256,32 @@
 </div>
 </main>
 
+<dialog id="details" aria-labelledby="d-title">
+  <img class="d-img" id="d-img" alt="" hidden>
+  <div class="d-ph" id="d-ph">Image</div>
+  <div class="d-in">
+    <div class="d-head">
+      <h3 id="d-title"></h3>
+      <button class="d-close" id="d-close">close ×</button>
+    </div>
+    <p id="d-sub"></p>
+    <dl class="d-meta" id="d-meta"></dl>
+    <div class="content open d-text" id="d-text"></div>
+  </div>
+</dialog>
+
 <script>
+  /* ——— Параметры окна Details по названию проекта. Пустое поле не показывается; без image стоит заглушка. ——— */
+  var META = {
+    "Private island development":      { location: "Caribbean",                year: "", role: "Lead Masterplan Architect", image: "" },
+    "CERN lab building":               { location: "Geneva, Switzerland",      year: "", role: "", image: "" },
+    "Easyinn":                         { location: "",                         year: "", role: "", image: "" },
+    "Habithai":                        { location: "Koh Samui, Thailand",      year: "", role: "", image: "" },
+    "Foresight Moscow-2050":           { location: "Moscow, Russia",           year: "", role: "", image: "" },
+    "Nikolskiy market":                { location: "Saint Petersburg, Russia", year: "", role: "", image: "" },
+    "Aircraft manufacturing facility": { location: "",                         year: "", role: "", image: "" }
+  };
+
   /* ——— Вставь адреса, когда будут. Пустая строка = без ссылки. ——— */
   var LINKS = {
     x:        "https://x.com/BarinovLive",
@@ -260,13 +299,40 @@
     li.replaceChildren(a);
   });
 
+  var dlg = document.getElementById('details');
+  var byId = function (id) { return document.getElementById(id); };
+
   document.querySelectorAll('.more').forEach(function (btn) {
     btn.addEventListener('click', function () {
-      var open = btn.closest('.case').querySelector('.content').classList.toggle('open');
-      btn.setAttribute('aria-expanded', open);
-      btn.textContent = open ? 'less' : 'more';
+      var c = btn.closest('.case');
+      var title = c.querySelector('h3').textContent;
+      var m = META[title] || {};
+      byId('d-title').textContent = title;
+      byId('d-sub').textContent = c.querySelector('h3 + p').textContent;
+
+      var img = byId('d-img');
+      if (m.image) { img.src = m.image; img.hidden = false; }
+      else { img.hidden = true; img.removeAttribute('src'); }
+      byId('d-ph').hidden = !img.hidden;
+
+      var meta = byId('d-meta');
+      meta.innerHTML = '';
+      [['Location', 'location'], ['Year', 'year'], ['Role', 'role']].forEach(function (f) {
+        if (!m[f[1]]) return;
+        var dt = document.createElement('dt'); dt.textContent = f[0];
+        var dd = document.createElement('dd'); dd.textContent = m[f[1]];
+        meta.append(dt, dd);
+      });
+      meta.hidden = !meta.children.length;
+
+      byId('d-text').innerHTML = c.querySelector('.content').innerHTML;
+      dlg.showModal();
+      dlg.scrollTop = 0;
     });
   });
+
+  byId('d-close').addEventListener('click', function () { dlg.close(); });
+  dlg.addEventListener('click', function (e) { if (e.target === dlg) dlg.close(); });
 
   if (LINKS.calendly) {
     var box = document.getElementById('calendly');
@@ -281,67 +347,81 @@
   }
 </script>
 <script>
-  /* ——— Фон: «живая» топографическая карта — изолинии медленно меняющегося рельефа ——— */
+  /* ——— Фон: полёт вперёд над ландшафтом-сеткой (меш в перспективе) ——— */
   (function () {
     var c = document.getElementById('bg'), x = c.getContext('2d');
     var still = matchMedia('(prefers-reduced-motion: reduce)').matches;
-    var W, H, cols, rows, cell, F, raf = 0, tick = 0;
-    /* пары рёбер ячейки для каждого из 16 случаев: 0 верх, 1 право, 2 низ, 3 лево */
-    var SEG = [[], [3, 0], [0, 1], [3, 1], [1, 2], [3, 0, 1, 2], [0, 2], [3, 2], [2, 3], [0, 2], [0, 1, 2, 3], [1, 2], [1, 3], [0, 1], [3, 0], []];
-    /* три класса линий: обычные, утолщённые (каждая четвёртая), акцентная */
-    var LV = [[], [], []];
-    for (var k = 0; k < 24; k++) LV[k === 13 ? 2 : k % 4 === 1 ? 1 : 0].push(-2.3 + k * .2);
+    var W, H, f, hor, raf = 0, tick = 0;
+    var NX = 104, NZ = 72, DX = .55, DZ = .5;    /* сетка: столбцы, ряды, шаг */
+    var CAM = 2.7, NEAR = .7, SPEED = 1.5;      /* высота камеры, ближняя граница, скорость (ед./с) */
+    var FAR = NEAR + NZ * DZ;
+    var SX = new Float32Array(NX * (NZ + 1)), SY = new Float32Array(NX * (NZ + 1));
 
     function setup() {
       var d = Math.min(window.devicePixelRatio || 1, 2);
       W = innerWidth; H = innerHeight;
       c.width = W * d; c.height = H * d;
       x.setTransform(d, 0, 0, d, 0, 0);
-      cell = W < 720 ? 12 : 14;
-      cols = Math.ceil(W / cell); rows = Math.ceil(H / cell);
-      F = new Float32Array((cols + 1) * (rows + 1));
+      f = H * .95;            /* фокусное расстояние */
+      hor = H * .40;          /* линия горизонта */
     }
 
-    function height(u, v, t) {
-      return Math.sin(u * 1.1 + t * .10 + 1.3 * Math.sin(v * .7 - t * .07))
-           + Math.sin(v * 1.3 - t * .08 + 1.1 * Math.sin(u * .9 + t * .05))
-           + .5 * Math.sin((u + v) * 1.7 + t * .12)
-           + .5 * Math.sin((u - v) * 2.1 - t * .09 + Math.sin(u * .5));
+    /* рельеф в мировых координатах: при движении форма не «плывёт», мы действительно летим над ней */
+    function height(u, v) {
+      return 1.15 * Math.sin(u * .33 + 1.3 * Math.sin(v * .19)) * Math.cos(v * .25 + u * .11)
+           + .55 * Math.sin(u * .82 + v * .57)
+           + .30 * Math.sin(v * 1.21 - u * .43)
+           + .18 * Math.sin(u * 1.9 + v * 1.4);
     }
 
     function draw(ms) {
-      var t = ms / 1000, m = W < 720, sc = m ? 170 : 230, n = cols + 1, i, j;
-      for (j = 0; j <= rows; j++) for (i = 0; i <= cols; i++) F[j * n + i] = height(i * cell / sc, j * cell / sc, t);
-      x.clearRect(0, 0, W, H);
-      x.lineWidth = 1;
-      for (var cls = 0; cls < 3; cls++) {
-        var L = LV[cls];
-        x.strokeStyle = cls === 2 ? '#F0507F' : '#E6E8EE';
-        x.globalAlpha = (cls === 2 ? .5 : cls === 1 ? .28 : .12) * (m ? .8 : 1);
-        x.beginPath();
-        for (j = 0; j < rows; j++) for (i = 0; i < cols; i++) {
-          var p = j * n + i, a = F[p], b = F[p + 1], cc = F[p + n + 1], dd = F[p + n];
-          var mn = Math.min(a, b, cc, dd), mx = Math.max(a, b, cc, dd);
-          for (var q = 0; q < L.length; q++) {
-            var l = L[q];
-            if (l < mn || l > mx) continue;
-            var s = SEG[(a > l ? 1 : 0) | (b > l ? 2 : 0) | (cc > l ? 4 : 0) | (dd > l ? 8 : 0)];
-            for (var e = 0; e < s.length; e++) {
-              var ed = s[e], px, py;
-              if (ed === 0) { px = i + (l - a) / (b - a); py = j; }
-              else if (ed === 1) { px = i + 1; py = j + (l - b) / (cc - b); }
-              else if (ed === 2) { px = i + (l - dd) / (cc - dd); py = j + 1; }
-              else { px = i; py = j + (l - a) / (dd - a); }
-              if (e % 2) x.lineTo(px * cell, py * cell); else x.moveTo(px * cell, py * cell);
-            }
-          }
+      var travel = ms / 1000 * SPEED, base = Math.floor(travel / DZ), frac = travel - base * DZ;
+      var m = W < 720, i, j, k, zc, a;
+      /* проекция вершин */
+      for (j = 0; j <= NZ; j++) {
+        zc = NEAR + j * DZ - frac;
+        var vz = (base + j) * DZ, inv = f / Math.max(zc, .05);
+        for (i = 0; i < NX; i++) {
+          var wx = (i - (NX - 1) / 2) * DX;
+          k = j * NX + i;
+          SX[k] = W / 2 + wx * inv;
+          SY[k] = hor + (CAM - height(wx, vz)) * inv;
         }
+      }
+      x.clearRect(0, 0, W, H);
+      /* от дальних рядов к ближним; дальние растворяются, ближний ряд появляется плавно */
+      for (j = NZ; j >= 0; j--) {
+        zc = NEAR + j * DZ - frac;
+        if (zc < .25) continue;
+        a = Math.pow(1 - zc / FAR, 1.7) * Math.min(1, (zc - .25) / 1.2) * (m ? .75 : 1);
+        if (a < .01) continue;
+        var acc = (base + j) % 9 === 0;
+        /* поперечная линия ряда */
+        x.strokeStyle = acc ? '#F0507F' : '#E6E8EE';
+        x.globalAlpha = a * (acc ? .85 : .42);
+        x.lineWidth = acc ? 1.2 : 1;
+        x.beginPath();
+        x.moveTo(SX[j * NX], SY[j * NX]);
+        for (i = 1; i < NX; i++) x.lineTo(SX[j * NX + i], SY[j * NX + i]);
         x.stroke();
+        /* продольные рёбра к следующему ряду */
+        if (j < NZ) {
+          x.strokeStyle = '#E6E8EE';
+          x.globalAlpha = a * .16;
+          x.lineWidth = 1;
+          x.beginPath();
+          for (i = 0; i < NX; i++) { x.moveTo(SX[j * NX + i], SY[j * NX + i]); x.lineTo(SX[(j + 1) * NX + i], SY[(j + 1) * NX + i]); }
+          x.stroke();
+        }
+        /* точки в узлах: реже, чем узлы; ближе — крупнее */
+        var r = Math.max(.8, Math.min(2.4, 5 / zc));
+        x.fillStyle = acc ? '#F0507F' : '#E6E8EE';
+        x.globalAlpha = Math.min(1, a * (acc ? 1.3 : .95));
+        for (i = (base + j) % 4; i < NX; i += 4) x.fillRect(SX[j * NX + i] - r / 2, SY[j * NX + i] - r / 2, r, r);
       }
       x.globalAlpha = 1;
     }
 
-    /* рельеф меняется медленно — хватает ~30 кадров в секунду */
     function frame(ms) { if (tick++ % 2 === 0) draw(ms); raf = requestAnimationFrame(frame); }
     function start() { if (still) draw(0); else if (!raf) raf = requestAnimationFrame(frame); }
     function stop() { cancelAnimationFrame(raf); raf = 0; }
