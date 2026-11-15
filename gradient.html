@@ -480,7 +480,7 @@
     var c = document.getElementById('bg'), x = c.getContext('2d');
     var still = matchMedia('(prefers-reduced-motion: reduce)').matches;
     var W, H, PTS = [], EDGES, SX, SY, NR, raf = 0, clock = 0, last = null;
-    var TX, TY, TZ, TD, TH, ARM = null, morph = 0, goal = 0;   /* парк роботов: места точек в 3D, текущая и желаемая степень сборки */
+    var TX, TY, TZ, TD, TH, ARM = {}, SC = {}, cur = 'robots', want = 'robots', morph = 0, goal = 0;   /* сцены из точек: места точек в 3D, какая сцена собрана и какая запрошена, степень сборки */
     var D = {
       size: .91,       /* радиус сферы в долях высоты экрана */
       x: .84,          /* центр по горизонтали, в долях ширины */
@@ -537,8 +537,8 @@
        самого зрителя — робот-доставщик с высоким флажком (корпус 0,55 м), над ним висит квадрокоптер.
        Тела — цилиндры, шары и коробки; каждая машина строится в своих осях (x — вперёд) и ставится
        на место с поворотом. Точки раскладываются по поверхностям, у коробок часть идёт на рёбра. */
-    function arm() {
-      if (ARM) return ARM;
+    function arm(kind) {
+      if (ARM[kind]) return ARM[kind];
       var L = [], tot = 0, g = 1, dx = 0, dy = 0, dz = 0, yc = 1, ys = 0;
       function put(x0, y0, z0, yaw, gain) { dx = x0; dy = y0; dz = z0; yc = Math.cos(yaw); ys = Math.sin(yaw); g = gain; }
       function at(p) { return [dx + p[0] * yc + p[2] * ys, dy + p[1], dz + p[2] * yc - p[0] * ys]; }
@@ -551,15 +551,40 @@
       function S(c, r, m) { var w = 12.566 * r * r * (m || 1) * g; L.push({ c: at(c), r: r, w: w }); tot += w; }
       function B(c, h, m) { var w = 8 * (h[0] * h[1] + h[1] * h[2] + h[0] * h[2]) * (m || 1) * g; L.push({ bc: at(c), h: h, yc: yc, ys: ys, w: w }); tot += w; }
       function E(c, h, m) { var w = 5.2 * (h[0] * h[1] + h[1] * h[2] + h[0] * h[2]) * (m || 1) * g; L.push({ ec: at(c), h: h, yc: yc, ys: ys, w: w }); tot += w; }
-      function R(c, rad, m) { var w = rad * .4 * (m || 1) * g; L.push({ rc: at(c), R: rad, w: w }); tot += w; }
+      function R(c, rad, m, kz, tb) { var w = rad * .4 * (m || 1) * g; L.push({ rc: at(c), R: rad, kz: kz || 1, tb: tb || .006, w: w }); tot += w; }
       var k, sx, sz;
+
+      /* ——— Коллайдер (для проекта CERN): три слоя, как на схемах ускорителя ———
+         Сверху — два пересекающихся кольца пучков, посередине — кольцо тоннеля с восемью точками
+         (четыре больших эксперимента с шахтами и четыре малых), малое кольцо предускорителя;
+         снизу — контур площадки. Слои связаны тонкими вертикалями в точках экспериментов. Масштаб условный. */
+      if (kind === 'cern') {
+        put(0, 0, 0, 0, 1);
+        R([0, 1.25, 0], 2.04, 7, .955); R([0, 1.25, 0], 1.95, 7, 1.045);
+        C([1.15, 1.25, -1.66], [2.7, 1.25, -.8], .004, false, 22); L[L.length - 1].ln = 1;
+        C([-.2, 1.25, 2.03], [-1.6, 1.25, 2.5], .004, false, 22); L[L.length - 1].ln = 1;
+        R([0, 0, 0], 2.0, 16, 1, .03);
+        R([0, 0, 1.38], .6, 5, 1, .018);
+        R([0, -1.25, 0], 2.4, 6);
+        B([1.35, -1.25, 2.1], [.62, .004, .11], 1.4); B([-1.2, -1.25, 1.85], [.36, .004, .09], 1.4);
+        R([-1.9, -1.25, .5], .07, 2); R([-1.4, -1.25, -.2], .05, 2); R([1.7, -1.25, .9], .06, 2);
+        for (k = 0; k < 8; k++) {
+          var sa0 = k * .7854 + .39;
+          put(2.0 * Math.cos(sa0), 0, 2.0 * Math.sin(sa0), -sa0, 6);
+          if (k % 2 === 0) {
+            B([0, 0, 0], [.24, .1, .15]); B([.3, -.03, 0], [.1, .045, .08]);
+            C([-.1, .1, 0], [-.1, .78, 0], .04); C([.03, .1, .08], [.03, .6, .08], .03); C([.12, .1, -.06], [.12, .46, -.06], .03);
+            C([0, -1.25, 0], [0, 1.25, 0], .003, false, 3); L[L.length - 1].ln = 1;
+          } else {
+            B([0, 0, 0], [.1, .06, .08]); C([0, .06, 0], [0, .5, 0], .028);
+          }
+        }
+        return (ARM[kind] = { L: L, tot: tot });
+      }
 
       /* площадка: два тонких круга на земле объединяют композицию */
       put(-.2, 0, .1, 0, 1);
       R([0, 0, 0], 2.75, 3.4); R([0, 0, 0], 2.0, 1.6);
-      /* вертикальная ось из центра кругов: тонкая линия вверх с небольшими кольцами-отметками через метр */
-      C([0, 0, 0], [0, 3.5, 0], .004, false, 30); L[L.length - 1].ln = 1;
-      R([0, 0, 0], .16, 2.2); R([0, 1, 0], .07, 2.4); R([0, 2, 0], .07, 2.4); R([0, 3, 0], .07, 2.4);
 
       /* автономный гольф-кар: небольшая обтекаемая капсула (2,5 м), колёса по углам, дверной проём, датчики на крыше */
       put(1.25, 0, 1.1, .5, 1.5);
@@ -619,19 +644,22 @@
         if (sx > 0) C([sx * .21, .02, sz * .24], [sx * .21, -.08, sz * .24], .008, false, 6);
       }
       C([.13, -.04, 0], [.13, -.06, 0], .02, false, 3); S([.15, -.085, 0], .04, 1.5); C([.16, -.085, 0], [.21, -.085, 0], .026, true, 2);
-      return (ARM = { L: L, tot: tot });
+      return (ARM[kind] = { L: L, tot: tot });
     }
 
-    function targets() {
-      var n = PTS.length, A = arm(), i;
+    function use(kind) { var q = SC[kind]; TX = q.X; TY = q.Y; TZ = q.Z; TD = q.D; TH = q.H; }
+    function targets() { fill('robots'); fill('cern'); use(cur); }
+
+    function fill(kind) {
+      var n = PTS.length, A = arm(kind), i, hf = kind === 'cern' ? .16 : .34;
       TX = new Float32Array(n); TY = new Float32Array(n); TZ = new Float32Array(n); TD = new Float32Array(n); TH = new Float32Array(n);
       for (i = 0; i < n; i++) {
         var pick = rnd(i, 3) * A.tot, o = 0, P0 = A.L[0];
         for (; o < A.L.length; o++) { P0 = A.L[o]; pick -= P0.w; if (pick <= 0) break; }
         var u1 = rnd(i, 5), u2 = rnd(i, 6), u3 = rnd(i, 8), u4 = rnd(i, 9), ph = 6.2832 * u2;
         if (P0.rc) {
-          var ra = 6.2832 * u1, rr0 = P0.R + (u2 - .5) * .012;
-          TX[i] = P0.rc[0] + rr0 * Math.cos(ra); TY[i] = P0.rc[1]; TZ[i] = P0.rc[2] + rr0 * Math.sin(ra);
+          var ra = 6.2832 * u1, rr0 = P0.R + (u2 - .5) * 2 * P0.tb;
+          TX[i] = P0.rc[0] + rr0 * Math.cos(ra); TY[i] = P0.rc[1] + (P0.tb > .01 ? (u3 - .5) * 2 * P0.tb : 0); TZ[i] = P0.rc[2] + rr0 * Math.sin(ra) * P0.kz;
         } else if (P0.ec) {
           var ez = 1 - 2 * u1, eq = Math.sqrt(1 - ez * ez), e0 = eq * Math.cos(ph), e2 = eq * Math.sin(ph), eh = P0.h;
           var en = Math.pow(Math.pow(Math.abs(e0 / eh[0]), 4) + Math.pow(Math.abs(ez / eh[1]), 4) + Math.pow(Math.abs(e2 / eh[2]), 4), -.25);
@@ -663,12 +691,13 @@
           TX[i] = a[0] + (b[0] - a[0]) * t + ux * cs + wx * sn; TY[i] = a[1] + (b[1] - a[1]) * t + uy * cs + wy * sn; TZ[i] = a[2] + (b[2] - a[2]) * t + uz * cs + wz * sn;
         }
         /* размытие формы: все точки слегка дрожат вокруг поверхности, а треть уходит в облако вокруг неё */
-        var hv = P0.rc || P0.ln ? 1 : rnd(i, 12), hr = hv < .34 ? .05 + .34 * rnd(i, 13) * rnd(i, 13) : .014 * rnd(i, 13);
+        var hv = P0.rc || P0.ln ? 1 : rnd(i, 12), hr = hv < hf ? .05 + .34 * rnd(i, 13) * rnd(i, 13) : .014 * rnd(i, 13);
         var hz = 1 - 2 * rnd(i, 14), hq = Math.sqrt(1 - hz * hz), ha = 6.2832 * rnd(i, 15);
         TX[i] += hr * hq * Math.cos(ha); TY[i] += hr * hz; TZ[i] += hr * hq * Math.sin(ha);
-        TH[i] = hv < .34 ? 0 : 1;
+        TH[i] = hv < hf ? 0 : 1;
         TD[i] = rnd(i, 7);
       }
+      SC[kind] = { X: TX, Y: TY, Z: TZ, D: TD, H: TH };
     }
 
     function setup() {
@@ -684,6 +713,8 @@
       var rdt = Math.max(0, Math.min(.1, (ms - last) / 1000));
       clock += rdt * P.speed; last = ms;
       if (still) morph = goal; else { morph += (goal - morph) * (1 - Math.exp(-rdt * 3)); if (Math.abs(goal - morph) < .001) morph = goal; }
+      /* запрошена другая сцена: сначала точки возвращаются в сферу, потом собирается новая */
+      if (want !== cur && morph < .04) { cur = want; use(cur); goal = 1; }
       var t = clock, k = W < 720 ? .85 : 1, i;
       var cx = W * P.x, cy = H * P.y, R = H * P.size, b = P.breathe;
       var ry = t * .12, rx = .35 + Math.sin(t * .07) * .2;
@@ -701,16 +732,18 @@
       /* парк роботов: точки переезжают со сферы на модели, каждая со своей задержкой; сцена слегка покачивается влево-вправо,
          смотрим с уровня глаз (1,5 м), точки облака вокруг форм мельче и бледнее */
       if (morph > 0) {
-        var ang = .3 * Math.sin(ms / 1000 * .22), ca = Math.cos(ang), sa = Math.sin(ang), ct = 1, st = 0;
-        var sc = Math.min(H * .2, W * .105), ox = W * .71, oy = H * .47;
+        /* роботы: вид с уровня глаз, сцена покачивается; коллайдер: вид сверху под углом, медленно вращается */
+        var cn = cur === 'cern', ang = cn ? ms / 1000 * .12 : .3 * Math.sin(ms / 1000 * .22), ca = Math.cos(ang), sa = Math.sin(ang);
+        var tl = cn ? .5 : 0, ct = Math.cos(tl), st = Math.sin(tl), ey = cn ? 0 : 1.5, pd = cn ? 10 : 8, dk = cn ? .14 : .13;
+        var sc = cn ? Math.min(H * .128, W * .09) : Math.min(H * .2, W * .105), ox = W * (cn ? .73 : .71), oy = H * (cn ? .49 : .47);
         for (i = 0; i < PTS.length; i++) {
           var e = morph * 1.6 - TD[i] * .6;
           if (e <= 0) continue;
           if (e > 1) e = 1;
           e = e * e * (3 - 2 * e);
-          var ax = TX[i] * ca + TZ[i] * sa, az = TZ[i] * ca - TX[i] * sa, ay = 1.5 - TY[i];
-          var ay2 = ay * ct - az * st, az2 = ay * st + az * ct, pf = 8 / (8 + az2);
-          var tn = .6 - az2 * .13; if (tn < .1) tn = .1; else if (tn > 1) tn = 1;
+          var ax = TX[i] * ca + TZ[i] * sa, az = TZ[i] * ca - TX[i] * sa, ay = ey - TY[i];
+          var ay2 = ay * ct - az * st, az2 = ay * st + az * ct, pf = pd / (pd + az2);
+          var tn = .6 - az2 * dk; if (tn < .1) tn = .1; else if (tn > 1) tn = 1;
           if (!TH[i]) tn = .06 + tn * .22;
           SX[i] += (ox + ax * sc * pf - SX[i]) * e; SY[i] += (oy + ay2 * sc * pf - SY[i]) * e; NR[i] += (tn - NR[i]) * e;
         }
@@ -755,14 +788,25 @@
 
     /* для страницы настройки: доступ к параметрам снаружи */
     window.sphere = { P: P, reset: function () { defaults(); build(); }, build: build, redraw: function () { if (still) draw(0); },
-      morph: function (v) { goal = v ? 1 : 0; if (still) draw(0); } };
+      morph: function (v, kind) {
+        kind = kind || 'robots';
+        if (v) {
+          if (kind !== cur && morph > .04 && !still) { want = kind; goal = 0; }
+          else { cur = want = kind; use(cur); goal = 1; }
+        } else if (kind === cur || kind === want) { want = cur; goal = 0; }
+        if (still) draw(0);
+      } };
 
-    /* наведение на RubiqOS собирает точки в парк роботов; на узких экранах эффект выключен */
-    var rq = document.querySelector('.case.main');
-    if (rq) {
-      rq.addEventListener('pointerenter', function (ev) { if (ev.pointerType !== 'touch' && innerWidth >= 900) window.sphere.morph(1); });
-      rq.addEventListener('pointerleave', function () { window.sphere.morph(0); });
+    /* наведение на проект собирает точки в его сцену: RubiqOS — парк роботов, CERN — коллайдер;
+       на узких экранах эффект выключен */
+    function bind(el, kind) {
+      if (!el) return;
+      el.addEventListener('pointerenter', function (ev) { if (ev.pointerType !== 'touch' && innerWidth >= 900) window.sphere.morph(1, kind); });
+      el.addEventListener('pointerleave', function () { window.sphere.morph(0, kind); });
     }
+    bind(document.querySelector('.case.main'), 'robots');
+    var hs = document.querySelectorAll('.case h3');
+    for (var hi = 0; hi < hs.length; hi++) if (/CERN/.test(hs[hi].textContent)) bind(hs[hi].closest('.case'), 'cern');
   })();
 </script>
 <script>
