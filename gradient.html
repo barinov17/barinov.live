@@ -172,7 +172,6 @@
   section { display: block; max-width: 560px; }
   section > :not(h2) { max-width: none; }
   section > h2 { display: flex; align-items: center; gap: 14px; margin: 0 0 28px; font-size: 10px; line-height: 1; letter-spacing: 0.16em; color: var(--muted); }
-  section > h2::after { content: ""; flex: 1; height: 1px; background: currentColor; opacity: .38; }
   .me { max-width: 560px; }
   .sheet { row-gap: 56px; }
   .sheet > p { padding-left: 0; }
@@ -181,9 +180,7 @@
   .case h3 { display: flex; align-items: center; gap: 10px; }
   .ico { flex: none; width: 19px; height: 19px; fill: none; stroke: currentColor; stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; }
   /* ——— Текущий проект — карточка: тонкая рамка, едва заметная заливка, скруглённые углы ——— */
-  .case.main { padding: 22px 24px 24px; border: 1px solid rgba(243, 238, 232, .18); border-radius: 16px; background: rgba(243, 238, 232, .04); }
   .case.main .site { margin-top: 22px; }
-  @media (max-width: 720px) { .case.main { padding: 18px 18px 20px; border-radius: 14px; } }
 </style>
 </head>
 <body>
