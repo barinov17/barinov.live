@@ -217,17 +217,12 @@
 
   /* ——— Верхний блок по образцу резюме: крупное жирное имя в две строки, под ним роль и короткая
      фраза; справа вверху — блок контактов под тонкой линией ——— */
-  .me { display: grid; grid-template-columns: minmax(0, 1fr) 190px; column-gap: 40px; align-items: start; max-width: none; padding: 8px 0 28px; }
+  .me { display: grid; grid-template-columns: minmax(0, 1fr); align-items: start; max-width: none; padding: 8px 0 28px; }
   .me h1 { grid-column: 1; font-size: clamp(42px, 5.4vw, 72px); line-height: .98; font-weight: 600; letter-spacing: -0.035em; margin: 0 0 clamp(18px, 2.2vw, 30px) -0.04em; }
   .me .role { grid-column: 1; font-size: 19px; line-height: 1.35; letter-spacing: -0.005em; color: var(--ink); margin-bottom: clamp(22px, 3vw, 40px); }
   .me .sum { grid-column: 1; max-width: 25em; font-size: clamp(19px, 1.7vw, 22px); line-height: 1.32; letter-spacing: -0.012em; color: #CFC8C9; text-wrap: pretty; }
-  .hc { grid-column: 2; grid-row: 1 / span 3; margin-top: 10px; padding-top: 9px; border-top: 1px solid rgba(243, 238, 232, .7); font-size: 13px; line-height: 1.5; }
-  .hc h2 { margin: 0 0 14px; font-size: 13px; line-height: 1.5; letter-spacing: 0; text-transform: none; color: var(--ink); }
-  .hc a { display: block; color: #CFC8C9; text-decoration: none; }
-  .hc a:hover { color: #7CC6DC; }
   @media (max-width: 720px) {
     .me { grid-template-columns: minmax(0, 1fr); padding-top: 22px; }
-    .hc { display: none; }
   }
 
   /* ——— Роль под именем — акцентным цветом ——— */
@@ -251,14 +246,6 @@
     <h1>Aleksandr<br>Barinov</h1>
     <p class="role">Real estate professional and urban planner</p>
     <p class="sum">I specialize in concept development and masterplanning for large-scale development projects, and in technology solutions for real estate operations.</p>
-    <aside class="hc">
-      <h2>Contact</h2>
-      <a href="https://wa.me/12428075582" target="_blank" rel="noopener">WhatsApp</a>
-      <a href="https://t.me/forbarinov" target="_blank" rel="noopener">Telegram</a>
-      <a href="https://x.com/BarinovLive" target="_blank" rel="noopener">X.com</a>
-      <a href="https://medium.com/@barinov.live" target="_blank" rel="noopener">Medium</a>
-      <a href="https://www.linkedin.com/in/forbarinov/" target="_blank" rel="noopener">LinkedIn</a>
-    </aside>
   </div>
 
   <section class="current">
