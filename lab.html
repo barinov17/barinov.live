@@ -1,0 +1,336 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#272C37">
+<title>Aleks Barinov — motion</title>
+<meta name="description" content="Aleks Barinov — real estate professional and urban planner. Development concepts, masterplans and proptech.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<script>document.documentElement.classList.add('js')</script>
+<style>
+  :root {
+    color-scheme: dark;
+    --paper: #272C37;
+    --ink: #E6E8EE;
+    --muted: #939AA8;
+    --hair: #363C49;
+    --accent: #F0507F;
+    --sans: "JetBrains Mono", ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+    /* один шрифт, два начертания, четыре кегля: 13 / 15 / 17 / до 30 */
+    --small: 13px;
+  }
+  * { box-sizing: border-box; }
+  html { -webkit-text-size-adjust: 100%; }
+  body {
+    margin: 0;
+    background: var(--paper);
+    color: var(--ink);
+    font: 400 15px/1.55 var(--sans);
+    -webkit-font-smoothing: antialiased;
+  }
+  p, h1, h2, h3, ul { margin: 0; padding: 0; font: inherit; list-style: none; }
+  b, h1, h3 { font-weight: 500; }
+  a { color: inherit; text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: 3px; }
+  a:hover { color: var(--accent); }
+  ::selection { background: var(--ink); color: var(--paper); }
+  :focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+  .muted { color: var(--muted); }
+
+  /* две зоны: тёмная — имя и текущий проект, чуть светлее — прошлые проекты и контакты */
+  .zone { background: var(--paper); color: var(--ink); padding: 48px clamp(16px, 2.5vw, 28px) 40px; }
+  .zone.top { position: relative; padding-top: clamp(24px, 4vw, 48px); padding-bottom: 48px; }
+  /* переключатель версии страницы — справа вверху */
+  .alt { position: absolute; top: clamp(24px, 4vw, 48px); right: clamp(16px, 2.5vw, 28px); padding: 4px 10px; border: 1px solid var(--muted); color: var(--muted); font-size: var(--small); text-decoration: none; }
+  .alt:hover { border-color: var(--accent); }
+  .zone.past { --paper: #313744; --muted: #9DA4B1; --hair: #404756; --accent: #F4628C; }
+
+  /* одна сетка на всю страницу: пустая узкая колонка-отступ + колонка текста */
+  .sheet { display: grid; grid-template-columns: minmax(0, 1fr); row-gap: 48px; }
+  /* каждый блок: подпись слева, содержимое правее */
+  /* одна ширина колонки на всю страницу: верхний блок, Now и Past заканчиваются на одной вертикали */
+  section { display: grid; grid-template-columns: 88px minmax(0, 1fr); column-gap: 28px; align-items: baseline; }
+  section > :not(h2) { grid-column: 2; max-width: 480px; }
+  .sheet > p { padding-left: 116px; }
+  /* моноширинный — только для служебного: имя, кнопка, ссылки, подвал */
+  h2, .more, .site, .cal, .sheet > p { font-size: var(--small); }
+  h2 { color: var(--muted); text-transform: uppercase; letter-spacing: 0.08em; }
+  .cal { margin-top: 28px; }
+
+  /* верхний блок: один крупный узкий набор, имя + фраза с выделенными словами */
+  /* имя — заголовок, фраза — отдельный абзац на ступень ниже, с отбивкой */
+  .me { max-width: 596px; padding: clamp(8px, 2vw, 24px) 0 8px; }
+  .me h1 { font-size: clamp(22px, 2.6vw, 30px); line-height: 1.2; letter-spacing: -0.02em; font-weight: 500; margin-bottom: 18px; }
+  .me p { font-size: 17px; line-height: 1.5; color: var(--muted); text-wrap: pretty; }
+  .me p b { color: var(--ink); font-weight: inherit; }
+  .me p em { color: var(--accent); font-style: normal; }
+  .links { display: flex; flex-wrap: wrap; gap: 0 24px; max-width: none; }
+
+  .case + .case { margin-top: 26px; }
+  /* основной проект: рамка, описание открыто, ссылка на сайт */
+  .case.main .content { padding-bottom: 0; }
+  /* текущий проект: шире остального и на чуть более светлой подложке */
+  .site { display: inline-block; margin-top: 10px; }
+  .case h3 { color: var(--accent); font-size: 17px; line-height: 1.3; margin-bottom: 2px; }
+  .more { display: inline-block; margin: 6px 0 0; padding: 0; border: 0; background: none; font-family: inherit; color: var(--muted); cursor: pointer; }
+  .more::after { content: " ↓"; }
+  .more[aria-expanded="true"]::after { content: " ↑"; }
+  .more:hover { color: #8FB3D1; }
+  .content { padding: 10px 0 6px; color: var(--muted); font-size: var(--small); line-height: 1.5; }
+  .js .content { display: none; }
+  .js .content.open { display: block; }
+  .content p + p, .content ul + p, .content p + ul { margin-top: 1em; }
+  .content li { padding-left: 1.2em; position: relative; }
+  .content li + li { margin-top: .35em; }
+  .content li::before { content: "–"; position: absolute; left: 0; }
+
+  .cal .calendly-inline-widget { min-width: 280px; height: 680px; border: 1px solid var(--hair); margin-top: 12px; }
+
+  /* фон-анимация: холст под содержимым, зоны полупрозрачные */
+  #bg { position: fixed; inset: 0; width: 100%; height: 100%; z-index: 0; pointer-events: none; }
+  main { position: relative; z-index: 1; }
+  .zone { background: transparent; }
+  .zone.past { background: rgba(49, 55, 68, .8); }
+
+  @media (max-width: 720px) {
+    .sheet { row-gap: 40px; }
+    section { grid-template-columns: minmax(0, 1fr); }
+    section > :not(h2) { grid-column: 1; }
+    section > h2 { margin-bottom: 12px; }
+    .sheet > p { padding-left: 0; }
+  }
+</style>
+</head>
+<body>
+<canvas id="bg" aria-hidden="true"></canvas>
+<main>
+<div class="zone top">
+<a class="alt" href="/">static</a>
+<div class="sheet">
+
+  <div class="me">
+    <h1>Aleks Barinov</h1>
+    <p>I specialize in <b>masterplanning</b>, <b>development concepts</b> and <b>technological solutions</b> for <em><span style="white-space:nowrap">large-scale</span> development projects</em>.</p>
+  </div>
+
+  <section class="current">
+  <h2>Now:</h2>
+  <ul>
+    <li class="case main">
+      <h3>RubiqOS</h3>
+      <p>Physical AI platform for resort operations.</p>
+      <div class="content open">
+        <p>RubiqOS orchestrates day-to-day operations between people and robots. Its engine plans the tasks, splits the work between staff and machines, and runs both as one team.</p>
+      </div>
+      <a class="site" href="https://rubiqos.com/" target="_blank" rel="noopener">rubiqos.com ↗</a>
+    </li>
+  </ul>
+  </section>
+
+</div>
+</div>
+<div class="zone past">
+<div class="sheet">
+
+  <section>
+  <h2>Past:</h2>
+  <ul>
+
+    <li class="case">
+      <h3>Private island development</h3>
+      <p>Masterplan for a $1B resort on a private island in the Caribbean.</p>
+      <button class="more" aria-expanded="false">more</button>
+      <div class="content">
+        <p>My concept won a <a href="https://www.ribacompetitions.com/" target="_blank" rel="noopener">RIBA competition</a>, and I was invited to join the project as Lead Masterplan Architect. I was the third member of the team and helped shape the initial vision, the masterplan and the overall development concept.</p>
+        <p>My scope covered the architectural and development concept of the island, strategic planning and cross-disciplinary coordination.</p>
+      </div>
+    </li>
+
+    <li class="case">
+      <h3>CERN lab building</h3>
+      <p>Concept development for a laboratory complex on the CERN campus.</p>
+      <button class="more" aria-expanded="false">more</button>
+      <div class="content">
+        <p>Our team helped shape the concept for a complex of administrative buildings and laboratories at CERN. We ran several strategy sessions with the architectural teams and laboratory representatives to define clear requirements for the architectural design.</p>
+        <p>In collaboration with <a href="https://home.cern/" target="_blank" rel="noopener">CERN</a> and <a href="https://www.nickl-partner.com/en/" target="_blank" rel="noopener">Nickl &amp; Partner</a></p>
+      </div>
+    </li>
+
+    <li class="case">
+      <h3>Easyinn</h3>
+      <p>Platform for automated property management.</p>
+      <button class="more" aria-expanded="false">more</button>
+      <div class="content">
+        <p>Easyinn started as an internal tool for running our own network of hotels with 280 units in total. It included a keyless access system and a guest app with a marketplace of local services.</p>
+        <p>It was later spun off as a standalone product and launched in several countries.</p>
+      </div>
+    </li>
+
+    <li class="case">
+      <h3>Habithai</h3>
+      <p>Gated community development on Koh Samui, Thailand.</p>
+      <button class="more" aria-expanded="false">more</button>
+      <div class="content">
+        <p>Masterplan and product concept for a gated community of 11 premium villas on Koh Samui, Thailand — plus fundraising, marketing and sales.</p>
+      </div>
+    </li>
+
+    <li class="case">
+      <h3>Foresight Moscow-2050</h3>
+      <p>The largest foresight study for the Moscow masterplan.</p>
+      <button class="more" aria-expanded="false">more</button>
+      <div class="content">
+        <p>I was part of the team that developed the methodology, strategy and overall structure of the study for the Moscow masterplan — a joint effort of three universities and research institutions and more than 2,000 experts from business, government and academia.</p>
+        <p>The project shaped the long-term development strategy of the Moscow masterplan and made several landmark projects possible, including:</p>
+        <ul>
+          <li>Autonomous taxis and delivery drones launched in real urban conditions together with <a href="https://yandex.com/" target="_blank" rel="noopener">Yandex</a> and <a href="https://vkusvill.ru/" target="_blank" rel="noopener">VkusVill</a>.</li>
+          <li><a href="https://badaevsky.com/en/" target="_blank" rel="noopener">Badaevsky</a> — a one-of-a-kind residential complex raised 17 meters above the ground.</li>
+          <li><a href="https://en.wikipedia.org/wiki/Moscow_Regular_River_Transport" target="_blank" rel="noopener">Moscow Regular River Transport</a> — the launch and route planning of the city's regular river service.</li>
+        </ul>
+        <p>In collaboration with the <a href="https://genplanmos.ru/" target="_blank" rel="noopener">Moscow Masterplan Institute</a> and the <a href="https://www.hse.ru/en/" target="_blank" rel="noopener">Higher School of Economics</a></p>
+      </div>
+    </li>
+
+    <li class="case">
+      <h3>Nikolskiy market</h3>
+      <p>Redevelopment of a cluster of historic buildings in Saint Petersburg.</p>
+      <button class="more" aria-expanded="false">more</button>
+      <div class="content">
+        <p>The goal was to increase the value of a restored 40,000 m² historic building fivefold within five years.</p>
+        <p>The overall development strategy was to create an attractive public space, fill it with hospitality operators, and acquire and redevelop the neighboring buildings in the block.</p>
+        <p>As a result, Saint Petersburg gained another informal center of attraction in the heart of the city.</p>
+        <p>In collaboration with <a href="https://milesandyards.com/" target="_blank" rel="noopener">Miles &amp; Yards</a> and <a href="https://arch-katarsis.com/" target="_blank" rel="noopener">Katarsis Architects</a></p>
+      </div>
+    </li>
+
+    <li class="case">
+      <h3>Aircraft manufacturing facility</h3>
+      <p>Development and optimization of the masterplan for a high-tech manufacturing center.</p>
+      <button class="more" aria-expanded="false">more</button>
+      <div class="content">
+        <p>The facility builds civil aircraft as well as fourth- and fifth-generation fighter jets.</p>
+        <p>Our task was to expand and partially redesign the site to make room for new production facilities.</p>
+      </div>
+    </li>
+  </ul>
+
+  </section>
+
+  <section>
+  <h2>Contacts:</h2>
+  <ul class="links">
+    <li><a href="https://wa.me/12428075582" target="_blank" rel="noopener">WhatsApp</a></li>
+    <li><a href="https://t.me/forbarinov" target="_blank" rel="noopener">Telegram</a></li>
+    <li data-link="x"><span class="muted">X.com</span></li>
+    <li data-link="medium"><span class="muted">Medium</span></li>
+    <li data-link="linkedin"><span class="muted">LinkedIn</span></li>
+  </ul>
+
+  <div class="cal" id="calendly">
+    <p class="muted">Calendar will appear here.</p>
+  </div>
+
+  </section>
+
+  <p class="muted">©2026 Aleks Barinov</p>
+
+</div>
+</div>
+</main>
+
+<script>
+  /* ——— Вставь адреса, когда будут. Пустая строка = без ссылки. ——— */
+  var LINKS = {
+    x:        "https://x.com/BarinovLive",
+    medium:   "https://medium.com/@barinov.live",
+    linkedin: "https://www.linkedin.com/in/forbarinov/",
+    calendly: ""    // https://calendly.com/username/30min
+  };
+
+  ['x', 'medium', 'linkedin'].forEach(function (k) {
+    var li = document.querySelector('[data-link="' + k + '"]');
+    if (!LINKS[k]) { li.remove(); return; }
+    var a = document.createElement('a');
+    a.href = LINKS[k]; a.target = '_blank'; a.rel = 'noopener';
+    a.textContent = li.textContent;
+    li.replaceChildren(a);
+  });
+
+  document.querySelectorAll('.more').forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      var open = btn.closest('.case').querySelector('.content').classList.toggle('open');
+      btn.setAttribute('aria-expanded', open);
+      btn.textContent = open ? 'less' : 'more';
+    });
+  });
+
+  if (LINKS.calendly) {
+    var box = document.getElementById('calendly');
+    box.innerHTML = '<div class="calendly-inline-widget"></div>';
+    box.firstChild.setAttribute('data-url', LINKS.calendly + '?hide_gdpr_banner=1&background_color=151a24&text_color=e6e8ee&primary_color=dc1f5c');
+    var s = document.createElement('script');
+    s.src = 'https://assets.calendly.com/assets/external/widget.js';
+    s.async = true;
+    document.body.appendChild(s);
+  } else {
+    document.getElementById('calendly').remove();
+  }
+</script>
+<script>
+  /* ——— Фон: облако точек на «дышащей» сфере, медленно вращается ——— */
+  (function () {
+    var c = document.getElementById('bg'), x = c.getContext('2d');
+    var still = matchMedia('(prefers-reduced-motion: reduce)').matches;
+    var W, H, P = [], raf = 0;
+
+    function setup() {
+      var d = Math.min(window.devicePixelRatio || 1, 2);
+      W = innerWidth; H = innerHeight;
+      c.width = W * d; c.height = H * d;
+      x.setTransform(d, 0, 0, d, 0, 0);
+      var n = W < 720 ? 1500 : 2600, g = Math.PI * (3 - Math.sqrt(5));
+      P = [];
+      for (var i = 0; i < n; i++) {
+        var y = 1 - 2 * (i + .5) / n, r = Math.sqrt(1 - y * y), a = i * g;
+        P.push([Math.cos(a) * r, y, Math.sin(a) * r, i % 19 === 0]);
+      }
+    }
+
+    function draw(ms) {
+      var t = ms / 1000, m = W < 720;
+      var cx = m ? W * .9 : W * .76, cy = m ? H * .3 : H * .46;
+      var R = m ? W * .62 : Math.min(W, H) * .34, k = m ? .85 : 1;
+      var ry = t * .12, rx = .35 + Math.sin(t * .07) * .2;
+      var cY = Math.cos(ry), sY = Math.sin(ry), cX = Math.cos(rx), sX = Math.sin(rx);
+      x.clearRect(0, 0, W, H);
+      for (var pass = 0; pass < 2; pass++) {
+        x.fillStyle = pass ? '#F0507F' : '#E6E8EE';
+        for (var i = 0; i < P.length; i++) {
+          var p = P[i];
+          if (p[3] != !!pass) continue;
+          var d = 1 + .16 * Math.sin(3 * p[0] + t * .6) * Math.sin(3 * p[1] + t * .45) + .1 * Math.sin(4 * p[2] - t * .5 + 2 * p[0]);
+          var px = p[0] * d, py = p[1] * d, pz = p[2] * d;
+          var x1 = px * cY + pz * sY, z1 = pz * cY - px * sY;
+          var y1 = py * cX - z1 * sX, z2 = py * sX + z1 * cX;
+          var f = 3 / (3 + z2), near = 1 - (z2 + 1.3) / 2.6;
+          x.globalAlpha = Math.min(1, (.1 + .55 * near) * k * (pass ? 1.5 : 1));
+          var s = near > .55 ? 1.7 : 1.1;
+          x.fillRect(cx + x1 * R * f, cy + y1 * R * f, s, s);
+        }
+      }
+      x.globalAlpha = 1;
+    }
+
+    function frame(ms) { draw(ms); raf = requestAnimationFrame(frame); }
+    function start() { if (still) draw(0); else if (!raf) raf = requestAnimationFrame(frame); }
+    function stop() { cancelAnimationFrame(raf); raf = 0; }
+
+    setup(); start();
+    addEventListener('resize', function () { setup(); if (still) draw(0); });
+    document.addEventListener('visibilitychange', function () { document.hidden ? stop() : start(); });
+  })();
+</script>
+</body>
+</html>
