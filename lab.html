@@ -354,8 +354,9 @@
     var c = document.getElementById('bg'), x = c.getContext('2d');
     var still = matchMedia('(prefers-reduced-motion: reduce)').matches;
     var W, H, f, hor, NS, STEP, YM, raf = 0, tick = 0;
-    var NZ = 120, DZ = .26;                    /* число профилей и шаг между ними */
-    var CAM = 2.5, NEAR = 1.1, SPEED = 1.1;    /* высота камеры, ближняя граница, скорость (ед./с) */
+    var NZ = 130, DZ = .3;                     /* число профилей и шаг между ними */
+    var CAM = 4.6, NEAR = 2.6, SPEED = 1.3;    /* высота камеры, ближняя граница, скорость (ед./с) */
+    var PITCH = 24 * Math.PI / 180, CT = Math.cos(PITCH), ST = Math.sin(PITCH);   /* наклон камеры вниз */
     var FAR = NEAR + NZ * DZ;
 
     function setup() {
@@ -399,7 +400,7 @@
         zc = NEAR + j * DZ - frac;
         if (zc < .45) continue;
         a = Math.pow(1 - zc / FAR, 1.5) * Math.min(1, (zc - .45) / 1.6) * (m ? .8 : 1);
-        inv = f / zc; wz = (base + j) * DZ;
+        inv = f / (zc * CT + CAM * ST); wz = (base + j) * DZ;
         var row = base + j, acc = row % 16 === 0;
         x.strokeStyle = acc ? '#F0507F' : '#E6E8EE';
         x.globalAlpha = a * (acc ? .8 : .36);
@@ -407,7 +408,8 @@
         x.beginPath(); pen = false;
         for (s = 0; s < NS; s++) {
           var px = s * STEP;
-          sy = hor + (CAM - height((px - W / 2) / inv, wz)) * inv;
+          var dh = CAM - height((px - W / 2) / inv, wz);
+          sy = H / 2 + (dh * CT - zc * ST) * f / (zc * CT + dh * ST);
           if (sy < YM[s]) { if (pen) x.lineTo(px, sy); else { x.moveTo(px, sy); pen = true; } YM[s] = sy; }
           else pen = false;
         }
@@ -420,7 +422,7 @@
             if (r < .86) continue;
             var wx = (i + hash(i, row) - .5) * 1.3, dx = W / 2 + wx * inv, si = Math.round(dx / STEP);
             if (si < 0 || si >= NS) continue;
-            var dy = hor + (CAM - height(wx, wz)) * inv;
+            var dd2 = CAM - height(wx, wz), dy = H / 2 + (dd2 * CT - zc * ST) * f / (zc * CT + dd2 * ST);
             if (dy > YM[si] + 1.5) continue;
             var sz = Math.max(.9, Math.min(2.6, 6 / zc)), pink = r > .985;
             x.fillStyle = pink ? '#F0507F' : '#E6E8EE';
