@@ -827,9 +827,9 @@
         /* отели: Калифорния, Нью-Йорк, Лондон, Барселона, Прага, Финляндия, Санкт-Петербург, Москва, Южная Африка */
         var CT = [[-118.24, 34.05], [-74.0, 40.71], [-.13, 51.51], [2.17, 41.39], [14.44, 50.08], [24.94, 60.17], [30.33, 59.93], [37.62, 55.75], [18.42, -33.92]];
         var LK = [[0, 1], [0, 2], [1, 2], [1, 3], [2, 3], [2, 4], [2, 5], [3, 4], [3, 7], [4, 5], [4, 6], [4, 7], [5, 6], [6, 7], [5, 7], [1, 5], [8, 3], [8, 2], [8, 7], [8, 1]];
-        var CP = [], LA = [], lsum = 0, c0;
-        for (c0 = 0; c0 < CT.length; c0++) CP.push(gxyz(CT[c0][0], CT[c0][1], 1));
-        for (c0 = 0; c0 < LK.length; c0++) { var pa = CP[LK[c0][0]], pb = CP[LK[c0][1]], an = Math.acos(Math.max(-1, Math.min(1, pa[0] * pb[0] + pa[1] * pb[1] + pa[2] * pb[2]))); lsum += an + .15; LA.push([an, lsum]); }
+        var GCT = [], LA = [], lsum = 0, c0;
+        for (c0 = 0; c0 < CT.length; c0++) GCT.push(gxyz(CT[c0][0], CT[c0][1], 1));
+        for (c0 = 0; c0 < LK.length; c0++) { var pa = GCT[LK[c0][0]], pb = GCT[LK[c0][1]], an = Math.acos(Math.max(-1, Math.min(1, pa[0] * pb[0] + pa[1] * pb[1] + pa[2] * pb[2]))); lsum += an + .15; LA.push([an, lsum]); }
         TX = new Float32Array(gn); TY = new Float32Array(gn); TZ = new Float32Array(gn); TD = new Float32Array(gn); TH = new Float32Array(gn);
         for (gq = 0; gq < gn; gq++) {
           var gu = rnd(gq, 3), g1 = rnd(gq, 5), g2 = rnd(gq, 6), g3 = rnd(gq, 8), gp, gk = 0;
@@ -838,11 +838,11 @@
           else if (gu < .68) { var ga = 6.2832 * g1, gr = 1.004 + .028 * g2 * g2; gp = [gr * Math.cos(ga), gr * Math.sin(ga), 0]; gk = 5; }   /* контур шара: кольцо, всегда повёрнутое к зрителю */
           else if (gu < .73) { gp = g2 < .5 ? gxyz(g1 * 360 - 180, [-60, -30, 0, 30, 60][Math.floor(g3 * 5)], 1) : gxyz(Math.floor(g3 * 12) * 30 - 180, g1 * 160 - 80, 1); gk = 2; }   /* сетка */
           else if (gu < .88) {                                                                            /* узлы-отели: плотные шарики */
-            var gc = CP[Math.floor(g1 * CP.length)], bz = 1 - 2 * g2, bq = Math.sqrt(1 - bz * bz), ba = 6.2832 * g3, br = .042 * Math.pow(rnd(gq, 9), .5);
+            var gc = GCT[Math.floor(g1 * GCT.length)], bz = 1 - 2 * g2, bq = Math.sqrt(1 - bz * bz), ba = 6.2832 * g3, br = .042 * Math.pow(rnd(gq, 9), .5);
             gp = [gc[0] * 1.015 + br * bq * Math.cos(ba), gc[1] * 1.015 + br * bz, gc[2] * 1.015 + br * bq * Math.sin(ba)]; gk = 4;
           } else {                                                                                        /* дуги между отелями, приподняты над поверхностью */
             var gl0 = g1 * lsum, li = 0; while (li < LA.length - 1 && LA[li][1] < gl0) li++;
-            var A0 = CP[LK[li][0]], B0 = CP[LK[li][1]], ang0 = LA[li][0], sn0 = Math.sin(ang0) || 1, ka = Math.sin((1 - g2) * ang0) / sn0, kb = Math.sin(g2 * ang0) / sn0, rr0 = 1.02 + .16 * Math.sin(Math.PI * g2) * Math.min(1, ang0);
+            var A0 = GCT[LK[li][0]], B0 = GCT[LK[li][1]], ang0 = LA[li][0], sn0 = Math.sin(ang0) || 1, ka = Math.sin((1 - g2) * ang0) / sn0, kb = Math.sin(g2 * ang0) / sn0, rr0 = 1.02 + .16 * Math.sin(Math.PI * g2) * Math.min(1, ang0);
             gp = [(A0[0] * ka + B0[0] * kb) * rr0, (A0[1] * ka + B0[1] * kb) * rr0, (A0[2] * ka + B0[2] * kb) * rr0]; gk = 4;
           }
           TX[gq] = gp[0]; TY[gq] = gp[1]; TZ[gq] = gp[2]; TH[gq] = gk; TD[gq] = rnd(gq, 7);
