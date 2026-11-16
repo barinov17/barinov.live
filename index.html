@@ -284,6 +284,10 @@
   .steps .sum { max-width: 27em; margin: 0; font-size: clamp(18px, 1.5vw, 21.5px); line-height: 1.34; letter-spacing: -0.012em; color: var(--muted); text-wrap: pretty; }
   .steps .sum b { color: var(--ink); font-weight: inherit; }
   .steps .sum em { color: var(--accent); font-style: normal; }
+  /* кнопка «Contacts» под описанием: лёгкий контур; на телефоне вместо неё — такая же внизу слева */
+  .steps .cbtn { display: inline-block; margin-top: clamp(22px, 2.4vw, 32px); padding: 9px 20px; border: 1px solid rgba(243, 238, 232, .3); border-radius: 999px; font-size: clamp(14px, 1.05vw, 15.5px); line-height: 1.2; color: var(--ink); text-decoration: none; transition: border-color .2s, color .2s; }
+  .steps .cbtn:hover { border-color: #7CC6DC; color: #7CC6DC; }
+  .steps .pp.mob { display: none; }
   /* страницы проектов */
   .steps h1.pt { margin: 0 0 14px; font-size: clamp(25px, 2.25vw, 33px); line-height: 1.1; font-weight: 500; letter-spacing: -0.022em; color: var(--accent); }
   .steps .sub { margin: 0 0 16px; font-size: clamp(16px, 1.2vw, 17.5px); line-height: 1.32; letter-spacing: -0.012em; color: var(--ink); text-wrap: pretty; }
@@ -332,7 +336,11 @@
     /* телефон: сцена в верхней части экрана, текст начинается примерно с двух третей высоты; если текста больше,
        чем помещается ниже, распорка сверху сжимается и текст поднимается; партнёры и ссылки — в самом низу */
     .steps section.slide, .steps section.slide.first { flex-direction: column; align-items: stretch; justify-content: flex-start; height: 100vh; height: 100svh; padding: 62px 30px 26px 18px; }
-    .steps section.slide::before { content: ""; flex: 0 1 calc(66vh - 62px); flex-basis: calc(66svh - 62px); min-height: 0; }
+    .steps section.slide::before { content: ""; flex: 0 1 calc(33.3vh - 62px); flex-basis: calc(33.3svh - 62px); min-height: 0; }   /* кейсы: текст с верхней границы средней трети, сцена — в верхней трети */
+    .steps section.slide.first::before { flex-basis: calc(66vh - 62px); flex-basis: calc(66svh - 62px); }                            /* первая страница: портрет сверху, текст с двух третей */
+    .steps .pg .cbtn { display: none; }
+    .steps .pp.mob { display: block; }
+    .steps .pp.mob .cbtn { margin-top: 0; }
     .steps .pg, .steps .first .pg { flex: none; width: 100%; }
     .steps .pp, .steps .pp.cl { position: static; flex: none; margin-top: auto; padding-top: 20px; max-width: none; }
     .dots { right: 2px; }
@@ -352,7 +360,9 @@
     <article class="pg">
       <h1>Aleksandr Barinov</h1>
       <p class="sum"><b>Real estate professional</b> specializing in <b>concept development</b>, <b>masterplanning</b>, and <b>technology solutions</b> for <em><span style="white-space:nowrap">large-scale</span> development</em>.</p>
+      <a class="cbtn" href="#contacts">Contacts</a>
     </article>
+    <aside class="pp mob"><a class="cbtn" href="#contacts">Contacts</a></aside>
   </section>
 
   <section class="slide" id="rubiqos" data-scene="robots" data-name="RubiqOS">
@@ -1134,7 +1144,7 @@
         var ang = v.turn + (v.swing > 0 ? v.swing * Math.sin(tt * v.speed) : tt * v.speed), ca = Math.cos(ang), sa = Math.sin(ang);
         var ct = Math.cos(v.tilt), st = Math.sin(v.tilt), ey = cn || mk || pm || gl ? 0 : isl ? .1 : av ? 0 : 1.75, pd = cn || isl || mk || av || pm || gl ? 10 : 8, dk = gl ? .34 : cn ? .14 : isl || mk ? .1 : av ? .09 : .13;
         var sc = (gl ? Math.min(H * .34, W * .2) : pm ? Math.min(H * .68, W * .4) : av ? Math.min(H * .4, W * .2) : cn ? Math.min(H * .294, W * .204) : mk ? Math.min(H * .16, W * .1) : isl ? Math.min(H * .2, W * .096) : Math.min(H * .2, W * .105)) * v.scale, ox = W * v.x, oy = H * v.y;
-        if (W < 720) { var wy = window.sphere && window.sphere.my; sc *= 2; ox = W * .5; oy = H * (wy || .34); if (pm) sc *= .9; if (av) sc *= .5; }   /* телефон: сцена вдвое крупнее, по центру свободного места над текстом (my задаёт скрипт страниц) */
+        if (W < 720) { var wy = window.sphere && window.sphere.my; sc *= 2 * (pm ? .9 : av ? .3 : cn ? .42 : mk ? .55 : isl ? .66 : gl ? .55 : .65); ox = W * .5; oy = H * ((wy || .34) + (pm || av || cn || gl ? 0 : mk ? -.02 : isl ? -.025 : -.05)); }   /* размеры и поправки по высоте подобраны так, чтобы сцена помещалась в верхней трети экрана */   /* телефон: сцена вдвое крупнее, по центру свободного места над текстом (my задаёт скрипт страниц) */
         for (i = 0; i < PTS.length; i++) {
           var e = morph * 1.6 - TD[i] * .6;
           if (e <= 0) continue;
@@ -1435,7 +1445,7 @@
       cur = i;
       for (var k = 0; k < links.length; k++) { if (k === i) links[k].setAttribute('aria-current', 'true'); else links[k].removeAttribute('aria-current'); }
       var pg = slides[i].querySelector('.pg');      /* телефон: центр сцены — середина свободного места над текстом */
-      if (S && pg) S.my = innerWidth < 720 ? Math.max(.22, Math.min(.4, (50 + pg.offsetTop) / 2 / Math.max(1, innerHeight))) : 0;
+      if (S && pg) S.my = innerWidth < 720 ? Math.max(.14, Math.min(.4, (50 + pg.offsetTop) / 2 / Math.max(1, innerHeight))) : 0;
       if (S && S.pin) S.pin(slides[i].getAttribute('data-scene') || null);
       try { history.replaceState(null, '', i === 0 ? location.pathname + location.search : '#' + slides[i].id); } catch (e) {}
     }
