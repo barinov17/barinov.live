@@ -594,13 +594,13 @@
        rim — выделение профиля объёмной модели (0 — нет),
        accent / accentDot — яркость и размер точек линий (берег и дороги), marina — яркость марины, build — яркость зданий */
     var DEF = {
-      robots: { scale: 1.11, x: 0.69, y: 0.285, tilt: 0.27, turn: 0.01, swing: 0.32, speed: 0.13, dot: 0.88, dotHalo: 0.95, bright: 1.08, free: 0.28, halo: 0.12, spread: 1.15, jitter: 0.02, edge: 0, accent: 1, accentDot: 1, marina: 1, build: 1.3, rim: 0.8 },
-      cern:   { scale: 2.5, x: 0.67, y: 0.46, tilt: 0.5, turn: 0, swing: 0.22, speed: 0.18, dot: 0.88, dotHalo: 0.9, bright: 1.08, free: 0.28, halo: 0.2, spread: 0.86, jitter: 0, edge: 0.14, accent: 1, accentDot: 1, marina: 2.4, build: 1.3, rim: 0 },
-      moscow: { scale: 2.06, x: 0.685, y: 0.45, tilt: 0.72, turn: 0, swing: 0, speed: 0.04, dot: 0.78, dotHalo: 1.4, bright: 0.98, free: 0.46, halo: 0.14, spread: 0.78, jitter: 0.01, edge: 0, accent: 2.1, accentDot: 1.08, marina: 2.25, build: 2.6, rim: 0 },
-      avia:   { scale: 2.5, x: 0.53, y: 0.56, tilt: 0.62, turn: 0.75, swing: 0.22, speed: 0.18, dot: 0.82, dotHalo: 1.05, bright: 1.15, free: 0.38, halo: 0.14, spread: 0.82, jitter: 0, edge: 0, accent: 1, accentDot: 1.2, marina: 1.45, build: 2.5, rim: 0 },
-      me:     { scale: 0.9, x: 0.72, y: 0.5, tilt: 0, turn: 0, swing: 0.22, speed: 0.18, dot: 0.7, dotHalo: 1.15, bright: 1.08, free: 0.34, halo: 0.12, spread: 0.68, jitter: 0, edge: 0.2, accent: 0.8, accentDot: 1, marina: 1, build: 2.6, rim: 0 },
+      robots: { scale: 1.15, x: 0.65, y: 0.285, tilt: 0.27, turn: 0.18, swing: 0.65, speed: 0.22, dot: 0.9, dotHalo: 0.9, bright: 1.1, free: 0.2, halo: 0.08, spread: 1.5, jitter: 0.02, edge: 0, accent: 1, accentDot: 1, marina: 1, build: 1, rim: 0.8 },
+      cern:   { scale: 2.5, x: 0.67, y: 0.46, tilt: 0.5, turn: 0, swing: 0.27, speed: 0.1, dot: 0.9, dotHalo: 0.8, bright: 1.1, free: 0.2, halo: 0.25, spread: 0.88, jitter: 0, edge: 0.14, accent: 1, accentDot: 1, marina: 2.8, build: 1, rim: 0 },
+      moscow: { scale: 2.06, x: 0.685, y: 0.45, tilt: 0.72, turn: 0, swing: 0, speed: 0.03, dot: 0.7, dotHalo: 1.85, bright: 0.9, free: 0.57, halo: 0.14, spread: 0.71, jitter: 0.01, edge: 0, accent: 2.6, accentDot: 1.15, marina: 2.45, build: 3, rim: 0 },
+      avia:   { scale: 2.5, x: 0.53, y: 0.56, tilt: 0.62, turn: 0.75, swing: 0.2, speed: 0.08, dot: 0.8, dotHalo: 1.1, bright: 1.25, free: 0.41, halo: 0.13, spread: 0.8, jitter: 0, edge: 0, accent: 1, accentDot: 1.4, marina: 1.45, build: 2.9, rim: 0 },
+      me:     { scale: 0.85, x: 0.72, y: 0.5, tilt: 0, turn: 0, swing: 0.22, speed: 0.25, dot: 0.55, dotHalo: 1.3, bright: 1.1, free: 0.34, halo: 0.09, spread: 0.5, jitter: 0, edge: 0.2, accent: 0.6, accentDot: 1, marina: 0.95, build: 2.95, rim: 0 },
       globe:  { scale: 1.38, x: 0.715, y: 0.5, tilt: 0.49, turn: 0.26, swing: 0.3, speed: 0.29, dot: 0.85, dotHalo: 1, bright: 1.08, free: 0.47, halo: 0.67, spread: 0.43, jitter: 0, edge: 0.54, accent: 1.3, accentDot: 1.1, marina: 2.3, build: 1.4, rim: 0 },
-      island: { scale: 1.91, x: 0.67, y: 0.45, tilt: 0.65, turn: -0.45, swing: 0.22, speed: 0.18, dot: 0.98, dotHalo: 0.92, bright: 0.82, free: 0.37, halo: 0.3, spread: 0.95, jitter: 0, edge: 0.4, accent: 1.6, accentDot: 0.9, marina: 2.2, build: 2.05, rim: 0 }
+      island: { scale: 1.91, x: 0.67, y: 0.45, tilt: 0.65, turn: -0.45, swing: 0.08, speed: 0.53, dot: 1.1, dotHalo: 0.85, bright: 0.6, free: 0.39, halo: 0.44, spread: 1.05, jitter: 0, edge: 0.4, accent: 1.85, accentDot: 0.8, marina: 2.35, build: 2.05, rim: 0 }
     };
     var V = {}, vk, vp;
     for (vk in DEF) { V[vk] = {}; for (vp in DEF[vk]) V[vk][vp] = DEF[vk][vp]; }
@@ -608,7 +608,7 @@
     var D = {
       size: 1.13,       /* радиус сферы в долях высоты экрана */
       x: .88,          /* центр по горизонтали, в долях ширины */
-      y: .49,          /* центр по вертикали, в долях высоты */
+      y: .43,          /* центр по вертикали, в долях высоты */
       speed: .21,      /* скорость вращения и «дыхания» */
       count: 14000,     /* число точек */
       dot: .9,         /* размер точки */
