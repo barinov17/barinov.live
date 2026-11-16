@@ -514,7 +514,7 @@
       robots: { scale: 1, x: .71, y: .33, tilt: .27, turn: .01, swing: .65, speed: .22, dot: .85, dotHalo: .9, bright: 1.1, free: .2, halo: .08, spread: 1.5, jitter: .02, edge: 0, accent: 1, accentDot: 1, marina: 1, build: 1 },
       cern:   { scale: 1.42, x: .675, y: .46, tilt: .5, turn: 0, swing: 0, speed: .12, dot: .9, dotHalo: .8, bright: 1.1, free: .2, halo: .3, spread: .35, jitter: .04, edge: 0, accent: 1, accentDot: 1, marina: 1, build: 1 },
       moscow: { scale: 1, x: .72, y: .48, tilt: .72, turn: 0, swing: 0, speed: .06, dot: .85, dotHalo: .8, bright: 1.1, free: .1, halo: .12, spread: .4, jitter: .004, edge: 0, accent: 1.5, accentDot: .8, marina: 1.9, build: 1 },
-      avia:   { scale: 1.6, x: .72, y: .52, tilt: .4, turn: -.2, swing: .2, speed: .14, dot: .9, dotHalo: .8, bright: 1.1, free: .12, halo: .12, spread: .4, jitter: .006, edge: 0, accent: 1.3, accentDot: .9, marina: 1, build: 1.25 },
+      avia:   { scale: 1.6, x: .72, y: .52, tilt: .4, turn: -.2, swing: .2, speed: .14, dot: .9, dotHalo: .8, bright: 1.1, free: .08, halo: .1, spread: .4, jitter: .003, edge: 0, accent: 1.3, accentDot: .9, marina: 1, build: 1.4 },
       island: { scale: 1.61, x: .69, y: .45, tilt: .65, turn: -.45, swing: .08, speed: .53, dot: 1.1, dotHalo: .85, bright: 1, free: .35, halo: .2, spread: 1.36, jitter: 0, edge: .26, accent: 1.85, accentDot: .8, marina: 1.75, build: 2.05 }
     };
     var V = {}, vk, vp;
@@ -727,11 +727,11 @@
             T3(v(.12, .1, sd * .036), v(-.2, .1, sd * .036), v(-.15, .1, sd * .28), 2.2); T3(v(-.15, .1, sd * .28), v(-.07, .1, sd * .28), v(.12, .1, sd * .036), 2.2);
             T3(v(-.24, .1, sd * .05), v(-.39, .1, sd * .05), v(-.37, .1, sd * .18), 2.2);
             T3(v(-.2, .12, sd * .06), v(-.37, .12, sd * .06), v(-.37, .28, sd * .1), 2.2);
-            Lq(v(-.12, .09, sd * .06), v(-.12, 0, sd * .06), 1.2);
+            Lq(v(-.12, .09, sd * .06), v(-.12, 0, sd * .06), .4);
           }
-          Lq(v(.18, .09, 0), v(.18, 0, 0), 1.2);
+          Lq(v(.18, .09, 0), v(.18, 0, 0), .4);
         }
-        jet(-.95, -1.05, -.12, 1.25); jet(-.8, -.35, -.1, 1.15); jet(-.62, .3, -.1, 1.1); jet(-.48, .9, -.12, 1.05);
+        jet(-.85, -1.1, -.45, 1.7, 9); jet(-.7, -.3, -.45, 1.6, 9); jet(-.55, .45, -.45, 1.5, 9); jet(-.4, 1.15, -.45, 1.4, 9);
         jet(-2.15, .75, -.05, .85, 3.5); jet(-1.9, 1.05, -.05, .8, 3.5); jet(-.9, 1.75, -.3, .8, 3.5);
         /* «летающее крыло» перед большим ангаром */
         put(1.45, 0, .85, 3.0, 4);
