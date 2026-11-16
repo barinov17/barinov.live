@@ -1320,7 +1320,10 @@
     ];
     var mode = 'base', cur = 'robots', pinned = null, rows = {}, brow = {}, tabs = {}, cases = {}, modes = {};
     try { var sv = JSON.parse(localStorage.getItem('grad-debug-scenes-2')); if (sv) for (var a in sv) if (S.V[a]) for (var b in sv[a]) if (b in S.V[a] && isFinite(sv[a][b])) S.V[a][b] = +sv[a][b]; } catch (e) {}
-    try { var sb = JSON.parse(localStorage.getItem('grad-lab-base')); if (sb) { for (var k0 in sb) if (k0 in S.P && isFinite(sb[k0])) S.P[k0] = +sb[k0]; S.baseY = S.P.y; S.build(); } } catch (e) {}
+    /* положение сферы по Y хранится без сдвига от прокрутки. Раньше в память попадало уже сдвинутое значение, и с каждым заходом сфера
+       уезжала всё выше, пока не пропала с первого экрана — поэтому старая запись читается один раз и без Y, дальше живёт новая. */
+    function baseVal(k0) { return k0 === 'y' ? (S.labY != null ? S.labY : S.y0 != null ? S.y0 : S.P.y) : S.P[k0]; }
+    try { var sbRaw = localStorage.getItem('grad-lab-base-2'), sbOld = sbRaw == null, sb = JSON.parse(sbOld ? localStorage.getItem('grad-lab-base') : sbRaw); if (sb) { if (sbOld) delete sb.y; for (var k0 in sb) if (k0 in S.P && isFinite(sb[k0])) S.P[k0] = +sb[k0]; S.baseY = S.P.y; S.build(); } } catch (e) {}
     try { mode = localStorage.getItem('grad-lab-mode') === 'cases' ? 'cases' : 'base'; } catch (e) {}
 
     var box = document.createElement('div'); box.className = 'dbg';
@@ -1335,7 +1338,7 @@
     var pb = box.querySelector('#dbg-base'), pc = box.querySelector('#dbg-cases'), mb = box.querySelector('#dbg-mode');
 
     function fmt(v, step) { return step >= 1 ? String(Math.round(v)) : (+v).toFixed(step < .01 ? 3 : 2); }
-    function baseLine() { return 'Базовая сцена [sphere] — ' + BASE.map(function (c) { return c[0] + ': ' + fmt(S.P[c[0]], c[4]); }).join(', '); }
+    function baseLine() { return 'Базовая сцена [sphere] — ' + BASE.map(function (c) { return c[0] + ': ' + fmt(baseVal(c[0]), c[4]); }).join(', '); }
     function line(k) {
       var name = '', parts = [];
       SCN.forEach(function (q) { if (q[0] === k) name = q[1]; });
@@ -1345,13 +1348,13 @@
     function show() {
       modes.base.setAttribute('aria-pressed', mode === 'base'); modes.cases.setAttribute('aria-pressed', mode === 'cases');
       pb.style.display = mode === 'base' ? '' : 'none'; pc.style.display = mode === 'cases' ? '' : 'none';
-      BASE.forEach(function (c) { brow[c[0]].input.value = S.P[c[0]]; brow[c[0]].val.textContent = fmt(S.P[c[0]], c[4]); });
+      BASE.forEach(function (c) { brow[c[0]].input.value = baseVal(c[0]); brow[c[0]].val.textContent = fmt(baseVal(c[0]), c[4]); });
       GROUPS.forEach(function (g) { g[1].forEach(function (c) { rows[c[0]].input.value = S.V[cur][c[0]]; rows[c[0]].val.textContent = fmt(S.V[cur][c[0]], c[4]); }); });
       SCN.forEach(function (q) { tabs[q[0]].setAttribute('aria-pressed', mode === 'cases' && q[0] === cur); if (cases[q[0]]) cases[q[0]].classList.toggle('pinned', pinned === q[0]); });
       out.value = mode === 'base' ? baseLine() : line(cur);
       try {
         localStorage.setItem('grad-debug-scenes-2', JSON.stringify(S.V));
-        var o = {}; BASE.forEach(function (c) { o[c[0]] = +fmt(c[0] === 'y' && S.labY != null ? S.labY : S.P[c[0]], c[4]); }); localStorage.setItem('grad-lab-base', JSON.stringify(o));
+        var o = {}; BASE.forEach(function (c) { o[c[0]] = +fmt(baseVal(c[0]), c[4]); }); localStorage.setItem('grad-lab-base-2', JSON.stringify(o));
         localStorage.setItem('grad-lab-mode', mode);
       } catch (e) {}
     }
@@ -1412,7 +1415,7 @@
     box.querySelector('#dbg-copy').addEventListener('click', function () { copy(mode === 'base' ? baseLine() : line(cur), this, 'скопировать'); });
     box.querySelector('#dbg-all').addEventListener('click', function () { copy([baseLine()].concat(SCN.map(function (q) { return line(q[0]); })).join('\n'), this, 'скопировать всё'); });
     box.querySelector('#dbg-reset').addEventListener('click', function () {
-      if (mode === 'base') { S.reset(); S.baseY = S.P.y; S.labY = null; } else for (var p in S.DEF[cur]) S.V[cur][p] = S.DEF[cur][p];
+      if (mode === 'base') { S.reset(); S.baseY = S.y0 = S.P.y; S.labY = null; } else for (var p in S.DEF[cur]) S.V[cur][p] = S.DEF[cur][p];
       S.redraw(); show();
     });
     box.querySelector('#dbg-fold').addEventListener('click', function () { this.textContent = box.classList.toggle('folded') ? 'развернуть' : 'свернуть'; });
@@ -1431,6 +1434,7 @@
       if (sp && sp.P) {
         if (sp.baseY != null) { base = sp.baseY; sp.baseY = null; }   /* положение задали бегунком в lab */
         if (base === null) base = sp.P.y;
+        sp.y0 = base;                                                 /* положение без сдвига от прокрутки — его и запоминает Tune */
         sp.P.y = base - y / Math.max(1, innerHeight) * .06;
       }
     }
