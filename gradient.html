@@ -974,7 +974,7 @@
         var cn = cur === 'cern', isl = cur === 'island', mk = cur === 'moscow', av = cur === 'avia', v = V[cur], tt = ms / 1000;
         var ang = v.turn + (v.swing > 0 ? v.swing * Math.sin(tt * v.speed) : tt * v.speed), ca = Math.cos(ang), sa = Math.sin(ang);
         var ct = Math.cos(v.tilt), st = Math.sin(v.tilt), ey = cn || mk ? 0 : isl ? .1 : av ? 0 : 1.75, pd = cn || isl || mk || av ? 10 : 8, dk = cn ? .14 : isl || mk ? .1 : av ? .09 : .13;
-        var sc = (av ? Math.min(H * .2, W * .1) : cn ? Math.min(H * .147, W * .102) : mk ? Math.min(H * .16, W * .1) : isl ? Math.min(H * .2, W * .096) : Math.min(H * .2, W * .105)) * v.scale, ox = W * v.x, oy = H * v.y;
+        var sc = (av ? Math.min(H * .2, W * .1) : cn ? Math.min(H * .294, W * .204) : mk ? Math.min(H * .16, W * .1) : isl ? Math.min(H * .2, W * .096) : Math.min(H * .2, W * .105)) * v.scale, ox = W * v.x, oy = H * v.y;
         for (i = 0; i < PTS.length; i++) {
           var e = morph * 1.6 - TD[i] * .6;
           if (e <= 0) continue;
