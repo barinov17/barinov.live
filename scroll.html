@@ -135,16 +135,12 @@
      поверх лежит зерно. Слева, под текстом, фон затемнён. */
   body { background: #131218; }
   .grad { position: fixed; inset: 0; z-index: 0; overflow: hidden; pointer-events: none; background: #131218; }
-  .grad i { position: absolute; display: block; border-radius: 50%; filter: blur(70px); will-change: transform; }
-  .grad .b1 { width: 62vw; height: 40vw; left: 46%; top: -24vw; background: radial-gradient(closest-side, #F0844A, rgba(240,132,74,0)); opacity: .95; animation: g1 19s ease-in-out infinite alternate; }
-  .grad .b2 { width: 44vw; height: 22vw; left: 30%; top: -8vw; background: radial-gradient(closest-side, #F3C3A6, rgba(243,195,166,0)); opacity: .8; animation: g2 23s ease-in-out infinite alternate; }
-  .grad .b3 { width: 70vw; height: 26vw; left: 42%; top: 9vw; background: radial-gradient(closest-side, #1E88AC, rgba(30,136,172,0)); opacity: .9; animation: g3 21s ease-in-out infinite alternate; }
-  .grad .b4 { width: 56vw; height: 30vw; left: 18%; top: 22vw; background: radial-gradient(closest-side, #5E3D80, rgba(94,61,128,0)); opacity: .55; animation: g4 27s ease-in-out infinite alternate; }
-  .grad .b5 { width: 80vw; height: 30vw; left: 30%; top: 62vh; background: radial-gradient(closest-side, #4A2328, rgba(74,35,40,0)); opacity: .5; animation: g2 31s ease-in-out infinite alternate-reverse; }
-  @keyframes g1 { from { transform: translate(-9vw, -3vw) rotate(-20deg) scale(.9); } to { transform: translate(11vw, 7vw) rotate(-2deg) scale(1.18); } }
-  @keyframes g2 { from { transform: translate(10vw, 3vw) rotate(-4deg) scale(1.12); } to { transform: translate(-12vw, -5vw) rotate(-24deg) scale(.88); } }
-  @keyframes g3 { from { transform: translate(-12vw, 6vw) rotate(-20deg) scale(.92); } to { transform: translate(9vw, -6vw) rotate(-1deg) scale(1.2); } }
-  @keyframes g4 { from { transform: translate(8vw, -6vw) rotate(2deg) scale(1.15); } to { transform: translate(-10vw, 8vw) rotate(-22deg) scale(.9); } }
+  .grad i { position: absolute; display: block; border-radius: 50%; filter: blur(70px); }
+  .grad .b1 { width: 62vw; height: 40vw; left: 46%; top: -24vw; background: radial-gradient(closest-side, #F0844A, rgba(240,132,74,0)); opacity: .95; }
+  .grad .b2 { width: 44vw; height: 22vw; left: 30%; top: -8vw; background: radial-gradient(closest-side, #F3C3A6, rgba(243,195,166,0)); opacity: .8; }
+  .grad .b3 { width: 70vw; height: 26vw; left: 42%; top: 9vw; background: radial-gradient(closest-side, #1E88AC, rgba(30,136,172,0)); opacity: .9; }
+  .grad .b4 { width: 56vw; height: 30vw; left: 18%; top: 22vw; background: radial-gradient(closest-side, #5E3D80, rgba(94,61,128,0)); opacity: .55; }
+  .grad .b5 { width: 80vw; height: 30vw; left: 30%; top: 62vh; background: radial-gradient(closest-side, #4A2328, rgba(74,35,40,0)); opacity: .5; }
   .grad .shade { position: absolute; inset: 0; background: linear-gradient(to right, rgba(19,18,24,.9), rgba(19,18,24,.55) 34%, rgba(19,18,24,0) 62%); }
   .grad .grain { position: absolute; inset: 0; background-image: url("data:image/svg+xml;utf8,%3Csvg%20xmlns%3D'http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg'%20width%3D'220'%20height%3D'220'%3E%3Cfilter%20id%3D'n'%3E%3CfeTurbulence%20type%3D'fractalNoise'%20baseFrequency%3D'0.9'%20numOctaves%3D'2'%20stitchTiles%3D'stitch'%2F%3E%3CfeColorMatrix%20values%3D'0%200%200%200%201%20%200%200%200%200%201%20%200%200%200%200%201%20%200%200%200%201.1%20-0.15'%2F%3E%3C%2Ffilter%3E%3Crect%20width%3D'100%25'%20height%3D'100%25'%20filter%3D'url(%23n)'%2F%3E%3C%2Fsvg%3E"); background-size: 220px 220px; opacity: .3; mix-blend-mode: overlay; }
   @media (max-width: 720px) {
@@ -190,13 +186,6 @@
   /* ——— Динамика градиента ———
      Оттенок всей композиции медленно уходит то в тёплую, то в холодную сторону;
      пятна мягко тянутся за курсором, каждое на свою глубину. */
-  .grad { animation: hue 37s ease-in-out infinite alternate; }
-  @keyframes hue { from { filter: hue-rotate(-16deg) saturate(1.05); } to { filter: hue-rotate(20deg) saturate(1.2); } }
-  .grad .b1 { translate: calc(var(--mx, 0) * 5vw) calc(var(--my, 0) * 3.5vw); }
-  .grad .b2 { translate: calc(var(--mx, 0) * -3vw) calc(var(--my, 0) * -2vw); }
-  .grad .b3 { translate: calc(var(--mx, 0) * 7vw) calc(var(--my, 0) * 4.5vw); }
-  .grad .b4 { translate: calc(var(--mx, 0) * -4.5vw) calc(var(--my, 0) * 3vw); }
-  .grad .b5 { translate: calc(var(--mx, 0) * 3vw) calc(var(--my, 0) * -2.5vw); }
   @media (prefers-reduced-motion: reduce) { .grad { animation: none; } }
 
 
@@ -263,12 +252,15 @@
   /* ——— Роль и описание — одна фраза под именем ——— */
   .me h1 { margin-bottom: clamp(14px, 1.6vw, 20px); }
 
-  /* ——— Параллакс при прокрутке: пятна градиента уезжают вверх медленнее текста, каждое со своей скоростью ——— */
-  .grad .b1 { translate: calc(var(--mx, 0) * 5vw) calc(var(--my, 0) * 3.5vw + var(--sy, 0) * -.05px); }
-  .grad .b2 { translate: calc(var(--mx, 0) * -3vw) calc(var(--my, 0) * -2vw + var(--sy, 0) * -.1px); }
-  .grad .b3 { translate: calc(var(--mx, 0) * 7vw) calc(var(--my, 0) * 4.5vw + var(--sy, 0) * -.075px); }
-  .grad .b4 { translate: calc(var(--mx, 0) * -4.5vw) calc(var(--my, 0) * 3vw + var(--sy, 0) * -.13px); }
-  .grad .b5 { translate: calc(var(--mx, 0) * 3vw) calc(var(--my, 0) * -2.5vw + var(--sy, 0) * -.16px); }
+
+  /* ——— Градиент неподвижен: пятна стоят в среднем положении прежней анимации. Движения на странице
+     хватает от точек, а плавающие размытые пятна с меняющимся оттенком были самой тяжёлой частью фона. ——— */
+  .grad { filter: saturate(1.12); }
+  .grad .b1 { transform: translate(1vw, 2vw) rotate(-11deg) scale(1.04); }
+  .grad .b2 { transform: translate(-1vw, -1vw) rotate(-14deg); }
+  .grad .b3 { transform: translate(-1.5vw, 0) rotate(-10deg) scale(1.06); }
+  .grad .b4 { transform: translate(-1vw, 1vw) rotate(-10deg) scale(1.02); }
+  .grad .b5 { transform: translate(-1vw, -1vw) rotate(-14deg); }
 
   /* ——— Больше поле слева; прошлые проекты — более узкой колонкой ——— */
   .zone { padding-left: clamp(22px, 6.5vw, 104px); }
@@ -566,22 +558,6 @@
 </script>
 
 <script>
-  /* ——— Градиент следует за курсором: положение сглаживается, чтобы пятна плыли, а не дёргались ——— */
-  (function () {
-    if (matchMedia("(prefers-reduced-motion: reduce)").matches || !matchMedia("(pointer: fine)").matches) return;
-    var g = document.querySelector(".grad"), tx = 0, ty = 0, x = 0, y = 0, raf = 0;
-    function step() {
-      x += (tx - x) * .045; y += (ty - y) * .045;
-      g.style.setProperty("--mx", x.toFixed(4)); g.style.setProperty("--my", y.toFixed(4));
-      raf = Math.abs(tx - x) + Math.abs(ty - y) > .002 ? requestAnimationFrame(step) : 0;
-    }
-    addEventListener("pointermove", function (e) {
-      tx = e.clientX / innerWidth * 2 - 1; ty = e.clientY / innerHeight * 2 - 1;
-      if (!raf) raf = requestAnimationFrame(step);
-    }, { passive: true });
-  })();
-</script>
-<script>
   /* ——— Фон: облако точек на «дышащей» сфере, медленно вращается ———
      Часть точек соединена с ближайшими соседями тонкими линиями — получается граф.
      Все настройки собраны в D (десктоп) и MOB (поправки для телефона). */
@@ -589,6 +565,7 @@
     var c = document.getElementById('bg'), x = c.getContext('2d');
     var still = matchMedia('(prefers-reduced-motion: reduce)').matches;
     var W, H, PTS = [], EDGES, SX, SY, NR, raf = 0, clock = 0, last = null;
+    var BKI = null;                                /* ступень яркости каждой точки в текущем кадре */
     var DX, DY, fresh = true;                     /* показанные положения точек: плавно догоняют расчётные, поэтому смена сцены — прямой перелёт */
     var NX, NY, NZ;                               /* ближайшая точка линии для каждой точки текущей сцены */
     var Q1, Q2, UX, UY, UZ, SZ, pinned = null;   /* случайные числа и направление разлёта каждой точки, её размер в кадре; закреплённая сцена (режим отладки) */
@@ -888,7 +865,6 @@
       return (ARM[kind] = { L: L, tot: tot });
     }
 
-    function use(kind) { var q = SC[kind]; TX = q.X; TY = q.Y; TZ = q.Z; TD = q.D; TH = q.H; NX = q.NX; NY = q.NY; NZ = q.NZ; }
     /* для каждой точки — ближайшая точка «линии» сцены (берег, дороги, марина, кольца); к ней точку можно прижать.
        Линии раскладываются по клеткам сетки, поиск идёт по соседним клеткам. */
     function nearest(q) {
@@ -906,7 +882,19 @@
         if (best >= 0) { q.NX[i] = q.X[best]; q.NY[i] = q.Y[best]; q.NZ[i] = q.Z[best]; }
       }
     }
-    function targets() { fill('robots'); fill('cern'); fill('island'); fill('moscow'); fill('avia'); fill('me'); fill('globe'); use(cur); }
+    /* места точек для сцены считаются при первом обращении к ней; после загрузки остальные сцены
+       досчитываются по одной в паузах, чтобы первое переключение не подтормаживало */
+    var KINDS = ['me', 'robots', 'island', 'cern', 'globe', 'moscow', 'avia'], warm = 0;
+    function use(kind) { if (!SC[kind]) fill(kind); var q = SC[kind]; TX = q.X; TY = q.Y; TZ = q.Z; TD = q.D; TH = q.H; NX = q.NX; NY = q.NY; NZ = q.NZ; }
+    function targets() {
+      SC = {}; use(cur);
+      clearTimeout(warm);
+      (function next() {
+        warm = setTimeout(function () {
+          for (var w = 0; w < KINDS.length; w++) if (!SC[KINDS[w]]) { fill(KINDS[w]); use(cur); next(); return; }
+        }, 350);
+      })();
+    }
 
     function fill(kind) {
       if (kind === 'globe') {
@@ -1084,7 +1072,7 @@
     }
 
     function setup() {
-      var d = Math.min(window.devicePixelRatio || 1, 2);
+      var d = Math.min(window.devicePixelRatio || 1, 1.5);
       W = innerWidth; H = innerHeight;
       c.width = W * d; c.height = H * d;
       x.setTransform(d, 0, 0, d, 0, 0);
@@ -1161,17 +1149,25 @@
           x.stroke();
         }
       }
-      /* точки */
-      for (var pass = 0; pass < 2; pass++) {
-        x.fillStyle = pass ? '#F4A982' : '#F3EEE8';
-        for (i = 0; i < PTS.length; i++) {
-          if (PTS[i][3] != !!pass) continue;
-          var near = NR[i], al = (.1 + .55 * near) * k * P.alpha * (pass ? 1.5 : 1) * (1 + morph * V[cur].bright);
-          if (al <= .004) continue;
-          x.globalAlpha = al > 1 ? 1 : al;
-          var s = (near > .55 ? 2.2 : 1.4) * P.dot * SZ[i];
-          x.fillRect(DX[i], DY[i], s, s);
+      /* точки: каждая попадает в одну из 16 ступеней яркости (отдельно обычные и акцентные), и вся ступень
+         рисуется одной заливкой — вместо тысяч отдельных заливок со сменой прозрачности на каждую точку */
+      var NB = 16, lum = k * P.alpha * (1 + morph * V[cur].bright), n = PTS.length, bk;
+      if (!BKI || BKI.length !== n) BKI = new Uint8Array(n);
+      for (i = 0; i < n; i++) {
+        var acc = PTS[i][3] ? 1 : 0, al = (.1 + .55 * NR[i]) * lum * (acc ? 1.5 : 1);
+        if (al <= .004) { BKI[i] = 255; continue; }
+        bk = al >= 1 ? NB - 1 : Math.floor(al * NB);
+        BKI[i] = bk + acc * NB;
+      }
+      for (bk = 0; bk < NB * 2; bk++) {
+        var any = false;
+        for (i = 0; i < n; i++) {
+          if (BKI[i] !== bk) continue;
+          if (!any) { any = true; x.fillStyle = bk < NB ? '#F3EEE8' : '#F4A982'; x.globalAlpha = (bk % NB + .6) / NB; x.beginPath(); }
+          var s = (NR[i] > .55 ? 2.2 : 1.4) * P.dot * SZ[i];
+          x.rect(DX[i], DY[i], s, s);
         }
+        if (any) x.fill();
       }
       x.globalAlpha = 1;
     }
@@ -1351,14 +1347,13 @@
   })();
 </script>
 <script>
-  /* параллакс при прокрутке: градиент и сфера слегка смещаются вверх */
+  /* параллакс при прокрутке: сфера слегка смещается вверх (градиент неподвижен) */
   (function () {
     if (matchMedia("(prefers-reduced-motion: reduce)").matches) return;
     var g = document.querySelector(".grad"), base = null, raf = 0;
     function apply() {
       raf = 0;
       var y = window.scrollY || 0;
-      if (g) g.style.setProperty("--sy", y.toFixed(1));
       var sp = window.sphere;
       if (sp && sp.P) {
         if (sp.baseY != null) { base = sp.baseY; sp.baseY = null; }   /* положение задали бегунком в lab */
