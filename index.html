@@ -894,7 +894,7 @@
 
     /* для каждой точки — ближайшая точка «линии» сцены (берег, дороги, марина, кольца); к ней точку можно прижать.
        Линии раскладываются по клеткам сетки, поиск идёт по соседним клеткам. */
-    function nearest(q) {
+    function nearest(q, lim) {      /* lim — дальше этого расстояния до линии точка не притягивается (для объёмных моделей) */
       var n = q.X.length, i, j, cell = .12, grid = {}, key, lines = 0;
       q.NX = new Float32Array(q.X); q.NY = new Float32Array(q.Y); q.NZ = new Float32Array(q.Z);
       for (i = 0; i < n; i++) if (q.H[i] === 1 || q.H[i] >= 3) { key = Math.floor(q.X[i] / cell) + ',' + Math.floor(q.Z[i] / cell); (grid[key] || (grid[key] = [])).push(i); lines++; }
@@ -906,7 +906,7 @@
           var list = grid[(gx + a) + ',' + (gz + b)]; if (!list) continue;
           for (j = 0; j < list.length; j++) { var t = list[j], dx = q.X[t] - q.X[i], dy = q.Y[t] - q.Y[i], dz = q.Z[t] - q.Z[i], d = dx * dx + dy * dy + dz * dz; if (d < bd) { bd = d; best = t; } }
         }
-        if (best >= 0) { q.NX[i] = q.X[best]; q.NY[i] = q.Y[best]; q.NZ[i] = q.Z[best]; }
+        if (best >= 0 && !(lim && bd > lim * lim)) { q.NX[i] = q.X[best]; q.NY[i] = q.Y[best]; q.NZ[i] = q.Z[best]; }
       }
     }
     /* места точек для сцены считаются при первом обращении к ней; после загрузки остальные сцены
@@ -1105,7 +1105,7 @@
         var ml = Math.sqrt(m0 * m0 + m1 * m1 + m2 * m2);
         if (ml > 0) { NMX[i] = m0 / ml; NMY[i] = m1 / ml; NMZ[i] = m2 / ml; }
       }
-      SC[kind] = { X: TX, Y: TY, Z: TZ, D: TD, H: TH, MX: NMX, MY: NMY, MZ: NMZ }; nearest(SC[kind]);
+      SC[kind] = { X: TX, Y: TY, Z: TZ, D: TD, H: TH, MX: NMX, MY: NMY, MZ: NMZ }; nearest(SC[kind], .12);   /* роботы: к линиям прижимаются только точки рядом с ними, сами модели с места не сдвигаются */
     }
 
     function setup() {
