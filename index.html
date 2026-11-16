@@ -331,7 +331,7 @@
   @media (max-width: 720px) {
     /* телефон: сцена в верхней части экрана, текст начинается примерно с двух третей высоты; если текста больше,
        чем помещается ниже, распорка сверху сжимается и текст поднимается; партнёры и ссылки — в самом низу */
-    .steps section.slide, .steps section.slide.first { flex-direction: column; align-items: stretch; justify-content: flex-start; padding: 62px 30px 26px 18px; }
+    .steps section.slide, .steps section.slide.first { flex-direction: column; align-items: stretch; justify-content: flex-start; height: 100vh; height: 100svh; padding: 62px 30px 26px 18px; }
     .steps section.slide::before { content: ""; flex: 0 1 calc(66vh - 62px); flex-basis: calc(66svh - 62px); min-height: 0; }
     .steps .pg, .steps .first .pg { flex: none; width: 100%; }
     .steps .pp, .steps .pp.cl { position: static; flex: none; margin-top: auto; padding-top: 20px; max-width: none; }
