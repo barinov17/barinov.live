@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" class="listpage">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -269,97 +269,150 @@
   .me .sum { max-width: 30em; }
   /* подзаголовки прошлых проектов — узкой колонкой, раскрывающиеся описания — на всю ширину карточки */
   .zone.past .case > p { max-width: 400px; }
+
+  /* ——— Страница «scroll»: полноэкранные шаги — About, по одному на проект и контакты в конце. Текст слева
+     прямо по фону, справа точки собираются в сцену текущего шага; переход — прокруткой или точками справа. ——— */
+  html.listpage { scroll-snap-type: y mandatory; scroll-behavior: smooth; }
+  main.list { display: none; }
+  .steps section.slide { position: relative; z-index: 1; display: flex; align-items: flex-start; box-sizing: border-box; max-width: none; min-height: 100vh; min-height: 100svh; padding: clamp(64px, 11vh, 112px) clamp(22px, 6.5vw, 104px) 56px; scroll-snap-align: start; scroll-snap-stop: always; }
+  .steps section.slide.first { align-items: center; padding-top: 70px; }
+  .steps .pg { width: min(470px, 100%); max-width: none; }
+  .steps .first .pg { width: min(720px, 100%); }
+  .steps .pg > * { grid-column: auto; max-width: none; }
+  /* первая страница: крупное имя и крупное описание */
+  .steps h1 { margin: 0 0 clamp(14px, 1.6vw, 22px); font-size: clamp(34px, 3.5vw, 50px); line-height: 1.02; font-weight: 600; letter-spacing: -0.04em; color: var(--ink); white-space: normal; }
+  .steps .sum { max-width: 27em; margin: 0; font-size: clamp(18px, 1.5vw, 21.5px); line-height: 1.34; letter-spacing: -0.012em; color: var(--muted); text-wrap: pretty; }
+  .steps .sum b { color: var(--ink); font-weight: inherit; }
+  .steps .sum em { color: var(--accent); font-style: normal; }
+  /* страницы проектов */
+  .steps h1.pt { margin: 0 0 14px; font-size: clamp(25px, 2.25vw, 33px); line-height: 1.1; font-weight: 500; letter-spacing: -0.022em; color: var(--accent); }
+  .steps .sub { margin: 0 0 16px; font-size: clamp(16px, 1.2vw, 17.5px); line-height: 1.32; letter-spacing: -0.012em; color: var(--ink); text-wrap: pretty; }
+  .steps .body { font-size: clamp(14px, 1vw, 15px); line-height: 1.58; color: #A39BA5; }
+  .steps .body p { margin: 0; max-width: none; }
+  .steps .body p + p, .steps .body ul + p, .steps .body p + ul { margin-top: .75em; }
+  .steps .body ul { display: block; margin: 0; padding: 0 0 0 1.25em; max-width: none; list-style: disc outside; }
+  .steps .body li { display: list-item; margin: .35em 0; padding: 0; }
+  .steps .body li::marker { color: var(--accent); }
+  .steps .body a { color: #7CC6DC; text-decoration: underline; text-decoration-color: rgba(124, 198, 220, .5); text-underline-offset: 3px; border: 0; }
+  .steps .body a:hover { color: #A8DDEC; text-decoration-color: currentColor; }
+  .steps .plabel { margin-top: 1.1em; color: var(--muted); }
+  .steps .soon { color: var(--muted); }
+  .steps .site { display: inline-block; margin-top: 16px; font-size: clamp(14px, 1vw, 15px); color: #7CC6DC; text-decoration: underline; text-decoration-color: rgba(124, 198, 220, .5); text-underline-offset: 3px; border: 0; }
+  .steps .site:hover { color: #A8DDEC; }
+  /* партнёры — отдельным блоком слева внизу страницы */
+  .steps .pp { position: absolute; left: clamp(22px, 6.5vw, 104px); bottom: clamp(26px, 5vh, 48px); max-width: min(500px, calc(100% - 60px)); }
+  .steps .pp h3 { margin: 0 0 8px; font-size: 10px; font-weight: 500; letter-spacing: .12em; text-transform: uppercase; color: var(--muted); }
+  .steps .pp ul { display: flex; flex-direction: column; gap: 5px; margin: 0; padding: 0; max-width: none; list-style: none; font-size: clamp(13.5px, .95vw, 14.5px); line-height: 1.45; color: #A39BA5; }
+  .steps .pp.nda p { margin: 0; max-width: 30em; font-size: clamp(12.5px, .9vw, 13.5px); line-height: 1.45; color: var(--muted); }
+  .steps .pp li { margin: 0; padding: 0; }
+  .steps .pp a { color: #7CC6DC; text-decoration: underline; text-decoration-color: rgba(124, 198, 220, .5); text-underline-offset: 3px; border: 0; }
+  .steps .pp a:hover { color: #A8DDEC; }
+  /* контакты */
+  .steps .pp.cl { max-width: min(640px, calc(100% - 60px)); }
+  .steps ul.links.row { display: flex; flex-direction: row; flex-wrap: wrap; gap: 8px 22px; max-width: none; margin: 0; padding: 0; list-style: none; font-size: clamp(14px, 1.05vw, 16px); }
+  .steps ul.links.row li { margin: 0; padding: 0; }
+  .steps ul.links.row a { display: inline-flex; align-items: center; gap: .55em; color: var(--ink); text-decoration: none; }
+  .steps ul.links.row a:hover { color: #7CC6DC; }
+  .steps ul.links.row .logo { width: .95em; height: .95em; fill: currentColor; }
+  /* календарь записи на звонок: виджет Calendly, появляется, когда в настройках страницы задана ссылка */
+  .steps .calwrap { margin-top: 6px; }
+  .steps .cal { max-width: none; border: 0; padding: 0; min-height: 0; }
+  .steps .cal .calendly-inline-widget { min-width: 300px; height: min(640px, calc(100vh - 290px)); border-radius: 12px; overflow: hidden; }
+  .steps .cal + .calph { display: none; }
+  .steps .calph { margin: 0; padding: 18px 20px; border: 1px dashed rgba(243, 238, 232, .22); border-radius: 12px; font-size: 13.5px; color: var(--muted); }
+  /* точки-навигация у правого края: текущий шаг крупнее, при наведении — название */
+  .dots { position: fixed; right: 14px; top: 50%; z-index: 6; display: flex; flex-direction: column; gap: 4px; transform: translateY(-50%); }
+  .dots a { position: relative; display: block; width: 18px; height: 14px; }
+  .dots a::before { content: ""; position: absolute; right: 6px; top: 4px; width: 6px; height: 6px; border-radius: 50%; background: rgba(243, 238, 232, .3); transition: background .2s, transform .2s; }
+  .dots a:hover::before { background: rgba(243, 238, 232, .8); }
+  .dots a[aria-current]::before { background: var(--accent); transform: scale(1.6); }
+  .dots a span { position: absolute; right: 24px; top: 50%; transform: translateY(-50%); padding: 3px 8px; border-radius: 999px; background: rgba(19, 18, 24, .8); font-size: 11px; white-space: nowrap; color: var(--ink); opacity: 0; pointer-events: none; transition: opacity .15s; }
+  .dots a:hover span { opacity: 1; }
+  @media (max-width: 720px) {
+    .steps section.slide { align-items: flex-start; padding: 62px 30px 30px 18px; }
+    .steps section.slide.first { align-items: flex-end; padding: 62px 30px 44px 18px; }   /* портрет сверху, имя и описание под ним */
+    .steps .pp { left: 18px; right: 30px; bottom: 24px; max-width: none; }
+    .dots { right: 2px; }
+    .dots a span { display: none; }
+  }
+  @media (prefers-reduced-motion: reduce) { html.listpage { scroll-behavior: auto; } }
 </style>
 </head>
 <body>
 <div class="grad" aria-hidden="true"><i class="b1"></i><i class="b2"></i><i class="b3"></i><i class="b4"></i><i class="b5"></i><b class="shade"></b><b class="grain"></b></div>
 <canvas id="bg" aria-hidden="true"></canvas>
-<nav class="tabs" aria-label="Versions"><a href="/" aria-current="page">main</a><a href="/scroll.html">scroll</a><a href="/?tune">tune</a></nav>
-<main>
-<div class="zone top">
-<div class="sheet">
+<nav class="tabs" aria-label="Versions"><a href="/" aria-current="page">main</a><a href="/?tune">tune</a></nav>
+<main class="list"></main>
 
-  <div class="me">
-    <h1>Aleksandr Barinov</h1>
-    <p class="sum"><b>Real estate professional</b> specializing in <b>concept development</b>, <b>masterplanning</b>, and <b>technology solutions</b> for <em><span style="white-space:nowrap">large-scale</span> development</em>.</p>
-  </div>
+<div class="steps">
+  <section class="slide first" id="about" data-scene="me" data-name="About">
+    <article class="pg">
+      <h1>Aleksandr Barinov</h1>
+      <p class="sum"><b>Real estate professional</b> specializing in <b>concept development</b>, <b>masterplanning</b>, and <b>technology solutions</b> for <em><span style="white-space:nowrap">large-scale</span> development</em>.</p>
+    </article>
+  </section>
 
-  <section class="current">
-  <h2>Now</h2>
-  <ul>
-    <li class="case main">
-      <h3>RubiqOS</h3>
-      <p>Physical AI platform for resort operations.</p>
-      <div class="content open">
+  <section class="slide" id="rubiqos" data-scene="robots" data-name="RubiqOS">
+    <article class="pg">
+      <h1 class="pt">RubiqOS</h1>
+      <p class="sub">Physical AI platform for resort operations.</p>
+      <div class="body">
         <p>RubiqOS orchestrates day-to-day operations between people and robots. Its engine plans the tasks, splits the work between staff and machines, and runs both as one team.</p>
       </div>
       <a class="site" href="https://rubiqos.com/" target="_blank" rel="noopener">rubiqos.com ↗</a>
-    </li>
-  </ul>
+    </article>
+    
   </section>
 
-</div>
-</div>
-<div class="zone past">
-<div class="sheet">
-
-  <section>
-  <h2>Past</h2>
-  <ul>
-
-    <li class="case">
-      <h3>Private island development</h3>
-      <p>Masterplan development for a $1B resort on a private island in the Caribbean.</p>
-      <button class="more" aria-expanded="false">more</button>
-      <div class="content">
+  <section class="slide" id="island" data-scene="island" data-name="Private island">
+    <article class="pg">
+      <h1 class="pt">Private island development</h1>
+      <p class="sub">Masterplan development for a $1B resort on a private island in the Caribbean.</p>
+      <div class="body">
         <p>My concept won a <a href="https://www.ribacompetitions.com/" target="_blank" rel="noopener">RIBA competition</a>, and I was invited to join the project as Lead Masterplan Architect. I was the third member of the team and helped shape the initial vision, the masterplan and the overall development concept.</p>
         <p>My scope covered the architectural and development concept of the island, strategic planning and cross-disciplinary coordination.</p>
       </div>
-    </li>
+      
+    </article>
+    <aside class="pp nda"><p>This project is under NDA, so the details are anonymized.</p></aside>
+  </section>
 
-    <li class="case">
-      <h3>CERN campus</h3>
-      <p>Concept development for a laboratory complex on the CERN campus.</p>
-      <button class="more" aria-expanded="false">more</button>
-      <div class="content">
+  <section class="slide" id="cern" data-scene="cern" data-name="CERN campus">
+    <article class="pg">
+      <h1 class="pt">CERN campus</h1>
+      <p class="sub">Concept development for a laboratory complex on the CERN campus.</p>
+      <div class="body">
         <p>I helped shape the concept for a complex of administrative buildings and laboratories at CERN. I ran several strategy sessions with the architectural teams and laboratory representatives to define clear requirements for the architectural design.</p>
-        <p class="plabel">Partners:</p>
-        <ul class="partners">
+      </div>
+      
+    </article>
+    <aside class="pp"><h3>Partners</h3><ul>
           <li><a href="https://home.cern/" target="_blank" rel="noopener">CERN</a></li>
           <li><a href="https://www.nickl-partner.com/en/" target="_blank" rel="noopener">Nickl &amp; Partner</a></li>
-        </ul>
-      </div>
-    </li>
+        </ul></aside>
+  </section>
 
-    <li class="case">
-      <h3>Easyinn</h3>
-      <p>Platform for automated property management.</p>
-      <button class="more" aria-expanded="false">more</button>
-      <div class="content">
+  <section class="slide" id="easyinn" data-scene="globe" data-name="Easyinn">
+    <article class="pg">
+      <h1 class="pt">Easyinn</h1>
+      <p class="sub">Platform for automated property management.</p>
+      <div class="body">
         <p>Easyinn started as an internal tool for running my own network of hotels with 280 units in total. It included a keyless access system and a guest app with a marketplace of local services.</p>
         <p>It was later spun off as a standalone product and launched in several countries.</p>
-        <p class="plabel">Partners:</p>
-        <ul class="partners">
+      </div>
+      
+    </article>
+    <aside class="pp"><h3>Partners</h3><ul>
           <li><a href="https://www.guesty.com/" target="_blank" rel="noopener">Guesty</a></li>
           <li><a href="https://nuki.io/" target="_blank" rel="noopener">Nuki</a></li>
-        </ul>
-      </div>
-    </li>
+        </ul></aside>
+  </section>
 
-    <li class="case">
-      <h3>Habithai</h3>
-      <p>Gated community development in Thailand.</p>
-      <button class="more" aria-expanded="false">more</button>
-      <div class="content">
-        <p>I developed the masterplan and the product and architectural concepts for a gated community of 11 premium villas on Koh Samui, Thailand.</p>
-      </div>
-    </li>
-
-    <li class="case">
-      <h3>Foresight Moscow-2050</h3>
-      <p>The largest foresight study for the Moscow masterplan.</p>
-      <button class="more" aria-expanded="false">more</button>
-      <div class="content">
+  <section class="slide" id="moscow" data-scene="moscow" data-name="Moscow-2050">
+    <article class="pg">
+      <h1 class="pt">Foresight Moscow‑2050</h1>
+      <p class="sub">The largest foresight study for the Moscow masterplan.</p>
+      <div class="body">
         <p>I was part of the team that developed the methodology, strategy and overall structure of the study for the Moscow masterplan — a joint effort of three universities and research institutions and more than 2,000 experts from business, government and academia.</p>
         <p>The project shaped the long-term development strategy of the Moscow masterplan and made several landmark projects possible, including:</p>
         <ul>
@@ -367,64 +420,112 @@
           <li><a href="https://badaevsky.com/en/" target="_blank" rel="noopener">Badaevsky</a> — a one-of-a-kind residential complex raised 17 meters above the ground.</li>
           <li><a href="https://en.wikipedia.org/wiki/Moscow_Regular_River_Transport" target="_blank" rel="noopener">Moscow Regular River Transport</a> — the launch and route planning of the city's regular river service.</li>
         </ul>
-        <p class="plabel">Partners:</p>
-        <ul class="partners">
+      </div>
+      
+    </article>
+    <aside class="pp"><h3>Partners</h3><ul>
           <li><a href="https://genplanmos.ru/" target="_blank" rel="noopener">Moscow Masterplan Institute</a></li>
           <li><a href="https://www.hse.ru/en/" target="_blank" rel="noopener">Higher School of Economics</a></li>
-        </ul>
-      </div>
-    </li>
+        </ul></aside>
+  </section>
 
-    <li class="case">
-      <h3>Nikolskiy market</h3>
-      <p>Redevelopment of a cluster of historic buildings in Saint Petersburg.</p>
-      <button class="more" aria-expanded="false">more</button>
-      <div class="content">
-        <p>The goal was to increase the value of a restored 40,000 m² historic building fivefold within five years.</p>
-        <p>The overall development strategy was to create an attractive public space, fill it with hospitality operators, and acquire and redevelop the neighboring buildings in the block.</p>
-        <p>As a result, Saint Petersburg gained another informal center of attraction in the heart of the city.</p>
-        <p class="plabel">Partners:</p>
-        <ul class="partners">
-          <li><a href="https://milesandyards.com/" target="_blank" rel="noopener">Miles &amp; Yards</a></li>
-          <li><a href="https://arch-katarsis.com/" target="_blank" rel="noopener">Katarsis Architects</a></li>
-        </ul>
-      </div>
-    </li>
-
-    <li class="case">
-      <h3>Aircraft assembly plant</h3>
-      <p>Masterplan optimization for a high-tech manufacturing site.</p>
-      <button class="more" aria-expanded="false">more</button>
-      <div class="content">
+  <section class="slide" id="aircraft" data-scene="avia" data-name="Aircraft plant">
+    <article class="pg">
+      <h1 class="pt">Aircraft assembly plant</h1>
+      <p class="sub">Masterplan optimization for a high-tech manufacturing site.</p>
+      <div class="body">
         <p>The facility builds civil aircraft as well as fourth- and fifth-generation fighter jets.</p>
         <p>My task was to expand and partially redesign the site to make room for new production facilities.</p>
       </div>
-    </li>
-  </ul>
-
+      
+    </article>
+    <aside class="pp nda"><p>This project is under NDA, so the details are anonymized.</p></aside>
   </section>
 
-  <section>
-  <h2>Contacts</h2>
-  <ul class="links">
+  <section class="slide" id="habithai" data-scene="" data-name="Habithai">
+    <article class="pg">
+      <h1 class="pt">Habithai</h1>
+      <p class="sub">Gated community development in Thailand.</p>
+      <div class="body">
+        <p>I developed the masterplan and the product and architectural concepts for a gated community of 11 premium villas on Koh Samui, Thailand.</p>
+      </div>
+      
+    </article>
+    
+  </section>
+
+  <section class="slide" id="nikolskiy" data-scene="" data-name="Nikolskiy market">
+    <article class="pg">
+      <h1 class="pt">Nikolskiy market</h1>
+      <p class="sub">Redevelopment of a cluster of historic buildings in Saint Petersburg.</p>
+      <div class="body">
+        <p>The goal was to increase the value of a restored 40,000 m² historic building fivefold within five years.</p>
+        <p>The overall development strategy was to create an attractive public space, fill it with hospitality operators, and acquire and redevelop the neighboring buildings in the block.</p>
+        <p>As a result, Saint Petersburg gained another informal center of attraction in the heart of the city.</p>
+      </div>
+      
+    </article>
+    <aside class="pp"><h3>Partners</h3><ul>
+          <li><a href="https://milesandyards.com/" target="_blank" rel="noopener">Miles &amp; Yards</a></li>
+          <li><a href="https://arch-katarsis.com/" target="_blank" rel="noopener">Katarsis Architects</a></li>
+        </ul></aside>
+  </section>
+
+  <section class="slide" id="sevkabel" data-scene="" data-name="Sevkabel Port">
+    <article class="pg">
+      <h1 class="pt">Sevkabel Port</h1>
+      
+      <div class="body">
+        <p class="soon">Description coming soon.</p>
+      </div>
+      
+    </article>
+    
+  </section>
+
+  <section class="slide" id="newholland" data-scene="" data-name="New Holland">
+    <article class="pg">
+      <h1 class="pt">New Holland</h1>
+      
+      <div class="body">
+        <p class="soon">Description coming soon.</p>
+      </div>
+      
+    </article>
+    
+  </section>
+
+  <section class="slide" id="colony" data-scene="" data-name="The Colony">
+    <article class="pg">
+      <h1 class="pt">The Colony</h1>
+      
+      <div class="body">
+        <p class="soon">Description coming soon.</p>
+      </div>
+      
+    </article>
+    
+  </section>
+
+  <section class="slide" id="contacts" data-scene="" data-name="Contacts">
+    <article class="pg">
+      <h1 class="pt">Contacts</h1>
+      <p class="sub">Book a discovery call or send a message.</p>
+      <div class="calwrap">
+        <div class="cal" id="calendly"></div>
+        <p class="calph">The booking calendar will appear here.</p>
+      </div>
+    </article>
+    <aside class="pp cl"><ul class="links row">
     <li><a href="https://wa.me/12428075582" target="_blank" rel="noopener"><svg class="logo" viewBox="0 0 24 24" aria-hidden="true"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/></svg>WhatsApp</a></li>
     <li><a href="https://t.me/forbarinov" target="_blank" rel="noopener"><svg class="logo" viewBox="0 0 24 24" aria-hidden="true"><path d="M11.944 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0a12 12 0 0 0-.056 0zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 0 1 .171.325c.016.093.036.306.02.472-.18 1.898-.962 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.48.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z"/></svg>Telegram</a></li>
     <li><a href="https://x.com/BarinovLive" target="_blank" rel="noopener"><svg class="logo" viewBox="0 0 24 24" aria-hidden="true"><path d="M18.901 1.153h3.68l-8.04 9.19L24 22.846h-7.406l-5.8-7.584-6.638 7.584H.474l8.6-9.83L0 1.154h7.594l5.243 6.932ZM17.61 20.644h2.039L6.486 3.24H4.298Z"/></svg>X.com</a></li>
     <li><a href="https://medium.com/@barinov.live" target="_blank" rel="noopener"><svg class="logo" viewBox="0 0 24 24" aria-hidden="true"><path d="M13.54 12a6.8 6.8 0 01-6.77 6.82A6.8 6.8 0 010 12a6.8 6.8 0 016.77-6.82A6.8 6.8 0 0113.54 12zM20.96 12c0 3.54-1.51 6.42-3.38 6.42-1.87 0-3.39-2.88-3.39-6.42s1.52-6.42 3.39-6.42 3.38 2.88 3.38 6.42M24 12c0 3.17-.53 5.75-1.19 5.75-.66 0-1.19-2.58-1.19-5.75s.53-5.75 1.19-5.75C23.47 6.25 24 8.83 24 12z"/></svg>Medium</a></li>
     <li><a href="https://www.linkedin.com/in/forbarinov/" target="_blank" rel="noopener"><svg class="logo" viewBox="0 0 24 24" aria-hidden="true"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>LinkedIn</a></li>
-  </ul>
-
-  <div class="cal" id="calendly">
-    <p class="muted">Calendar will appear here.</p>
-  </div>
-
+  </ul></aside>
   </section>
-
-  <p class="muted">©2026 Aleksandr Barinov · Map data © <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener" style="color: inherit">OpenStreetMap</a> contributors</p>
-
 </div>
-</div>
-</main>
+
 
 
 <script>
@@ -475,6 +576,7 @@
     var c = document.getElementById('bg'), x = c.getContext('2d');
     var still = matchMedia('(prefers-reduced-motion: reduce)').matches;
     var W, H, PTS = [], EDGES, SX, SY, NR, raf = 0, clock = 0, last = null;
+    var MX = null, MY = null, MZ = null;          /* нормали поверхностей в точках сцены (есть не у всех сцен) */
     var BKI = null;                                /* ступень яркости каждой точки в текущем кадре */
     var DX, DY, fresh = true;                     /* показанные положения точек: плавно догоняют расчётные, поэтому смена сцены — прямой перелёт */
     var NX, NY, NZ;                               /* ближайшая точка линии для каждой точки текущей сцены */
@@ -486,15 +588,16 @@
        free — доля точек, которые не собираются и остаются в сфере, halo — доля точек в облаке вокруг формы,
        spread — разлёт облака, jitter — размытие самой формы,
        edge — прижатие остальных точек к линиям сцены (0 — нет, 1 — все точки на линиях),
+       rim — выделение профиля объёмной модели (0 — нет),
        accent / accentDot — яркость и размер точек линий (берег и дороги), marina — яркость марины, build — яркость зданий */
     var DEF = {
-      robots: { scale: 1.11, x: 0.69, y: 0.285, tilt: 0.27, turn: 0.01, swing: 0.32, speed: 0.13, dot: 0.88, dotHalo: 0.95, bright: 1.08, free: 0.28, halo: 0.12, spread: 1.15, jitter: 0.02, edge: 0, accent: 1, accentDot: 1, marina: 1, build: 1.3 },
-      cern:   { scale: 2.5, x: 0.67, y: 0.46, tilt: 0.5, turn: 0, swing: 0.22, speed: 0.18, dot: 0.88, dotHalo: 0.9, bright: 1.08, free: 0.28, halo: 0.2, spread: 0.86, jitter: 0, edge: 0.14, accent: 1, accentDot: 1, marina: 2.4, build: 1.3 },
-      moscow: { scale: 2.06, x: 0.685, y: 0.45, tilt: 0.72, turn: 0, swing: 0, speed: 0.04, dot: 0.78, dotHalo: 1.4, bright: 0.98, free: 0.46, halo: 0.14, spread: 0.78, jitter: 0.01, edge: 0, accent: 2.1, accentDot: 1.08, marina: 2.25, build: 2.6 },
-      avia:   { scale: 2.5, x: 0.53, y: 0.56, tilt: 0.62, turn: 0.75, swing: 0.22, speed: 0.18, dot: 0.82, dotHalo: 1.05, bright: 1.15, free: 0.38, halo: 0.14, spread: 0.82, jitter: 0, edge: 0, accent: 1, accentDot: 1.2, marina: 1.45, build: 2.5 },
-      me:     { scale: 0.9, x: 0.72, y: 0.5, tilt: 0, turn: 0, swing: 0.22, speed: 0.18, dot: 0.7, dotHalo: 1.15, bright: 1.08, free: 0.34, halo: 0.12, spread: 0.68, jitter: 0, edge: 0.2, accent: 0.8, accentDot: 1, marina: 1, build: 2.6 },
-      globe:  { scale: 1.38, x: 0.715, y: 0.5, tilt: 0.49, turn: 0.26, swing: 0.3, speed: 0.29, dot: 0.85, dotHalo: 1, bright: 1.08, free: 0.47, halo: 0.67, spread: 0.43, jitter: 0, edge: 0.54, accent: 1.3, accentDot: 1.1, marina: 2.3, build: 1.4 },
-      island: { scale: 1.91, x: 0.67, y: 0.45, tilt: 0.65, turn: -0.45, swing: 0.22, speed: 0.18, dot: 0.98, dotHalo: 0.92, bright: 0.82, free: 0.37, halo: 0.3, spread: 0.95, jitter: 0, edge: 0.4, accent: 1.6, accentDot: 0.9, marina: 2.2, build: 2.05 }
+      robots: { scale: 1.11, x: 0.69, y: 0.285, tilt: 0.27, turn: 0.01, swing: 0.32, speed: 0.13, dot: 0.88, dotHalo: 0.95, bright: 1.08, free: 0.28, halo: 0.12, spread: 1.15, jitter: 0.02, edge: 0, accent: 1, accentDot: 1, marina: 1, build: 1.3, rim: 0.8 },
+      cern:   { scale: 2.5, x: 0.67, y: 0.46, tilt: 0.5, turn: 0, swing: 0.22, speed: 0.18, dot: 0.88, dotHalo: 0.9, bright: 1.08, free: 0.28, halo: 0.2, spread: 0.86, jitter: 0, edge: 0.14, accent: 1, accentDot: 1, marina: 2.4, build: 1.3, rim: 0 },
+      moscow: { scale: 2.06, x: 0.685, y: 0.45, tilt: 0.72, turn: 0, swing: 0, speed: 0.04, dot: 0.78, dotHalo: 1.4, bright: 0.98, free: 0.46, halo: 0.14, spread: 0.78, jitter: 0.01, edge: 0, accent: 2.1, accentDot: 1.08, marina: 2.25, build: 2.6, rim: 0 },
+      avia:   { scale: 2.5, x: 0.53, y: 0.56, tilt: 0.62, turn: 0.75, swing: 0.22, speed: 0.18, dot: 0.82, dotHalo: 1.05, bright: 1.15, free: 0.38, halo: 0.14, spread: 0.82, jitter: 0, edge: 0, accent: 1, accentDot: 1.2, marina: 1.45, build: 2.5, rim: 0 },
+      me:     { scale: 0.9, x: 0.72, y: 0.5, tilt: 0, turn: 0, swing: 0.22, speed: 0.18, dot: 0.7, dotHalo: 1.15, bright: 1.08, free: 0.34, halo: 0.12, spread: 0.68, jitter: 0, edge: 0.2, accent: 0.8, accentDot: 1, marina: 1, build: 2.6, rim: 0 },
+      globe:  { scale: 1.38, x: 0.715, y: 0.5, tilt: 0.49, turn: 0.26, swing: 0.3, speed: 0.29, dot: 0.85, dotHalo: 1, bright: 1.08, free: 0.47, halo: 0.67, spread: 0.43, jitter: 0, edge: 0.54, accent: 1.3, accentDot: 1.1, marina: 2.3, build: 1.4, rim: 0 },
+      island: { scale: 1.91, x: 0.67, y: 0.45, tilt: 0.65, turn: -0.45, swing: 0.22, speed: 0.18, dot: 0.98, dotHalo: 0.92, bright: 0.82, free: 0.37, halo: 0.3, spread: 0.95, jitter: 0, edge: 0.4, accent: 1.6, accentDot: 0.9, marina: 2.2, build: 2.05, rim: 0 }
     };
     var V = {}, vk, vp;
     for (vk in DEF) { V[vk] = {}; for (vp in DEF[vk]) V[vk][vp] = DEF[vk][vp]; }
@@ -795,7 +898,7 @@
     /* места точек для сцены считаются при первом обращении к ней; после загрузки остальные сцены
        досчитываются по одной в паузах, чтобы первое переключение не подтормаживало */
     var KINDS = ['me', 'robots', 'island', 'cern', 'globe', 'moscow', 'avia'], warm = 0;
-    function use(kind) { if (!SC[kind]) fill(kind); var q = SC[kind]; TX = q.X; TY = q.Y; TZ = q.Z; TD = q.D; TH = q.H; NX = q.NX; NY = q.NY; NZ = q.NZ; }
+    function use(kind) { if (!SC[kind]) fill(kind); var q = SC[kind]; TX = q.X; TY = q.Y; TZ = q.Z; TD = q.D; TH = q.H; NX = q.NX; NY = q.NY; NZ = q.NZ; MX = q.MX || null; MY = q.MY || null; MZ = q.MZ || null; }
     function targets() {
       SC = {}; use(cur);
       clearTimeout(warm);
@@ -821,12 +924,12 @@
         TX = new Float32Array(gn); TY = new Float32Array(gn); TZ = new Float32Array(gn); TD = new Float32Array(gn); TH = new Float32Array(gn);
         for (gq = 0; gq < gn; gq++) {
           var gu = rnd(gq, 3), g1 = rnd(gq, 5), g2 = rnd(gq, 6), g3 = rnd(gq, 8), gp, gk = 0;
-          if (gu < .36) { gp = gpt(Math.floor(g1 * GP.nl)); gk = 0; }                                   /* суша */
-          else if (gu < .52) { gp = gpt(GP.nl + Math.floor(g1 * GP.nc)); gk = 3; }                       /* берега */
-          else if (gu < .68) { var ga = 6.2832 * g1, gr = 1.004 + .028 * g2 * g2; gp = [gr * Math.cos(ga), gr * Math.sin(ga), 0]; gk = 5; }   /* контур шара: кольцо, всегда повёрнутое к зрителю */
-          else if (gu < .73) { gp = g2 < .5 ? gxyz(g1 * 360 - 180, [-60, -30, 0, 30, 60][Math.floor(g3 * 5)], 1) : gxyz(Math.floor(g3 * 12) * 30 - 180, g1 * 160 - 80, 1); gk = 2; }   /* сетка */
-          else if (gu < .88) {                                                                            /* узлы-отели: плотные шарики */
-            var gc = GCT[Math.floor(g1 * GCT.length)], bz = 1 - 2 * g2, bq = Math.sqrt(1 - bz * bz), ba = 6.2832 * g3, br = .042 * Math.pow(rnd(gq, 9), .5);
+          if (gu < .3) { gp = gpt(Math.floor(g1 * GP.nl)); gk = 0; }                                   /* суша */
+          else if (gu < .62) { gp = gpt(GP.nl + Math.floor(g1 * GP.nc)); gk = 3; }                       /* берега */
+          else if (gu < .685) { var ga = 6.2832 * g1, gr = 1.004 + .02 * g2 * g2; gp = [gr * Math.cos(ga), gr * Math.sin(ga), 0]; gk = 5; }   /* контур шара: кольцо, всегда повёрнутое к зрителю */
+          else if (gu < .72) { gp = g2 < .5 ? gxyz(g1 * 360 - 180, [-60, -30, 0, 30, 60][Math.floor(g3 * 5)], 1) : gxyz(Math.floor(g3 * 12) * 30 - 180, g1 * 160 - 80, 1); gk = 2; }   /* сетка */
+          else if (gu < .785) {                                                                            /* узлы-отели: плотные шарики */
+            var gc = GCT[Math.floor(g1 * GCT.length)], bz = 1 - 2 * g2, bq = Math.sqrt(1 - bz * bz), ba = 6.2832 * g3, br = .03 * Math.pow(rnd(gq, 9), .5);
             gp = [gc[0] * 1.015 + br * bq * Math.cos(ba), gc[1] * 1.015 + br * bz, gc[2] * 1.015 + br * bq * Math.sin(ba)]; gk = 4;
           } else {                                                                                        /* дуги между отелями, приподняты над поверхностью */
             var gl0 = g1 * lsum, li = 0; while (li < LA.length - 1 && LA[li][1] < gl0) li++;
@@ -916,7 +1019,9 @@
       }
       var n = PTS.length, A = arm(kind), i, hf = kind === 'cern' ? .32 : kind === 'island' ? .2 : .34, soft = kind === 'cern';
       TX = new Float32Array(n); TY = new Float32Array(n); TZ = new Float32Array(n); TD = new Float32Array(n); TH = new Float32Array(n);
+      var NMX = new Float32Array(n), NMY = new Float32Array(n), NMZ = new Float32Array(n), m0, m1, m2;
       for (i = 0; i < n; i++) {
+        m0 = m1 = m2 = 0;
         var pick = rnd(i, 3) * A.tot, o = 0, P0 = A.L[0];
         for (; o < A.L.length; o++) { P0 = A.L[o]; pick -= P0.w; if (pick <= 0) break; }
         var u1 = rnd(i, 5), u2 = rnd(i, 6), u3 = rnd(i, 8), u4 = rnd(i, 9), ph = 6.2832 * u2;
@@ -948,6 +1053,8 @@
           var en = Math.pow(Math.pow(Math.abs(e0 / eh[0]), 4) + Math.pow(Math.abs(ez / eh[1]), 4) + Math.pow(Math.abs(e2 / eh[2]), 4), -.25);
           e0 *= en; e2 *= en;
           TX[i] = P0.ec[0] + e0 * P0.yc + e2 * P0.ys; TY[i] = P0.ec[1] + ez * en; TZ[i] = P0.ec[2] + e2 * P0.yc - e0 * P0.ys;
+          var l0 = Math.pow(e0, 3) / Math.pow(eh[0], 4), l2 = Math.pow(e2, 3) / Math.pow(eh[2], 4);
+          m0 = l0 * P0.yc + l2 * P0.ys; m1 = Math.pow(ez * en, 3) / Math.pow(eh[1], 4); m2 = l2 * P0.yc - l0 * P0.ys;
         } else if (P0.bc) {
           var h = P0.h, q = [u1 * 2 - 1, u2 * 2 - 1, rnd(i, 10) * 2 - 1], sg = u3 < .5 ? -1 : 1;
           if (u4 < .3) {                               /* ребро: одна координата свободна, две другие на краях */
@@ -955,13 +1062,15 @@
             q[(fr + 1) % 3] = bits & 1 ? 1 : -1; q[(fr + 2) % 3] = bits & 2 ? 1 : -1;
           } else {                                     /* грань: выбирается по площади */
             var a0 = h[1] * h[2], a1 = h[0] * h[2], a2 = h[0] * h[1], pk = rnd(i, 11) * (a0 + a1 + a2);
-            q[pk < a0 ? 0 : pk < a0 + a1 ? 1 : 2] = sg;
+            var fi = pk < a0 ? 0 : pk < a0 + a1 ? 1 : 2; q[fi] = sg;
+            if (fi === 1) m1 = sg; else { var f0 = fi === 0 ? sg : 0, f2 = fi === 2 ? sg : 0; m0 = f0 * P0.yc + f2 * P0.ys; m2 = f2 * P0.yc - f0 * P0.ys; }
           }
           var bx = q[0] * h[0], bz = q[2] * h[2];
           TX[i] = P0.bc[0] + bx * P0.yc + bz * P0.ys; TY[i] = P0.bc[1] + q[1] * h[1]; TZ[i] = P0.bc[2] + bz * P0.yc - bx * P0.ys;
         } else if (P0.c) {
           var zz = 1 - 2 * u1, rr = Math.sqrt(1 - zz * zz);
           TX[i] = P0.c[0] + P0.r * rr * Math.cos(ph); TY[i] = P0.c[1] + P0.r * zz; TZ[i] = P0.c[2] + P0.r * rr * Math.sin(ph);
+          m0 = rr * Math.cos(ph); m1 = zz; m2 = rr * Math.sin(ph);
         } else {
           var a = P0.a, b = P0.b, L1 = P0.len || 1, nx = (b[0] - a[0]) / L1, ny = (b[1] - a[1]) / L1, nz = (b[2] - a[2]) / L1;
           var hx = Math.abs(ny) < .9 ? 0 : 1, hy = Math.abs(ny) < .9 ? 1 : 0;
@@ -969,16 +1078,20 @@
           ux /= ul; uy /= ul; uz /= ul;
           var wx = ny * uz - nz * uy, wy = nz * ux - nx * uz, wz = nx * uy - ny * ux;
           var t = u1, rad = P0.r;
-          if (u3 < P0.capf) { t = u1 < .5 ? 0 : 1; rad = P0.r * Math.sqrt(u4); }
+          var cap = u3 < P0.capf;
+          if (cap) { t = u1 < .5 ? 0 : 1; rad = P0.r * Math.sqrt(u4); }
           var cs = Math.cos(ph) * rad, sn = Math.sin(ph) * rad;
+          if (cap) { m0 = nx; m1 = ny; m2 = nz; } else if (!P0.ln) { m0 = ux * cs + wx * sn; m1 = uy * cs + wy * sn; m2 = uz * cs + wz * sn; }
           TX[i] = a[0] + (b[0] - a[0]) * t + ux * cs + wx * sn; TY[i] = a[1] + (b[1] - a[1]) * t + uy * cs + wy * sn; TZ[i] = a[2] + (b[2] - a[2]) * t + uz * cs + wz * sn;
         }
         /* вид точки: 1 — чёткая линия или кольцо (не размывается), 0 — обычная; размытие добавляется при отрисовке */
         if (P0.arch && TY[i] < 0) TY[i] = -TY[i];       /* арочный ангар: нижняя половина цилиндра зеркалится наверх */
         TH[i] = P0.k || (P0.ln || (P0.rc && !soft) ? 1 : P0.bg ? 2 : 0);   /* k — явно заданный вид: 3 — линии-акценты, 4 — вода */
         TD[i] = rnd(i, 7);
+        var ml = Math.sqrt(m0 * m0 + m1 * m1 + m2 * m2);
+        if (ml > 0) { NMX[i] = m0 / ml; NMY[i] = m1 / ml; NMZ[i] = m2 / ml; }
       }
-      SC[kind] = { X: TX, Y: TY, Z: TZ, D: TD, H: TH }; nearest(SC[kind]);
+      SC[kind] = { X: TX, Y: TY, Z: TZ, D: TD, H: TH, MX: NMX, MY: NMY, MZ: NMZ }; nearest(SC[kind]);
     }
 
     function setup() {
@@ -1035,9 +1148,15 @@
           if (kf === 5) { ax = bx; ay2 = -by; az2 = 0; }      /* вид 5 — контур шара: всегда лицом к зрителю */
           var pf = pd / (pd + az2);
           var tn = .6 - az2 * dk; if (tn < .1) tn = .1; else if (tn > 1) tn = 1;
+          var rimS = 1;
+          if (MX && v.rim > 0 && kf === 0 && !cl) {
+            var qx0 = MX[i], qy0 = MY[i], qz0 = MZ[i];
+            if (qx0 || qy0 || qz0) { var rn = 1 - Math.abs(-qy0 * st + (qz0 * ca - qx0 * sa) * ct); rn = rn * rn * rn; tn *= (1 - .7 * v.rim) + 2.6 * v.rim * rn; rimS = 1 + .45 * v.rim * rn; }
+            else tn *= 1 + .5 * v.rim;                 /* рёбра коробок всегда считаются профилем */
+          }
           if (cl || kf === 2) tn = .06 + tn * .22; else if (kf === 3) tn *= v.accent; else if (kf === 5) tn = .5 * v.accent; else if (kf === 4) tn *= v.marina; else if (kf === 0) tn *= v.build;
           if (tn > 1) tn = 1;
-          SZ[i] = 1 + ((cl || kf === 2 ? v.dotHalo : kf >= 3 ? v.dot * v.accentDot : v.dot) - 1) * e;
+          SZ[i] = (1 + ((cl || kf === 2 ? v.dotHalo : kf >= 3 ? v.dot * v.accentDot : v.dot) - 1) * e) * (1 + (rimS - 1) * e);
           SX[i] += (ox + ax * sc * pf - SX[i]) * e; SY[i] += (oy + ay2 * sc * pf - SY[i]) * e; NR[i] += (tn - NR[i]) * e;
         }
       }
@@ -1137,6 +1256,22 @@
       for (var q = 0; q < ls.length; q++) { if (/tune/.test(ls[q].textContent)) ls[q].setAttribute('aria-current', 'page'); else ls[q].removeAttribute('aria-current'); }
     }
     if (!on || !S) return;
+    /* вход в Tune по паролю; в коде хранится только контрольная сумма, признак входа — до закрытия вкладки */
+    var okKey = 'tune-ok', opened = false;
+    try { opened = sessionStorage.getItem(okKey) === '1'; } catch (e) {}
+    if (!opened) {
+      var gate = document.createElement('form'); gate.className = 'dbg gatebox';
+      gate.innerHTML = '<div class="dbg-head"><b>Tune</b></div><label style="display:block"><span>Пароль</span><input type="password" id="tune-pw" autocomplete="off" style="display:block;width:100%;margin-top:6px;padding:7px 9px;border-radius:8px;border:1px solid rgba(243,238,232,.2);background:rgba(0,0,0,.3);color:inherit;font:inherit"></label><div class="dbg-foot"><button type="submit">открыть</button></div>';
+      gate.addEventListener('submit', function (ev) {
+        ev.preventDefault();
+        var t = 'tune:' + gate.querySelector('#tune-pw').value, hv = 5381;
+        for (var gi = 0; gi < t.length; gi++) hv = ((hv << 5) + hv + t.charCodeAt(gi)) >>> 0;
+        if (hv === 3085557348) { try { sessionStorage.setItem(okKey, '1'); } catch (e) {} location.reload(); }
+        else { gate.querySelector('#tune-pw').value = ''; gate.querySelector('.dbg-head b').textContent = 'Tune — неверный пароль'; }
+      });
+      document.body.appendChild(gate);
+      return;
+    }
     S.debug = true; document.body.classList.add('debug');
 
     var BASE = [
@@ -1157,7 +1292,7 @@
         ['spread', 'Разлёт облака', 0, 1.5, .01], ['jitter', 'Размытие самой формы', 0, .3, .002]]],
       ['Линии и акценты', [
         ['edge', 'Прижатие точек к линиям', 0, 1, .01], ['accent', 'Яркость линий (берег, дороги)', 0, 3, .05],
-        ['accentDot', 'Размер точек линий', .3, 3, .05], ['marina', 'Яркость второго слоя линий (вода, тоннели)', 0, 3, .05], ['build', 'Яркость объёмов (здания, парки)', 0, 3, .05]]]
+        ['accentDot', 'Размер точек линий', .3, 3, .05], ['marina', 'Яркость второго слоя линий (вода, тоннели)', 0, 3, .05], ['build', 'Яркость объёмов (здания, парки)', 0, 3, .05], ['rim', 'Выделение профиля модели', 0, 1.5, .01]]]
     ];
     var mode = 'base', cur = 'robots', pinned = null, rows = {}, brow = {}, tabs = {}, cases = {}, modes = {};
     try { var sv = JSON.parse(localStorage.getItem('grad-debug-scenes-2')); if (sv) for (var a in sv) if (S.V[a]) for (var b in sv[a]) if (b in S.V[a] && isFinite(sv[a][b])) S.V[a][b] = +sv[a][b]; } catch (e) {}
@@ -1202,7 +1337,11 @@
       show();
     }
     function pick(k) {
-      if (pinned === k) { pinned = null; S.pin(null); } else { pinned = k; cur = k; S.pin(k); }
+      if (pinned === k) { pinned = null; S.pin(null); } else {
+        pinned = k; cur = k;
+        var sl = document.querySelector('.slide[data-scene="' + k + '"]'); if (sl) window.scrollTo(0, sl.offsetTop);
+        S.pin(k);
+      }
       mode = 'cases'; show();
     }
     S.onPick = function (k, el) { cases[k] = el; pick(k); };
@@ -1274,6 +1413,45 @@
     addEventListener("scroll", function () { if (!raf) raf = requestAnimationFrame(apply); }, { passive: true });
     addEventListener("resize", function () { if (!raf) raf = requestAnimationFrame(apply); });
     apply();
+  })();
+</script>
+<script>
+  /* ——— scroll: какой шаг занимает экран, та сцена и собирается; у шагов без своей сцены остаётся сфера.
+     Справа — точки по числу шагов. Текущий шаг пишется в адрес (#island и т. п.). ——— */
+  (function () {
+    var S = window.sphere, slides = document.querySelectorAll('.slide'), dots = document.createElement('nav'), links = [], cur = -1;
+    dots.className = 'dots'; dots.setAttribute('aria-label', 'Pages');
+    for (var i = 0; i < slides.length; i++) {
+      var a = document.createElement('a'), t = document.createElement('span');
+      a.href = '#' + slides[i].id; t.textContent = slides[i].getAttribute('data-name') || ''; a.setAttribute('aria-label', t.textContent);
+      a.appendChild(t); dots.appendChild(a); links.push(a);
+    }
+    document.body.appendChild(dots);
+    function show(i) {
+      if (i === cur || i < 0) return;
+      cur = i;
+      for (var k = 0; k < links.length; k++) { if (k === i) links[k].setAttribute('aria-current', 'true'); else links[k].removeAttribute('aria-current'); }
+      if (S && S.pin) S.pin(slides[i].getAttribute('data-scene') || null);
+      try { history.replaceState(null, '', i === 0 ? location.pathname + location.search : '#' + slides[i].id); } catch (e) {}
+    }
+    /* шаг определяется по положению прокрутки с опережением: как только экран сдвинулся на пятую часть
+       в сторону соседней страницы, её сцена уже начинает собираться — к остановке текст и точки приходят вместе */
+    var lastY = window.scrollY || 0, raf = 0;
+    function check() {
+      raf = 0;
+      var y = window.scrollY || 0, h = Math.max(1, innerHeight), p = y / h, dir = y > lastY ? 1 : y < lastY ? -1 : 0;
+      lastY = y;
+      var idx = dir > 0 ? Math.floor(p + .8) : dir < 0 ? Math.ceil(p - .8) : Math.round(p);
+      show(Math.max(0, Math.min(slides.length - 1, idx)));
+    }
+    addEventListener('scroll', function () { if (!raf) raf = requestAnimationFrame(check); }, { passive: true });
+    addEventListener('resize', check);
+    /* открытие по ссылке с #проектом: сразу встаём на его страницу */
+    var start = 0, hid = location.hash.slice(1);
+    for (var h0 = 0; h0 < slides.length; h0++) if (slides[h0].id === hid) start = h0;
+    if (start) { var sb = document.documentElement.style.scrollBehavior; document.documentElement.style.scrollBehavior = 'auto'; window.scrollTo(0, slides[start].offsetTop); document.documentElement.style.scrollBehavior = sb; lastY = window.scrollY || 0; }
+    else start = Math.max(0, Math.min(slides.length - 1, Math.round((window.scrollY || 0) / Math.max(1, innerHeight))));
+    show(start);
   })();
 </script>
 </body>
