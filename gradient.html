@@ -994,7 +994,7 @@
         var cn = cur === 'cern', isl = cur === 'island', mk = cur === 'moscow', av = cur === 'avia', pm = cur === 'me', v = V[cur], tt = ms / 1000;
         var ang = v.turn + (v.swing > 0 ? v.swing * Math.sin(tt * v.speed) : tt * v.speed), ca = Math.cos(ang), sa = Math.sin(ang);
         var ct = Math.cos(v.tilt), st = Math.sin(v.tilt), ey = cn || mk || pm ? 0 : isl ? .1 : av ? 0 : 1.75, pd = cn || isl || mk || av || pm ? 10 : 8, dk = cn ? .14 : isl || mk ? .1 : av ? .09 : .13;
-        var sc = (pm ? Math.min(H * .34, W * .2) : av ? Math.min(H * .2, W * .1) : cn ? Math.min(H * .294, W * .204) : mk ? Math.min(H * .16, W * .1) : isl ? Math.min(H * .2, W * .096) : Math.min(H * .2, W * .105)) * v.scale, ox = W * v.x, oy = H * v.y;
+        var sc = (pm ? Math.min(H * .68, W * .4) : av ? Math.min(H * .2, W * .1) : cn ? Math.min(H * .294, W * .204) : mk ? Math.min(H * .16, W * .1) : isl ? Math.min(H * .2, W * .096) : Math.min(H * .2, W * .105)) * v.scale, ox = W * v.x, oy = H * v.y;
         for (i = 0; i < PTS.length; i++) {
           var e = morph * 1.6 - TD[i] * .6;
           if (e <= 0) continue;
