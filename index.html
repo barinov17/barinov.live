@@ -532,7 +532,7 @@
       accent: 7,      /* доля акцентных точек, % */
       links: 0         /* связи между соседними точками выключены (доля точек со связью, %) */
     };
-    var MOB = { size: .48, x: 1.05, y: .34, count: 2600 };
+    var MOB = { size: .48, x: 1.05, y: .34, count: 5000 };
     var P = {};
     /* соседи точки на такой сфере стоят через эти шаги по номеру */
     var OFF = [1, 2, 3, 5, 8, 13, 21, 34, 55, 89, 144];
@@ -994,6 +994,7 @@
         var ang = v.turn + (v.swing > 0 ? v.swing * Math.sin(tt * v.speed) : tt * v.speed), ca = Math.cos(ang), sa = Math.sin(ang);
         var ct = Math.cos(v.tilt), st = Math.sin(v.tilt), ey = cn || mk || pm ? 0 : isl ? .1 : av ? 0 : 1.75, pd = cn || isl || mk || av || pm ? 10 : 8, dk = cn ? .14 : isl || mk ? .1 : av ? .09 : .13;
         var sc = (pm ? Math.min(H * .68, W * .4) : av ? Math.min(H * .2, W * .1) : cn ? Math.min(H * .294, W * .204) : mk ? Math.min(H * .16, W * .1) : isl ? Math.min(H * .2, W * .096) : Math.min(H * .2, W * .105)) * v.scale, ox = W * v.x, oy = H * v.y;
+        if (W < 720) { sc *= 2; ox = W * .5; oy = H * .54; }   /* телефон: сцена по центру экрана и вдвое крупнее */
         for (i = 0; i < PTS.length; i++) {
           var e = morph * 1.6 - TD[i] * .6;
           if (e <= 0) continue;
