@@ -601,12 +601,12 @@
        edge — прижатие остальных точек к линиям сцены (0 — нет, 1 — все точки на линиях),
        accent / accentDot — яркость и размер точек линий (берег и дороги), marina — яркость марины, build — яркость зданий */
     var DEF = {
-      robots: { scale: 1, x: .71, y: .33, tilt: .27, turn: .01, swing: .65, speed: .22, dot: .85, dotHalo: .9, bright: 1.1, free: .2, halo: .08, spread: 1.5, jitter: .02, edge: 0, accent: 1, accentDot: 1, marina: 1, build: 1 },
-      cern:   { scale: 2.5, x: .66, y: .46, tilt: .5, turn: 0, swing: .27, speed: .17, dot: .9, dotHalo: .8, bright: 1.1, free: .2, halo: .25, spread: .88, jitter: 0, edge: .14, accent: 1, accentDot: 1, marina: 2.8, build: 1 },
-      moscow: { scale: 2.38, x: .695, y: .48, tilt: .72, turn: 0, swing: 0, speed: .06, dot: .7, dotHalo: 1.85, bright: .9, free: .57, halo: .14, spread: .71, jitter: .01, edge: 0, accent: 2.6, accentDot: 1.15, marina: 2.45, build: 3 },
-      avia:   { scale: 2.5, x: .53, y: .56, tilt: .62, turn: .75, swing: .2, speed: .06, dot: .8, dotHalo: 1.1, bright: 1.25, free: .41, halo: .13, spread: .8, jitter: 0, edge: 0, accent: 1, accentDot: 1.4, marina: 1.45, build: 2.9 },
-      me:     { scale: .9, x: .72, y: .5, tilt: 0, turn: 0, swing: .22, speed: .25, dot: .55, dotHalo: 1.3, bright: 1.1, free: .34, halo: .09, spread: .5, jitter: 0, edge: .2, accent: .6, accentDot: 1, marina: .95, build: 2.95 },
-      island: { scale: 1.91, x: .67, y: .45, tilt: .65, turn: -.45, swing: .08, speed: .53, dot: 1.1, dotHalo: .85, bright: .6, free: .39, halo: .44, spread: 1.05, jitter: 0, edge: .4, accent: 1.85, accentDot: .8, marina: 2.35, build: 2.05 }
+      robots: { scale: 1.11, x: 0.69, y: 0.285, tilt: 0.27, turn: 0.01, swing: 0.65, speed: 0.22, dot: 0.9, dotHalo: 0.9, bright: 1.1, free: 0.2, halo: 0.08, spread: 1.5, jitter: 0.02, edge: 0, accent: 1, accentDot: 1, marina: 1, build: 1 },
+      cern:   { scale: 2.5, x: 0.67, y: 0.46, tilt: 0.5, turn: 0, swing: 0.27, speed: 0.1, dot: 0.9, dotHalo: 0.8, bright: 1.1, free: 0.2, halo: 0.25, spread: 0.88, jitter: 0, edge: 0.14, accent: 1, accentDot: 1, marina: 2.8, build: 1 },
+      moscow: { scale: 2.06, x: 0.685, y: 0.45, tilt: 0.72, turn: 0, swing: 0, speed: 0.03, dot: 0.7, dotHalo: 1.85, bright: 0.9, free: 0.57, halo: 0.14, spread: 0.71, jitter: 0.01, edge: 0, accent: 2.6, accentDot: 1.15, marina: 2.45, build: 3 },
+      avia:   { scale: 2.5, x: 0.53, y: 0.56, tilt: 0.62, turn: 0.75, swing: 0.2, speed: 0.08, dot: 0.8, dotHalo: 1.1, bright: 1.25, free: 0.41, halo: 0.13, spread: 0.8, jitter: 0, edge: 0, accent: 1, accentDot: 1.4, marina: 1.45, build: 2.9 },
+      me:     { scale: 0.9, x: 0.72, y: 0.5, tilt: 0, turn: 0, swing: 0.22, speed: 0.25, dot: 0.55, dotHalo: 1.3, bright: 1.1, free: 0.34, halo: 0.09, spread: 0.5, jitter: 0, edge: 0.2, accent: 0.6, accentDot: 1, marina: 0.95, build: 2.95 },
+      island: { scale: 1.91, x: 0.67, y: 0.45, tilt: 0.65, turn: -0.45, swing: 0.08, speed: 0.53, dot: 1.1, dotHalo: 0.85, bright: 0.6, free: 0.39, halo: 0.44, spread: 1.05, jitter: 0, edge: 0.4, accent: 1.85, accentDot: 0.8, marina: 2.35, build: 2.05 }
     };
     var V = {}, vk, vp;
     for (vk in DEF) { V[vk] = {}; for (vp in DEF[vk]) V[vk][vp] = DEF[vk][vp]; }
@@ -614,7 +614,7 @@
     var D = {
       size: 1.13,       /* радиус сферы в долях высоты экрана */
       x: .88,          /* центр по горизонтали, в долях ширины */
-      y: .68,          /* центр по вертикали, в долях высоты */
+      y: .49,          /* центр по вертикали, в долях высоты */
       speed: .21,      /* скорость вращения и «дыхания» */
       count: 14000,     /* число точек */
       dot: .9,         /* размер точки */
