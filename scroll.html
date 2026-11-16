@@ -284,18 +284,19 @@
   html.listpage { scroll-snap-type: y mandatory; scroll-behavior: smooth; }
   main.list { display: none; }
   .steps section.slide { position: relative; z-index: 1; display: flex; align-items: flex-start; box-sizing: border-box; max-width: none; min-height: 100vh; min-height: 100svh; padding: clamp(64px, 11vh, 112px) clamp(22px, 6.5vw, 104px) 56px; scroll-snap-align: start; scroll-snap-stop: always; }
-  .steps .pg { width: min(500px, 100%); max-width: none; }
-  .steps .first .pg { width: min(640px, 100%); }
+  .steps section.slide.first { align-items: center; padding-top: 70px; }
+  .steps .pg { width: min(470px, 100%); max-width: none; }
+  .steps .first .pg { width: min(560px, 100%); }
   .steps .pg > * { grid-column: auto; max-width: none; }
   /* первая страница: крупное имя и крупное описание */
-  .steps h1 { margin: 0 0 clamp(14px, 1.6vw, 22px); font-size: clamp(40px, 4.6vw, 68px); line-height: 1; font-weight: 600; letter-spacing: -0.04em; color: var(--ink); white-space: normal; }
-  .steps .sum { max-width: 20em; margin: 0; font-size: clamp(20px, 1.85vw, 27px); line-height: 1.28; letter-spacing: -0.016em; color: var(--muted); text-wrap: balance; }
+  .steps h1 { margin: 0 0 clamp(14px, 1.6vw, 22px); font-size: clamp(34px, 3.5vw, 50px); line-height: 1.02; font-weight: 600; letter-spacing: -0.04em; color: var(--ink); white-space: normal; }
+  .steps .sum { max-width: 20em; margin: 0; font-size: clamp(18px, 1.5vw, 21.5px); line-height: 1.34; letter-spacing: -0.012em; color: var(--muted); text-wrap: balance; }
   .steps .sum b { color: var(--ink); font-weight: inherit; }
   .steps .sum em { color: var(--accent); font-style: normal; }
   /* страницы проектов */
-  .steps h1.pt { margin: 0 0 14px; font-size: clamp(30px, 2.9vw, 44px); line-height: 1.06; font-weight: 500; letter-spacing: -0.026em; color: var(--accent); }
-  .steps .sub { margin: 0 0 18px; font-size: clamp(17px, 1.35vw, 20px); line-height: 1.32; letter-spacing: -0.012em; color: var(--ink); text-wrap: pretty; }
-  .steps .body { font-size: clamp(15px, 1.05vw, 16px); line-height: 1.55; color: #CFC8C9; }
+  .steps h1.pt { margin: 0 0 14px; font-size: clamp(25px, 2.25vw, 33px); line-height: 1.1; font-weight: 500; letter-spacing: -0.022em; color: var(--accent); }
+  .steps .sub { margin: 0 0 16px; font-size: clamp(16px, 1.2vw, 17.5px); line-height: 1.32; letter-spacing: -0.012em; color: var(--ink); text-wrap: pretty; }
+  .steps .body { font-size: clamp(14px, 1vw, 15px); line-height: 1.58; color: #A39BA5; }
   .steps .body p { margin: 0; max-width: none; }
   .steps .body p + p, .steps .body ul + p, .steps .body p + ul { margin-top: .75em; }
   .steps .body ul { display: block; margin: 0; padding: 0 0 0 1.25em; max-width: none; list-style: disc outside; }
@@ -305,17 +306,18 @@
   .steps .body a:hover { color: #A8DDEC; text-decoration-color: currentColor; }
   .steps .plabel { margin-top: 1.1em; color: var(--muted); }
   .steps .soon { color: var(--muted); }
-  .steps .site { display: inline-block; margin-top: 18px; font-size: clamp(15px, 1.05vw, 16px); color: #7CC6DC; text-decoration: underline; text-decoration-color: rgba(124, 198, 220, .5); text-underline-offset: 3px; border: 0; }
+  .steps .site { display: inline-block; margin-top: 16px; font-size: clamp(14px, 1vw, 15px); color: #7CC6DC; text-decoration: underline; text-decoration-color: rgba(124, 198, 220, .5); text-underline-offset: 3px; border: 0; }
   .steps .site:hover { color: #A8DDEC; }
   /* партнёры — отдельным блоком слева внизу страницы */
   .steps .pp { position: absolute; left: clamp(22px, 6.5vw, 104px); bottom: clamp(26px, 5vh, 48px); max-width: min(500px, calc(100% - 60px)); }
   .steps .pp h3 { margin: 0 0 8px; font-size: 10px; font-weight: 500; letter-spacing: .12em; text-transform: uppercase; color: var(--muted); }
-  .steps .pp ul { display: flex; flex-wrap: wrap; gap: 4px 22px; margin: 0; padding: 0; max-width: none; list-style: none; font-size: clamp(14px, 1vw, 15.5px); line-height: 1.45; color: #CFC8C9; }
+  .steps .pp ul { display: flex; flex-direction: column; gap: 5px; margin: 0; padding: 0; max-width: none; list-style: none; font-size: clamp(13.5px, .95vw, 14.5px); line-height: 1.45; color: #A39BA5; }
+  .steps .pp.nda p { margin: 0; max-width: 30em; font-size: clamp(12.5px, .9vw, 13.5px); line-height: 1.45; color: var(--muted); }
   .steps .pp li { margin: 0; padding: 0; }
   .steps .pp a { color: #7CC6DC; text-decoration: underline; text-decoration-color: rgba(124, 198, 220, .5); text-underline-offset: 3px; border: 0; }
   .steps .pp a:hover { color: #A8DDEC; }
   /* контакты */
-  .steps ul.links.col { display: flex; flex-direction: column; gap: clamp(12px, 1.4vw, 20px); max-width: none; margin: clamp(10px, 1.4vw, 22px) 0 0; padding: 0; list-style: none; font-size: clamp(18px, 1.5vw, 22px); letter-spacing: -0.012em; }
+  .steps ul.links.col { display: flex; flex-direction: column; gap: clamp(12px, 1.4vw, 20px); max-width: none; margin: clamp(10px, 1.4vw, 22px) 0 0; padding: 0; list-style: none; font-size: clamp(16.5px, 1.3vw, 19px); letter-spacing: -0.01em; }
   .steps ul.links.col a { display: inline-flex; align-items: center; gap: .6em; color: var(--ink); text-decoration: none; }
   .steps ul.links.col a:hover { color: #7CC6DC; }
   .steps ul.links.col .logo { width: .9em; height: .9em; fill: currentColor; }
@@ -372,7 +374,7 @@
       </div>
       
     </article>
-    
+    <aside class="pp nda"><p>This project is under NDA, so the details are anonymized.</p></aside>
   </section>
 
   <section class="slide" id="cern" data-scene="cern" data-name="CERN campus">
@@ -437,7 +439,7 @@
       </div>
       
     </article>
-    
+    <aside class="pp nda"><p>This project is under NDA, so the details are anonymized.</p></aside>
   </section>
 
   <section class="slide" id="habithai" data-scene="" data-name="Habithai">
