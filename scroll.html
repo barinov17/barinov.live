@@ -1382,7 +1382,12 @@
     }
     addEventListener('scroll', function () { if (!raf) raf = requestAnimationFrame(check); }, { passive: true });
     addEventListener('resize', check);
-    show(Math.max(0, Math.min(slides.length - 1, Math.round((window.scrollY || 0) / Math.max(1, innerHeight)))));
+    /* открытие по ссылке с #проектом: сразу встаём на его страницу */
+    var start = 0, hid = location.hash.slice(1);
+    for (var h0 = 0; h0 < slides.length; h0++) if (slides[h0].id === hid) start = h0;
+    if (start) { var sb = document.documentElement.style.scrollBehavior; document.documentElement.style.scrollBehavior = 'auto'; window.scrollTo(0, slides[start].offsetTop); document.documentElement.style.scrollBehavior = sb; lastY = window.scrollY || 0; }
+    else start = Math.max(0, Math.min(slides.length - 1, Math.round((window.scrollY || 0) / Math.max(1, innerHeight))));
+    show(start);
   })();
 </script>
 </body>
