@@ -692,7 +692,7 @@
        поэтому любое число первых точек даёт ровную выборку. */
     /* данные сцен лежат отдельными файлами в /data и подгружаются, когда сцена нужна (и заранее — для соседних страниц);
        на телефоне берётся облегчённый набор — первые 5000 точек того же перемешанного набора, то есть ровно те, что он рисует */
-    var IP = null, MP = null, AP = null, SPB = null, CP = null, PP = null, GP = null, DV = '1', LOADING = {};
+    var IP = null, MP = null, AP = null, SPB = null, CP = null, PP = null, GP = null, DV = '2', LOADING = {};
     function dat(kind) { return kind === 'island' ? IP : kind === 'moscow' ? MP : kind === 'avia' ? AP : kind === 'spb' ? SPB : kind === 'cern' ? CP : kind === 'me' ? PP : kind === 'globe' ? GP : null; }
     function has(kind) { if (kind === 'robots') return true; var d = dat(kind); return !!d && !(d.lite && d.n < PTS.length); }
     function load(kind, done) {
@@ -1009,6 +1009,8 @@
           TD[aq] = rnd(aq, 7);
         }
         SC[kind] = { X: TX, Y: TY, Z: TZ, D: TD, H: TH }; nearest(SC[kind]);
+        /* круги радиусов (центр и радиус в километрах) — в единицы сцены; рисуются сплошной линией, см. конец draw */
+        if (AD.rings) SC[kind].RG = AD.rings.map(function (g) { return [g[0] / adv, (g[1] + azs) / adv, g[2] / adv]; });
         return;
       }
       if (kind === 'moscow') {
@@ -1232,6 +1234,21 @@
           x.rect(DX[i], DY[i], s, s);
         }
         if (any) x.fill();
+      }
+      /* Петербург: круги радиусов 500 м и 1 км вокруг проектов — сплошной линией по земле, в той же проекции, что и точки;
+         появляются, когда сцена почти собралась */
+      if (morph > .55 && cur === 'spb' && SC.spb && SC.spb.RG) {
+        var rgs = SC.spb.RG, rga = (morph - .55) / .45, rgq, rgj;
+        x.strokeStyle = '#F3EEE8'; x.lineWidth = W < 720 ? .8 : 1; x.globalAlpha = Math.min(1, .4 * V.spb.accent * rga * rga);
+        x.beginPath();
+        for (rgq = 0; rgq < rgs.length; rgq++) for (rgj = 0; rgj <= 120; rgj++) {
+          var rbx = rgs[rgq][0] + rgs[rgq][2] * Math.cos(rgj / 120 * 6.2832), rbz = rgs[rgq][1] + rgs[rgq][2] * Math.sin(rgj / 120 * 6.2832);
+          var rax = (rbx - pvx) * ca + (rbz - pvz) * sa + pvax, raz = (rbz - pvz) * ca - (rbx - pvx) * sa + pvaz;
+          var ry2 = ey * ct - raz * st, rz2 = ey * st + raz * ct, rpq = pd + rz2; if (rpq < pd * .25) rpq = pd * .25;
+          var rpx = ox + rax * sc * pd / rpq, rpy = oy + ry2 * sc * pd / rpq;
+          if (rgj) x.lineTo(rpx, rpy); else x.moveTo(rpx, rpy);
+        }
+        x.stroke();
       }
       x.globalAlpha = 1;
     }
