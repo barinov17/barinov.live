@@ -279,53 +279,42 @@
   /* подзаголовки прошлых проектов — узкой колонкой, раскрывающиеся описания — на всю ширину карточки */
   .zone.past .case > p { max-width: 400px; }
 
-  /* ——— Страница «scroll»: слева узкая светлая стеклянная колонка навигации (About и проекты в двух группах),
-     рядом «страница» выбранного пункта — название и описание; справа точки собираются в его сцену. ——— */
-  html.listpage, html.listpage body { height: 100%; overflow: hidden; }
+  /* ——— Страница «scroll»: полноэкранные шаги — About и по одному на проект. Текст слева прямо по фону,
+     справа точки собираются в сцену текущего шага; переход между шагами — прокруткой. ——— */
+  html.listpage { scroll-snap-type: y mandatory; scroll-behavior: smooth; }
   main.list { display: none; }
-  .glass { position: fixed; z-index: 4; left: 14px; top: 14px; bottom: 14px; box-sizing: border-box; width: 232px; overflow: auto; padding: 18px 12px 16px; border-radius: 20px;
-    background: rgba(247, 243, 238, .74); border: 1px solid rgba(255, 255, 255, .55); box-shadow: 0 20px 60px rgba(0, 0, 0, .28), inset 0 1px 0 rgba(255, 255, 255, .6);
-    backdrop-filter: blur(22px) saturate(1.35); -webkit-backdrop-filter: blur(22px) saturate(1.35); color: #1B1920; scrollbar-width: thin; scrollbar-color: rgba(27, 25, 32, .25) transparent; }
-  .glass .nvs { display: flex; flex-direction: column; gap: 1px; }
-  .glass h2 { margin: 14px 0 4px; padding: 12px 12px 0; border-top: 1px solid rgba(27, 25, 32, .12); font-size: 10px; line-height: 1.3; font-weight: 500; letter-spacing: .12em; text-transform: uppercase; color: #8A828C; }
-  .glass .nv { display: block; width: 100%; padding: 8px 12px; border: 0; border-radius: 11px; background: none; text-align: left; font: inherit; font-size: 15.5px; line-height: 1.25; font-weight: 500; letter-spacing: -0.012em; color: #1B1920; cursor: pointer; transition: background .16s, color .16s; }
-  .glass .nv:hover { background: rgba(255, 255, 255, .4); }
-  .glass .nv.on { background: rgba(255, 255, 255, .7); box-shadow: 0 1px 0 rgba(255, 255, 255, .7) inset, 0 6px 18px rgba(27, 25, 32, .08); color: #B4562A; }
-  .page { position: fixed; z-index: 3; left: 262px; top: 0; bottom: 0; box-sizing: border-box; width: min(450px, calc(100vw - 280px)); display: flex; align-items: center; padding: 70px 0 40px 22px; pointer-events: none; }
-  .page .pg { width: 100%; max-height: 100%; overflow: auto; pointer-events: auto; scrollbar-width: none; }
-  .page .pg[hidden] { display: none; }
-  .page .pg.on { animation: pgin .45s ease both; }
-  @keyframes pgin { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
-  .page h1 { margin: 0 0 14px; font-size: clamp(32px, 3.3vw, 46px); line-height: 1.04; font-weight: 600; letter-spacing: -0.035em; color: var(--ink); white-space: normal; }
-  .page h1.pt { font-size: clamp(27px, 2.7vw, 38px); font-weight: 500; letter-spacing: -0.025em; color: var(--accent); margin-bottom: 10px; }
-  .page h3.lab { margin: 0 0 12px; font-size: 10px; font-weight: 500; letter-spacing: .12em; text-transform: uppercase; color: var(--muted); }
-  .page .sum { max-width: none; margin: 0 0 28px; font-size: clamp(18px, 1.5vw, 21px); line-height: 1.34; letter-spacing: -0.012em; color: var(--muted); text-wrap: pretty; }
-  .page .sum b { color: var(--ink); font-weight: inherit; }
-  .page .sum em { color: var(--accent); font-style: normal; }
-  .page .sub { margin: 0 0 18px; font-size: 18px; line-height: 1.38; color: var(--ink); }
-  .page .body { font-size: 15px; line-height: 1.56; color: #CFC8C9; }
-  .page .body p { margin: 0; max-width: none; }
-  .page .body p + p, .page .body ul + p, .page .body p + ul { margin-top: .7em; }
-  .page .body ul { margin: 0; padding-left: 1.1em; max-width: none; }
-  .page .body li { margin: .25em 0; }
-  .page .body a, .page .muted a { color: inherit; text-decoration: underline; text-decoration-color: rgba(243, 238, 232, .35); text-underline-offset: 3px; }
-  .page .body a:hover { color: #7CC6DC; }
-  .page .plabel { margin-top: 1em; color: var(--muted); }
-  .page .soon { color: var(--muted); }
-  .page .site { display: inline-block; margin-top: 18px; }
-  .page ul.links.col { display: flex; flex-direction: column; gap: 11px; max-width: none; margin: 0 0 26px; padding: 0; list-style: none; font-size: 17px; }
-  .page ul.links.col a { display: inline-flex; align-items: center; gap: 11px; color: var(--ink); text-decoration: none; }
-  .page ul.links.col a:hover { color: #7CC6DC; }
-  .page ul.links.col .logo { width: 18px; height: 18px; fill: currentColor; }
-  .page .muted { margin: 0; font-size: 11.5px; color: var(--muted); }
+  .steps section.slide { position: relative; z-index: 1; display: flex; align-items: center; box-sizing: border-box; max-width: none; min-height: 100vh; min-height: 100svh; padding: 70px clamp(22px, 6.5vw, 104px) 50px; scroll-snap-align: start; scroll-snap-stop: always; }
+  .steps .pg { width: min(470px, 100%); max-width: none; }
+  .steps .pg > * { grid-column: auto; max-width: none; }
+  .slide .next { position: absolute; left: clamp(22px, 6.5vw, 104px); bottom: 24px; font-size: 10px; letter-spacing: .12em; text-transform: uppercase; color: var(--muted); text-decoration: none; }
+  .slide .next:hover { color: var(--ink); }
+  .steps h1 { margin: 0 0 14px; font-size: clamp(32px, 3.3vw, 46px); line-height: 1.04; font-weight: 600; letter-spacing: -0.035em; color: var(--ink); white-space: normal; }
+  .steps h1.pt { font-size: clamp(27px, 2.7vw, 38px); font-weight: 500; letter-spacing: -0.025em; color: var(--accent); margin-bottom: 10px; }
+  .steps h3.lab { display: flex; justify-content: space-between; margin: 0 0 12px; font-size: 10px; font-weight: 500; letter-spacing: .12em; text-transform: uppercase; color: var(--muted); }
+  .steps .sum { max-width: none; margin: 0 0 28px; font-size: clamp(18px, 1.5vw, 21px); line-height: 1.34; letter-spacing: -0.012em; color: var(--muted); text-wrap: pretty; }
+  .steps .sum b { color: var(--ink); font-weight: inherit; }
+  .steps .sum em { color: var(--accent); font-style: normal; }
+  .steps .sub { margin: 0 0 18px; font-size: 18px; line-height: 1.38; color: var(--ink); }
+  .steps .body { font-size: 15px; line-height: 1.56; color: #CFC8C9; }
+  .steps .body p { margin: 0; max-width: none; }
+  .steps .body p + p, .page .body ul + p, .page .body p + ul { margin-top: .7em; }
+  .steps .body ul { margin: 0; padding-left: 1.1em; max-width: none; }
+  .steps .body li { margin: .25em 0; }
+  .steps .body a, .page .muted a { color: inherit; text-decoration: underline; text-decoration-color: rgba(243, 238, 232, .35); text-underline-offset: 3px; }
+  .steps .body a:hover { color: #7CC6DC; }
+  .steps .plabel { margin-top: 1em; color: var(--muted); }
+  .steps .soon { color: var(--muted); }
+  .steps .site { display: inline-block; margin-top: 18px; }
+  .steps ul.links.col { display: flex; flex-direction: column; gap: 11px; max-width: none; margin: 0 0 26px; padding: 0; list-style: none; font-size: 17px; }
+  .steps ul.links.col a { display: inline-flex; align-items: center; gap: 11px; color: var(--ink); text-decoration: none; }
+  .steps ul.links.col a:hover { color: #7CC6DC; }
+  .steps ul.links.col .logo { width: 18px; height: 18px; fill: currentColor; }
+  .steps .muted { margin: 0; font-size: 11.5px; color: var(--muted); }
   @media (max-width: 720px) {
-    .glass { left: 8px; right: 8px; top: 40px; bottom: auto; width: auto; padding: 8px; border-radius: 16px; }
-    .glass .nvs { flex-direction: row; overflow-x: auto; gap: 4px; scrollbar-width: none; }
-    .glass h2 { display: none; }
-    .glass .nv { width: auto; white-space: nowrap; padding: 7px 11px; font-size: 14px; }
-    .page { left: 8px; right: 8px; top: auto; bottom: 8px; width: auto; max-height: 52vh; padding: 18px 18px 16px; border-radius: 16px; align-items: flex-start; background: rgba(19, 18, 24, .6); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); pointer-events: auto; }
+    .steps section.slide { align-items: flex-end; padding: 56px 18px 26px; }
+    .slide .next { display: none; }
   }
-  @media (prefers-reduced-motion: reduce) { .page .pg.on { animation: none; } }
+  @media (prefers-reduced-motion: reduce) { html.listpage { scroll-behavior: auto; } }
 </style>
 </head>
 <body>
@@ -334,66 +323,56 @@
 <nav class="tabs" aria-label="Versions"><a href="/">main</a><a href="/scroll.html" aria-current="page">scroll</a><a href="/?tune">tune</a></nav>
 <main class="list"></main>
 
-<aside class="glass" aria-label="Navigation">
-  <nav class="nvs">
-    <button type="button" class="nv on" data-id="about" data-scene="me">About</button>
-    <h2>Now</h2>
-    <button type="button" class="nv" data-id="rubiqos" data-scene="robots">RubiqOS</button>
-    <h2>Masterplanning &amp; product</h2>
-    <button type="button" class="nv" data-id="island" data-scene="island">Private island</button>
-    <button type="button" class="nv" data-id="moscow" data-scene="moscow">Moscow-2050</button>
-    <button type="button" class="nv" data-id="easyinn" data-scene="">Easyinn</button>
-    <button type="button" class="nv" data-id="aircraft" data-scene="avia">Aircraft plant</button>
-    <button type="button" class="nv" data-id="cern" data-scene="cern">CERN campus</button>
-    <h2>Real estate development</h2>
-    <button type="button" class="nv" data-id="habithai" data-scene="">Habithai</button>
-    <button type="button" class="nv" data-id="nikolskiy" data-scene="">Nikolskiy market</button>
-    <button type="button" class="nv" data-id="sevkabel" data-scene="">Sevkabel Port</button>
-    <button type="button" class="nv" data-id="newholland" data-scene="">New Holland</button>
-    <button type="button" class="nv" data-id="colony" data-scene="">The Colony</button>
-  </nav>
-</aside>
-<section class="page" aria-live="polite">
-  <article class="pg on" id="pg-about">
-    <h1>Aleksandr Barinov</h1>
-    <p class="sum"><b>Real estate professional</b> specializing in <b>concept development</b>, <b>masterplanning</b>, and <b>technology solutions</b> for <em><span style="white-space:nowrap">large-scale</span> development</em>.</p>
-    <h3 class="lab">Contacts</h3>
-    <ul class="links col">
+<div class="steps">
+  <section class="slide" id="about" data-scene="me">
+    <article class="pg">
+      <h3 class="lab"><span>About</span><span>01 / 12</span></h3>
+      <h1>Aleksandr Barinov</h1>
+      <p class="sum"><b>Real estate professional</b> specializing in <b>concept development</b>, <b>masterplanning</b>, and <b>technology solutions</b> for <em><span style="white-space:nowrap">large-scale</span> development</em>.</p>
+      <h3 class="lab">Contacts</h3>
+      <ul class="links col">
     <li><a href="https://wa.me/12428075582" target="_blank" rel="noopener"><svg class="logo" viewBox="0 0 24 24" aria-hidden="true"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/></svg>WhatsApp</a></li>
     <li><a href="https://t.me/forbarinov" target="_blank" rel="noopener"><svg class="logo" viewBox="0 0 24 24" aria-hidden="true"><path d="M11.944 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0a12 12 0 0 0-.056 0zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 0 1 .171.325c.016.093.036.306.02.472-.18 1.898-.962 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.48.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z"/></svg>Telegram</a></li>
     <li><a href="https://x.com/BarinovLive" target="_blank" rel="noopener"><svg class="logo" viewBox="0 0 24 24" aria-hidden="true"><path d="M18.901 1.153h3.68l-8.04 9.19L24 22.846h-7.406l-5.8-7.584-6.638 7.584H.474l8.6-9.83L0 1.154h7.594l5.243 6.932ZM17.61 20.644h2.039L6.486 3.24H4.298Z"/></svg>X.com</a></li>
     <li><a href="https://medium.com/@barinov.live" target="_blank" rel="noopener"><svg class="logo" viewBox="0 0 24 24" aria-hidden="true"><path d="M13.54 12a6.8 6.8 0 01-6.77 6.82A6.8 6.8 0 010 12a6.8 6.8 0 016.77-6.82A6.8 6.8 0 0113.54 12zM20.96 12c0 3.54-1.51 6.42-3.38 6.42-1.87 0-3.39-2.88-3.39-6.42s1.52-6.42 3.39-6.42 3.38 2.88 3.38 6.42M24 12c0 3.17-.53 5.75-1.19 5.75-.66 0-1.19-2.58-1.19-5.75s.53-5.75 1.19-5.75C23.47 6.25 24 8.83 24 12z"/></svg>Medium</a></li>
     <li><a href="https://www.linkedin.com/in/forbarinov/" target="_blank" rel="noopener"><svg class="logo" viewBox="0 0 24 24" aria-hidden="true"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>LinkedIn</a></li>
   </ul>
-    <p class="muted">©2026 Aleksandr Barinov · Map data © <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener" style="color: inherit">OpenStreetMap</a> contributors</p>
-  </article>
+      <p class="muted">©2026 Aleksandr Barinov · Map data © <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener" style="color: inherit">OpenStreetMap</a> contributors</p>
+    </article>
+    <a class="next" href="#rubiqos">scroll ↓</a>
+  </section>
 
-  <article class="pg" id="pg-rubiqos" hidden>
-    <h3 class="lab">Now</h3>
-    <h1 class="pt">RubiqOS</h1>
-    <p class="sub">Physical AI platform for resort operations.</p>
-    <div class="body">
+  <section class="slide" id="rubiqos" data-scene="robots">
+    <article class="pg">
+      <h3 class="lab"><span>Now</span><span>02 / 12</span></h3>
+      <h1 class="pt">RubiqOS</h1>
+      <p class="sub">Physical AI platform for resort operations.</p>
+      <div class="body">
         <p>RubiqOS orchestrates day-to-day operations between people and robots. Its engine plans the tasks, splits the work between staff and machines, and runs both as one team.</p>
-    </div>
-    <a class="site" href="https://rubiqos.com/" target="_blank" rel="noopener">rubiqos.com ↗</a>
-  </article>
+      </div>
+      <a class="site" href="https://rubiqos.com/" target="_blank" rel="noopener">rubiqos.com ↗</a>
+    </article>
+  </section>
 
-  <article class="pg" id="pg-island" hidden>
-    <h3 class="lab">Masterplanning &amp; product</h3>
-    <h1 class="pt">Private island development</h1>
-    <p class="sub">Masterplan development for a $1B resort on a private island in the Caribbean.</p>
-    <div class="body">
+  <section class="slide" id="island" data-scene="island">
+    <article class="pg">
+      <h3 class="lab"><span>Masterplanning &amp; product</span><span>03 / 12</span></h3>
+      <h1 class="pt">Private island development</h1>
+      <p class="sub">Masterplan development for a $1B resort on a private island in the Caribbean.</p>
+      <div class="body">
         <p>My concept won a <a href="https://www.ribacompetitions.com/" target="_blank" rel="noopener">RIBA competition</a>, and I was invited to join the project as Lead Masterplan Architect. I was the third member of the team and helped shape the initial vision, the masterplan and the overall development concept.</p>
         <p>My scope covered the architectural and development concept of the island, strategic planning and cross-disciplinary coordination.</p>
-    </div>
-    
-  </article>
+      </div>
+      
+    </article>
+  </section>
 
-  <article class="pg" id="pg-moscow" hidden>
-    <h3 class="lab">Masterplanning &amp; product</h3>
-    <h1 class="pt">Foresight Moscow-2050</h1>
-    <p class="sub">The largest foresight study for the Moscow masterplan.</p>
-    <div class="body">
+  <section class="slide" id="moscow" data-scene="moscow">
+    <article class="pg">
+      <h3 class="lab"><span>Masterplanning &amp; product</span><span>04 / 12</span></h3>
+      <h1 class="pt">Foresight Moscow-2050</h1>
+      <p class="sub">The largest foresight study for the Moscow masterplan.</p>
+      <div class="body">
         <p>I was part of the team that developed the methodology, strategy and overall structure of the study for the Moscow masterplan — a joint effort of three universities and research institutions and more than 2,000 experts from business, government and academia.</p>
         <p>The project shaped the long-term development strategy of the Moscow masterplan and made several landmark projects possible, including:</p>
         <ul>
@@ -406,15 +385,17 @@
           <li><a href="https://genplanmos.ru/" target="_blank" rel="noopener">Moscow Masterplan Institute</a></li>
           <li><a href="https://www.hse.ru/en/" target="_blank" rel="noopener">Higher School of Economics</a></li>
         </ul>
-    </div>
-    
-  </article>
+      </div>
+      
+    </article>
+  </section>
 
-  <article class="pg" id="pg-easyinn" hidden>
-    <h3 class="lab">Masterplanning &amp; product</h3>
-    <h1 class="pt">Easyinn</h1>
-    <p class="sub">Platform for automated property management.</p>
-    <div class="body">
+  <section class="slide" id="easyinn" data-scene="">
+    <article class="pg">
+      <h3 class="lab"><span>Masterplanning &amp; product</span><span>05 / 12</span></h3>
+      <h1 class="pt">Easyinn</h1>
+      <p class="sub">Platform for automated property management.</p>
+      <div class="body">
         <p>Easyinn started as an internal tool for running my own network of hotels with 280 units in total. It included a keyless access system and a guest app with a marketplace of local services.</p>
         <p>It was later spun off as a standalone product and launched in several countries.</p>
         <p class="plabel">Partners:</p>
@@ -422,51 +403,59 @@
           <li><a href="https://www.guesty.com/" target="_blank" rel="noopener">Guesty</a> — property management system</li>
           <li><a href="https://nuki.io/" target="_blank" rel="noopener">Nuki</a> — smart locks</li>
         </ul>
-    </div>
-    
-  </article>
+      </div>
+      
+    </article>
+  </section>
 
-  <article class="pg" id="pg-aircraft" hidden>
-    <h3 class="lab">Masterplanning &amp; product</h3>
-    <h1 class="pt">Aircraft assembly plant</h1>
-    <p class="sub">Masterplan optimization for a high-tech manufacturing site.</p>
-    <div class="body">
+  <section class="slide" id="aircraft" data-scene="avia">
+    <article class="pg">
+      <h3 class="lab"><span>Masterplanning &amp; product</span><span>06 / 12</span></h3>
+      <h1 class="pt">Aircraft assembly plant</h1>
+      <p class="sub">Masterplan optimization for a high-tech manufacturing site.</p>
+      <div class="body">
         <p>The facility builds civil aircraft as well as fourth- and fifth-generation fighter jets.</p>
         <p>My task was to expand and partially redesign the site to make room for new production facilities.</p>
-    </div>
-    
-  </article>
+      </div>
+      
+    </article>
+  </section>
 
-  <article class="pg" id="pg-cern" hidden>
-    <h3 class="lab">Masterplanning &amp; product</h3>
-    <h1 class="pt">CERN campus</h1>
-    <p class="sub">Concept development for a laboratory complex on the CERN campus.</p>
-    <div class="body">
+  <section class="slide" id="cern" data-scene="cern">
+    <article class="pg">
+      <h3 class="lab"><span>Masterplanning &amp; product</span><span>07 / 12</span></h3>
+      <h1 class="pt">CERN campus</h1>
+      <p class="sub">Concept development for a laboratory complex on the CERN campus.</p>
+      <div class="body">
         <p>I helped shape the concept for a complex of administrative buildings and laboratories at CERN. I ran several strategy sessions with the architectural teams and laboratory representatives to define clear requirements for the architectural design.</p>
         <p class="plabel">Partners:</p>
         <ul class="partners">
           <li><a href="https://home.cern/" target="_blank" rel="noopener">CERN</a></li>
           <li><a href="https://www.nickl-partner.com/en/" target="_blank" rel="noopener">Nickl &amp; Partner</a></li>
         </ul>
-    </div>
-    
-  </article>
+      </div>
+      
+    </article>
+  </section>
 
-  <article class="pg" id="pg-habithai" hidden>
-    <h3 class="lab">Real estate development</h3>
-    <h1 class="pt">Habithai</h1>
-    <p class="sub">Gated community development in Thailand.</p>
-    <div class="body">
+  <section class="slide" id="habithai" data-scene="">
+    <article class="pg">
+      <h3 class="lab"><span>Real estate development</span><span>08 / 12</span></h3>
+      <h1 class="pt">Habithai</h1>
+      <p class="sub">Gated community development in Thailand.</p>
+      <div class="body">
         <p>I developed the masterplan and the product and architectural concepts for a gated community of 11 premium villas on Koh Samui, Thailand.</p>
-    </div>
-    
-  </article>
+      </div>
+      
+    </article>
+  </section>
 
-  <article class="pg" id="pg-nikolskiy" hidden>
-    <h3 class="lab">Real estate development</h3>
-    <h1 class="pt">Nikolskiy market</h1>
-    <p class="sub">Redevelopment of a cluster of historic buildings in Saint Petersburg.</p>
-    <div class="body">
+  <section class="slide" id="nikolskiy" data-scene="">
+    <article class="pg">
+      <h3 class="lab"><span>Real estate development</span><span>09 / 12</span></h3>
+      <h1 class="pt">Nikolskiy market</h1>
+      <p class="sub">Redevelopment of a cluster of historic buildings in Saint Petersburg.</p>
+      <div class="body">
         <p>The goal was to increase the value of a restored 40,000 m² historic building fivefold within five years.</p>
         <p>The overall development strategy was to create an attractive public space, fill it with hospitality operators, and acquire and redevelop the neighboring buildings in the block.</p>
         <p>As a result, Saint Petersburg gained another informal center of attraction in the heart of the city.</p>
@@ -475,40 +464,47 @@
           <li><a href="https://milesandyards.com/" target="_blank" rel="noopener">Miles &amp; Yards</a></li>
           <li><a href="https://arch-katarsis.com/" target="_blank" rel="noopener">Katarsis Architects</a></li>
         </ul>
-    </div>
-    
-  </article>
+      </div>
+      
+    </article>
+  </section>
 
-  <article class="pg" id="pg-sevkabel" hidden>
-    <h3 class="lab">Real estate development</h3>
-    <h1 class="pt">Sevkabel Port</h1>
-    
-    <div class="body">
+  <section class="slide" id="sevkabel" data-scene="">
+    <article class="pg">
+      <h3 class="lab"><span>Real estate development</span><span>10 / 12</span></h3>
+      <h1 class="pt">Sevkabel Port</h1>
+      
+      <div class="body">
         <p class="soon">Description coming soon.</p>
-    </div>
-    
-  </article>
+      </div>
+      
+    </article>
+  </section>
 
-  <article class="pg" id="pg-newholland" hidden>
-    <h3 class="lab">Real estate development</h3>
-    <h1 class="pt">New Holland</h1>
-    
-    <div class="body">
+  <section class="slide" id="newholland" data-scene="">
+    <article class="pg">
+      <h3 class="lab"><span>Real estate development</span><span>11 / 12</span></h3>
+      <h1 class="pt">New Holland</h1>
+      
+      <div class="body">
         <p class="soon">Description coming soon.</p>
-    </div>
-    
-  </article>
+      </div>
+      
+    </article>
+  </section>
 
-  <article class="pg" id="pg-colony" hidden>
-    <h3 class="lab">Real estate development</h3>
-    <h1 class="pt">The Colony</h1>
-    
-    <div class="body">
+  <section class="slide" id="colony" data-scene="">
+    <article class="pg">
+      <h3 class="lab"><span>Real estate development</span><span>12 / 12</span></h3>
+      <h1 class="pt">The Colony</h1>
+      
+      <div class="body">
         <p class="soon">Description coming soon.</p>
-    </div>
-    
-  </article>
-</section>
+      </div>
+      
+    </article>
+  </section>
+</div>
 <div id="calendly" hidden></div>
 
 
@@ -1318,26 +1314,22 @@
   })();
 </script>
 <script>
-  /* ——— навигация слева: клик по пункту открывает его страницу и собирает его сцену; About показывает портрет.
-     У проектов без своей сцены справа остаётся сфера. Выбранный пункт пишется в адрес (#island и т. п.). ——— */
+  /* ——— scroll: какой шаг занимает экран, та сцена и собирается; у шагов без своей сцены остаётся сфера.
+     Текущий шаг пишется в адрес (#island и т. п.), по такой ссылке страница откроется сразу на нём. ——— */
   (function () {
-    var S = window.sphere, btns = document.querySelectorAll('.nv'), cur = null;
-    function show(id, quiet) {
-      var b = null, i;
-      for (i = 0; i < btns.length; i++) if (btns[i].getAttribute('data-id') === id) b = btns[i];
-      if (!b) { b = btns[0]; id = 'about'; }
-      if (id === cur) return;
-      cur = id;
-      for (i = 0; i < btns.length; i++) btns[i].classList.toggle('on', btns[i] === b);
-      var pgs = document.querySelectorAll('.pg');
-      for (i = 0; i < pgs.length; i++) { var on = pgs[i].id === 'pg-' + id; pgs[i].hidden = !on; pgs[i].classList.toggle('on', on); if (on) pgs[i].scrollTop = 0; }
-      if (S && S.pin) S.pin(b.getAttribute('data-scene') || null);
-      if (!quiet) { try { history.replaceState(null, '', id === 'about' ? location.pathname + location.search : '#' + id); } catch (e) {} }
-      if (b.scrollIntoView) b.scrollIntoView({ block: 'nearest', inline: 'nearest' });
+    var S = window.sphere, slides = document.querySelectorAll('.slide'), cur = -1;
+    function show(i) {
+      if (i === cur || i < 0) return;
+      cur = i;
+      if (S && S.pin) S.pin(slides[i].getAttribute('data-scene') || null);
+      try { history.replaceState(null, '', i === 0 ? location.pathname + location.search : '#' + slides[i].id); } catch (e) {}
     }
-    for (var k = 0; k < btns.length; k++) btns[k].addEventListener('click', function () { show(this.getAttribute('data-id')); });
-    addEventListener('hashchange', function () { show(location.hash.slice(1) || 'about', true); });
-    show(location.hash.slice(1) || 'about', true);
+    if ('IntersectionObserver' in window) {
+      var io = new IntersectionObserver(function (es) {
+        for (var e = 0; e < es.length; e++) if (es[e].isIntersecting) show(Array.prototype.indexOf.call(slides, es[e].target));
+      }, { threshold: .55 });
+      for (var j = 0; j < slides.length; j++) io.observe(slides[j]);
+    } else show(0);
   })();
 </script>
 </body>
