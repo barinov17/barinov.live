@@ -329,9 +329,12 @@
   .dots a span { position: absolute; right: 24px; top: 50%; transform: translateY(-50%); padding: 3px 8px; border-radius: 999px; background: rgba(19, 18, 24, .8); font-size: 11px; white-space: nowrap; color: var(--ink); opacity: 0; pointer-events: none; transition: opacity .15s; }
   .dots a:hover span { opacity: 1; }
   @media (max-width: 720px) {
-    .steps section.slide { align-items: flex-start; padding: 62px 30px 30px 18px; }
-    .steps section.slide.first { align-items: flex-end; padding: 62px 30px 44px 18px; }   /* портрет сверху, имя и описание под ним */
-    .steps .pp { left: 18px; right: 30px; bottom: 24px; max-width: none; }
+    /* телефон: сцена в верхней части экрана, текст начинается примерно с двух третей высоты; если текста больше,
+       чем помещается ниже, распорка сверху сжимается и текст поднимается; партнёры и ссылки — в самом низу */
+    .steps section.slide, .steps section.slide.first { flex-direction: column; align-items: stretch; justify-content: flex-start; padding: 62px 30px 26px 18px; }
+    .steps section.slide::before { content: ""; flex: 0 1 calc(66vh - 62px); flex-basis: calc(66svh - 62px); min-height: 0; }
+    .steps .pg, .steps .first .pg { flex: none; width: 100%; }
+    .steps .pp, .steps .pp.cl { position: static; flex: none; margin-top: auto; padding-top: 20px; max-width: none; }
     .dots { right: 2px; }
     .dots a span { display: none; }
   }
@@ -1131,7 +1134,7 @@
         var ang = v.turn + (v.swing > 0 ? v.swing * Math.sin(tt * v.speed) : tt * v.speed), ca = Math.cos(ang), sa = Math.sin(ang);
         var ct = Math.cos(v.tilt), st = Math.sin(v.tilt), ey = cn || mk || pm || gl ? 0 : isl ? .1 : av ? 0 : 1.75, pd = cn || isl || mk || av || pm || gl ? 10 : 8, dk = gl ? .34 : cn ? .14 : isl || mk ? .1 : av ? .09 : .13;
         var sc = (gl ? Math.min(H * .34, W * .2) : pm ? Math.min(H * .68, W * .4) : av ? Math.min(H * .2, W * .1) : cn ? Math.min(H * .294, W * .204) : mk ? Math.min(H * .16, W * .1) : isl ? Math.min(H * .2, W * .096) : Math.min(H * .2, W * .105)) * v.scale, ox = W * v.x, oy = H * v.y;
-        if (W < 720) { sc *= 2; ox = W * .5; oy = H * .54; if (pm) { sc *= .66; oy = H * .33; } }   /* телефон: сцена по центру экрана и вдвое крупнее; портрет — в верхней половине, под ним имя */
+        if (W < 720) { var wy = window.sphere && window.sphere.my; sc *= 2; ox = W * .5; oy = H * (wy || .34); if (pm) sc *= .9; }   /* телефон: сцена вдвое крупнее, по центру свободного места над текстом (my задаёт скрипт страниц) */
         for (i = 0; i < PTS.length; i++) {
           var e = morph * 1.6 - TD[i] * .6;
           if (e <= 0) continue;
@@ -1431,6 +1434,8 @@
       if (i === cur || i < 0) return;
       cur = i;
       for (var k = 0; k < links.length; k++) { if (k === i) links[k].setAttribute('aria-current', 'true'); else links[k].removeAttribute('aria-current'); }
+      var pg = slides[i].querySelector('.pg');      /* телефон: центр сцены — середина свободного места над текстом */
+      if (S && pg) S.my = innerWidth < 720 ? Math.max(.22, Math.min(.4, (50 + pg.offsetTop) / 2 / Math.max(1, innerHeight))) : 0;
       if (S && S.pin) S.pin(slides[i].getAttribute('data-scene') || null);
       try { history.replaceState(null, '', i === 0 ? location.pathname + location.search : '#' + slides[i].id); } catch (e) {}
     }
