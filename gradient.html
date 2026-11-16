@@ -213,7 +213,7 @@
   .dbg { position: fixed; left: 14px; bottom: 14px; z-index: 20; width: 318px; max-height: calc(100vh - 28px); overflow: auto; padding: 12px 14px 12px; border-radius: 12px; background: rgba(19, 18, 24, .9); border: 1px solid rgba(243, 238, 232, .14); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); font-size: 11.5px; line-height: 1.35; color: var(--ink); }
   .dbg b { font-weight: 500; }
   .dbg-head { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; margin-bottom: 8px; }
-  .dbg-tabs { display: flex; gap: 4px; margin-bottom: 10px; }
+  .dbg-tabs { display: flex; flex-wrap: wrap; gap: 4px; margin-bottom: 10px; }
   .dbg button { font: inherit; color: var(--muted); background: rgba(243, 238, 232, .07); border: 0; border-radius: 999px; padding: 4px 9px; cursor: pointer; }
   .dbg button:hover { color: var(--ink); }
   .dbg button[aria-pressed="true"] { color: #131218; background: var(--accent); }
@@ -513,6 +513,7 @@
     var DEF = {
       robots: { scale: 1, x: .71, y: .33, tilt: .27, turn: .01, swing: .65, speed: .22, dot: .85, dotHalo: .9, bright: 1.1, free: .2, halo: .08, spread: 1.5, jitter: .02, edge: 0, accent: 1, accentDot: 1, marina: 1, build: 1 },
       cern:   { scale: 1.42, x: .675, y: .46, tilt: .5, turn: 0, swing: 0, speed: .12, dot: .9, dotHalo: .8, bright: 1.1, free: .2, halo: .3, spread: .35, jitter: .04, edge: 0, accent: 1, accentDot: 1, marina: 1, build: 1 },
+      moscow: { scale: 1, x: .72, y: .47, tilt: .78, turn: 0, swing: 0, speed: .07, dot: .9, dotHalo: .8, bright: 1.1, free: .2, halo: .15, spread: .5, jitter: .012, edge: 0, accent: 1.2, accentDot: .85, marina: 1.5, build: 1 },
       island: { scale: 1.61, x: .69, y: .45, tilt: .65, turn: -.45, swing: .08, speed: .53, dot: 1.1, dotHalo: .85, bright: 1, free: .35, halo: .2, spread: 1.36, jitter: 0, edge: 0, accent: 1.25, accentDot: .8, marina: 1.6, build: .62 }
     };
     var V = {}, vk, vp;
@@ -698,6 +699,53 @@
         return (ARM[kind] = { L: L, tot: tot });
       }
 
+      /* ——— Москва (для проекта Foresight Moscow-2050): схема города в объёме ———
+         Контур кольцевой дороги, внутренние кольца и радиальные магистрали — линии; река — изогнутая
+         лента чуть ниже земли; парки — плотные приподнятые облака точек; между ними редкая «ткань»
+         кварталов; несколько вертикалей-ориентиров. Координаты сняты с карты (пиксели → единицы сцены),
+         север уходит вдаль. Масштаб условный. */
+      if (kind === 'moscow') {
+        put(0, 0, 0, 0, 1);
+        function M(px, py) { return [(px - 375) / 170, 0, -(py - 440) / 170]; }
+        function Lk(a, b, kk, kd) { Ln(a, b, kk); L[L.length - 1].k = kd; }
+        var RING = [[355, 60], [440, 75], [520, 110], [600, 170], [660, 250], [680, 340], [685, 450], [680, 540], [665, 640], [610, 720], [530, 790], [440, 830], [350, 835], [270, 810], [190, 740], [140, 650], [95, 560], [65, 480], [68, 380], [80, 290], [105, 230], [170, 140], [250, 85]];
+        var poly = [], bb = [9, -9, 9, -9], c0 = M(385, 415), m0, m1;
+        for (k = 0; k < RING.length; k++) { m0 = M(RING[k][0], RING[k][1]); poly.push([m0[0], m0[2]]); if (m0[0] < bb[0]) bb[0] = m0[0]; if (m0[0] > bb[1]) bb[1] = m0[0]; if (m0[2] < bb[2]) bb[2] = m0[2]; if (m0[2] > bb[3]) bb[3] = m0[2]; }
+        /* ткань кварталов: редкие фоновые точки внутри кольцевой */
+        L.push({ pg: poly, bb: bb, bg: 1, w: 15 }); tot += 15;
+        /* кольцевая и радиальные магистрали */
+        for (k = 0; k < RING.length; k++) { m0 = M(RING[k][0], RING[k][1]); m1 = M(RING[(k + 1) % RING.length][0], RING[(k + 1) % RING.length][1]); Lk(m0, m1, 1.7, 3); }
+        for (k = 0; k < RING.length; k += 2) {
+          m1 = M(RING[k][0], RING[k][1]);
+          var rx0 = m1[0] - c0[0], rz0 = m1[2] - c0[2], rl = Math.sqrt(rx0 * rx0 + rz0 * rz0), bend = (k % 4 ? .06 : -.05);
+          var mid = [c0[0] + rx0 * .55 - rz0 / rl * bend * rl, 0, c0[2] + rz0 * .55 + rx0 / rl * bend * rl];
+          Lk([c0[0] + rx0 / rl * .12, 0, c0[2] + rz0 / rl * .12], mid, .55, 3); Lk(mid, m1, .55, 3);
+        }
+        /* внутренние кольца: Бульварное, Садовое, Третье, и дуга между Третьим и кольцевой */
+        put(c0[0], 0, c0[2], 0, 1);
+        R([0, 0, 0], .12, 16); L[L.length - 1].k = 3; R([0, 0, 0], .23, 16); L[L.length - 1].k = 3; R([0, 0, 0], .46, 13, 1.08); L[L.length - 1].k = 3; R([.05, 0, -.08], 1.05, 5, 1.18); L[L.length - 1].k = 3;
+        put(0, 0, 0, 0, 1);
+        /* река: лента из двух берегов, чуть ниже земли; канал на северо-западе */
+        var RIV = [[65, 240], [110, 250], [150, 300], [120, 340], [170, 390], [240, 420], [300, 410], [325, 430], [300, 480], [290, 510], [340, 500], [365, 455], [385, 440], [410, 470], [395, 530], [410, 570], [460, 560], [500, 550], [505, 600], [450, 640], [480, 690], [540, 680], [600, 660], [620, 720], [680, 735]];
+        for (k = 0; k < RIV.length - 1; k++) {
+          m0 = M(RIV[k][0], RIV[k][1]); m1 = M(RIV[k + 1][0], RIV[k + 1][1]); m0[1] = m1[1] = -.02;
+          C(m0, m1, .022, false, 14); L[L.length - 1].k = 4;
+        }
+        var CAN = [[215, 55], [185, 150], [205, 235], [150, 300]];
+        for (k = 0; k < CAN.length - 1; k++) { m0 = M(CAN[k][0], CAN[k][1]); m1 = M(CAN[k + 1][0], CAN[k + 1][1]); m0[1] = m1[1] = -.02; C(m0, m1, .014, false, 12); L[L.length - 1].k = 4; }
+        /* парки: плотные приподнятые облака (центр и полуоси в пикселях карты) */
+        var GRN = [[560, 200, 80, 50], [610, 370, 55, 40], [455, 315, 22, 22], [310, 720, 35, 70], [590, 570, 35, 25], [475, 790, 35, 25], [290, 500, 30, 20], [150, 310, 25, 20], [385, 235, 35, 30], [220, 430, 30, 15], [300, 265, 25, 40], [455, 600, 20, 20], [230, 570, 18, 18], [600, 470, 25, 18]];
+        for (k = 0; k < GRN.length; k++) {
+          m0 = M(GRN[k][0], GRN[k][1]);
+          var gw = 4 * (GRN[k][2] / 170) * (GRN[k][3] / 170) * 10;
+          L.push({ gc: m0, h: [GRN[k][2] / 170, .05 + .05 * rnd(k, 41), GRN[k][3] / 170], w: gw }); tot += gw;
+        }
+        /* ориентиры: башня на севере и группа высоток на западе от центра */
+        m0 = M(420, 250); Lk(m0, [m0[0], .5, m0[2]], 2, 3); S([m0[0], .3, m0[2]], .025, 20);
+        for (k = 0; k < 5; k++) { m0 = M(282 + k * 7, 418 + (k % 2) * 8); Lk(m0, [m0[0], .16 + rnd(k, 42) * .16, m0[2]], 2.4, 3); }
+        return (ARM[kind] = { L: L, tot: tot });
+      }
+
       /* ——— Коллайдер (для проекта CERN): три слоя, как на схемах ускорителя ———
          Сверху — два пересекающихся кольца пучков, посередине — кольцо тоннеля с восемью точками
          (четыре больших эксперимента с шахтами и четыре малых), малое кольцо предускорителя;
@@ -809,7 +857,7 @@
         if (best >= 0) { q.NX[i] = q.X[best]; q.NY[i] = q.Y[best]; q.NZ[i] = q.Z[best]; }
       }
     }
-    function targets() { fill('robots'); fill('cern'); fill('island'); use(cur); }
+    function targets() { fill('robots'); fill('cern'); fill('island'); fill('moscow'); use(cur); }
 
     function fill(kind) {
       if (kind === 'island' && IP) {
@@ -834,7 +882,16 @@
         var pick = rnd(i, 3) * A.tot, o = 0, P0 = A.L[0];
         for (; o < A.L.length; o++) { P0 = A.L[o]; pick -= P0.w; if (pick <= 0) break; }
         var u1 = rnd(i, 5), u2 = rnd(i, 6), u3 = rnd(i, 8), u4 = rnd(i, 9), ph = 6.2832 * u2;
-        if (P0.pg) {
+        if (P0.gc) {
+          /* облако: точки внутри приплюснутого эллипсоида, гуще к центру, только над землёй */
+          var cz = 1 - 2 * u1, cq = Math.sqrt(1 - cz * cz), cr = Math.pow(u3, .6);
+          TX[i] = P0.gc[0] + P0.h[0] * cr * cq * Math.cos(ph); TY[i] = P0.gc[1] + P0.h[1] * cr * Math.abs(cz); TZ[i] = P0.gc[2] + P0.h[2] * cr * cq * Math.sin(ph);
+        } else if (P0.pg && P0.pg !== 1) {
+          /* случайное место внутри произвольного контура */
+          var qx = 0, qz = 0;
+          for (var t2 = 0; t2 < 12; t2++) { qx = P0.bb[0] + (P0.bb[1] - P0.bb[0]) * rnd(i, 20 + t2 * 2); qz = P0.bb[2] + (P0.bb[3] - P0.bb[2]) * rnd(i, 21 + t2 * 2); if (inPoly(P0.pg, qx, qz)) break; }
+          TX[i] = qx; TY[i] = 0; TZ[i] = qz;
+        } else if (P0.pg) {
           /* случайное место внутри контура берега: несколько попыток, высота — по рельефу */
           var gx = 0, gz = 0;
           for (var tr = 0; tr < 28; tr++) { gx = -2.75 + 5.5 * rnd(i, 20 + tr * 2); gz = -.65 + 1.47 * rnd(i, 21 + tr * 2); if (onIsle(gx, gz)) break; }
@@ -874,7 +931,7 @@
           TX[i] = a[0] + (b[0] - a[0]) * t + ux * cs + wx * sn; TY[i] = a[1] + (b[1] - a[1]) * t + uy * cs + wy * sn; TZ[i] = a[2] + (b[2] - a[2]) * t + uz * cs + wz * sn;
         }
         /* вид точки: 1 — чёткая линия или кольцо (не размывается), 0 — обычная; размытие добавляется при отрисовке */
-        TH[i] = P0.ln || (P0.rc && !soft) ? 1 : 0;
+        TH[i] = P0.k || (P0.ln || (P0.rc && !soft) ? 1 : P0.bg ? 2 : 0);   /* k — явно заданный вид: 3 — линии-акценты, 4 — вода */
         TD[i] = rnd(i, 7);
       }
       SC[kind] = { X: TX, Y: TY, Z: TZ, D: TD, H: TH }; nearest(SC[kind]);
@@ -913,11 +970,12 @@
          смотрим чуть сверху, с высоты 1,75 м, точки облака вокруг форм мельче и бледнее */
       if (morph > 0) {
         /* роботы: вид чуть сверху, сцена покачивается; коллайдер: вид сверху под углом, медленно вращается;
-           остров: вид сверху, как на макете, плавно поворачивается туда-обратно */
-        var cn = cur === 'cern', isl = cur === 'island', v = V[cur], tt = ms / 1000;
+           остров: вид сверху, как на макете, плавно поворачивается туда-обратно;
+           Москва: вид сверху под углом, очень медленно вращается */
+        var cn = cur === 'cern', isl = cur === 'island', mk = cur === 'moscow', v = V[cur], tt = ms / 1000;
         var ang = v.turn + (v.swing > 0 ? v.swing * Math.sin(tt * v.speed) : tt * v.speed), ca = Math.cos(ang), sa = Math.sin(ang);
-        var ct = Math.cos(v.tilt), st = Math.sin(v.tilt), ey = cn ? 0 : isl ? .1 : 1.75, pd = cn || isl ? 10 : 8, dk = cn ? .14 : isl ? .1 : .13;
-        var sc = (cn ? Math.min(H * .147, W * .102) : isl ? Math.min(H * .2, W * .096) : Math.min(H * .2, W * .105)) * v.scale, ox = W * v.x, oy = H * v.y;
+        var ct = Math.cos(v.tilt), st = Math.sin(v.tilt), ey = cn || mk ? 0 : isl ? .1 : 1.75, pd = cn || isl || mk ? 10 : 8, dk = cn ? .14 : isl || mk ? .1 : .13;
+        var sc = (cn ? Math.min(H * .147, W * .102) : mk ? Math.min(H * .16, W * .1) : isl ? Math.min(H * .2, W * .096) : Math.min(H * .2, W * .105)) * v.scale, ox = W * v.x, oy = H * v.y;
         for (i = 0; i < PTS.length; i++) {
           var e = morph * 1.6 - TD[i] * .6;
           if (e <= 0) continue;
@@ -990,7 +1048,7 @@
         if (still) draw(0);
       } };
 
-    /* наведение на проект собирает точки в его сцену: RubiqOS — парк роботов, CERN — коллайдер, частный остров — макет острова;
+    /* наведение на проект собирает точки в его сцену: RubiqOS — парк роботов, CERN — коллайдер, частный остров — макет острова, Москва-2050 — схема города;
        на узких экранах эффект выключен */
     function bind(el, kind) {
       if (!el) return;
@@ -1003,6 +1061,7 @@
     for (var hi = 0; hi < hs.length; hi++) {
       if (/CERN/.test(hs[hi].textContent)) bind(hs[hi].closest('.case'), 'cern');
       if (/island/i.test(hs[hi].textContent)) bind(hs[hi].closest('.case'), 'island');
+      if (/Moscow/i.test(hs[hi].textContent)) bind(hs[hi].closest('.case'), 'moscow');
     }
   })();
 </script>
@@ -1027,7 +1086,7 @@
       ['speed', 'Скорость', 0, 2.5, .01], ['count', 'Число точек', 300, 16000, 100], ['dot', 'Размер точки', .3, 3.5, .05],
       ['alpha', 'Яркость', 0, 1.6, .01], ['breathe', '«Дыхание» формы', 0, 3, .05], ['accent', 'Акцентных точек, %', 0, 40, 1]
     ];
-    var SCN = [['robots', 'RubiqOS'], ['cern', 'CERN campus'], ['island', 'Private island']];
+    var SCN = [['robots', 'RubiqOS'], ['island', 'Private island'], ['cern', 'CERN campus'], ['moscow', 'Moscow-2050']];
     var GROUPS = [
       ['Положение и вид', [
         ['scale', 'Размер', .3, 2.5, .01], ['x', 'Позиция по X', .2, 1.1, .005], ['y', 'Позиция по Y', .1, .9, .005],
@@ -1040,7 +1099,7 @@
         ['spread', 'Разлёт облака', 0, 1.5, .01], ['jitter', 'Размытие самой формы', 0, .3, .002]]],
       ['Линии и акценты', [
         ['edge', 'Прижатие точек к линиям', 0, 1, .01], ['accent', 'Яркость линий (берег, дороги)', 0, 3, .05],
-        ['accentDot', 'Размер точек линий', .3, 3, .05], ['marina', 'Яркость марины и причалов', 0, 3, .05], ['build', 'Яркость зданий и объёмов', 0, 3, .05]]]
+        ['accentDot', 'Размер точек линий', .3, 3, .05], ['marina', 'Яркость воды (марина, река)', 0, 3, .05], ['build', 'Яркость зданий и объёмов', 0, 3, .05]]]
     ];
     var mode = 'base', cur = 'robots', pinned = null, rows = {}, brow = {}, tabs = {}, cases = {}, modes = {};
     try { var sv = JSON.parse(localStorage.getItem('grad-debug-scenes-2')); if (sv) for (var a in sv) if (S.V[a]) for (var b in sv[a]) if (b in S.V[a] && isFinite(sv[a][b])) S.V[a][b] = +sv[a][b]; } catch (e) {}
@@ -1116,7 +1175,7 @@
     });
     var hs = document.querySelectorAll('.case h3');
     for (var i = 0; i < hs.length; i++) {
-      var t = hs[i].textContent, el = hs[i].closest('.case'), k = /RubiqOS/.test(t) ? 'robots' : /CERN/.test(t) ? 'cern' : /island/i.test(t) ? 'island' : null;
+      var t = hs[i].textContent, el = hs[i].closest('.case'), k = /RubiqOS/.test(t) ? 'robots' : /CERN/.test(t) ? 'cern' : /island/i.test(t) ? 'island' : /Moscow/i.test(t) ? 'moscow' : null;
       if (k) { cases[k] = el; el.classList.add('pick'); }
     }
     GROUPS.forEach(function (g) {
