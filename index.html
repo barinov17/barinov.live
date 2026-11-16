@@ -499,6 +499,7 @@
     var c = document.getElementById('bg'), x = c.getContext('2d');
     var still = matchMedia('(prefers-reduced-motion: reduce)').matches;
     var W, H, PTS = [], EDGES, SX, SY, NR, raf = 0, clock = 0, last = null;
+    var DX, DY, fresh = true;                     /* показанные положения точек: плавно догоняют расчётные, поэтому смена сцены — прямой перелёт */
     var NX, NY, NZ;                               /* ближайшая точка линии для каждой точки текущей сцены */
     var Q1, Q2, UX, UY, UZ, SZ, pinned = null;   /* случайные числа и направление разлёта каждой точки, её размер в кадре; закреплённая сцена (режим отладки) */
     /* настройки каждой сцены (их же крутит панель отладки):
@@ -553,7 +554,7 @@
         PTS.push([Math.cos(a) * r, y, Math.sin(a) * r, (i * 7919 % 1000) < P.accent * 10]);
       }
       SX = new Float32Array(n); SY = new Float32Array(n); NR = new Float32Array(n);
-      Q1 = new Float32Array(n); Q2 = new Float32Array(n); UX = new Float32Array(n); UY = new Float32Array(n); UZ = new Float32Array(n); SZ = new Float32Array(n);
+      Q1 = new Float32Array(n); Q2 = new Float32Array(n); UX = new Float32Array(n); UY = new Float32Array(n); UZ = new Float32Array(n); SZ = new Float32Array(n); DX = new Float32Array(n); DY = new Float32Array(n); fresh = true;
       for (i = 0; i < n; i++) {
         var dz0 = 1 - 2 * rnd(i, 14), dq0 = Math.sqrt(1 - dz0 * dz0), da0 = 6.2832 * rnd(i, 15);
         Q1[i] = rnd(i, 12); Q2[i] = rnd(i, 13); UX[i] = dq0 * Math.cos(da0); UY[i] = dz0; UZ[i] = dq0 * Math.sin(da0); SZ[i] = 1;
@@ -967,9 +968,7 @@
       if (last === null) last = ms;
       var rdt = Math.max(0, Math.min(.1, (ms - last) / 1000));
       clock += rdt * P.speed; last = ms;
-      if (still) morph = goal; else { morph += (goal - morph) * (1 - Math.exp(-rdt * 3)); if (Math.abs(goal - morph) < .001) morph = goal; }
-      /* запрошена другая сцена: сначала точки возвращаются в сферу, потом собирается новая */
-      if (want !== cur && morph < .04) { cur = want; use(cur); goal = 1; }
+      if (still) morph = goal; else { morph += (goal - morph) * (1 - Math.exp(-rdt * 4.5)); if (Math.abs(goal - morph) < .001) morph = goal; }
       var t = clock, k = W < 720 ? .85 : 1, i;
       var cx = W * P.x, cy = H * P.y, R = H * P.size, b = P.breathe;
       var ry = t * .12, rx = .35 + Math.sin(t * .07) * .2;
@@ -1015,6 +1014,9 @@
           SX[i] += (ox + ax * sc * pf - SX[i]) * e; SY[i] += (oy + ay2 * sc * pf - SY[i]) * e; NR[i] += (tn - NR[i]) * e;
         }
       }
+      /* показанные положения догоняют расчётные: при смене сцены точки не прыгают, а перелетают */
+      var fk = fresh || still ? 1 : 1 - Math.exp(-rdt * 8); fresh = false;
+      for (i = 0; i < PTS.length; i++) { DX[i] += (SX[i] - DX[i]) * fk; DY[i] += (SY[i] - DY[i]) * fk; }
       x.clearRect(0, 0, W, H);
       /* связи: три слоя по глубине, ближние ярче */
       if (EDGES.length) {
@@ -1039,7 +1041,7 @@
           if (al <= .004) continue;
           x.globalAlpha = al > 1 ? 1 : al;
           var s = (near > .55 ? 2.2 : 1.4) * P.dot * SZ[i];
-          x.fillRect(SX[i], SY[i], s, s);
+          x.fillRect(DX[i], DY[i], s, s);
         }
       }
       x.globalAlpha = 1;
@@ -1056,13 +1058,12 @@
     /* для страницы настройки: доступ к параметрам снаружи */
     window.sphere = { P: P, reset: function () { defaults(); build(); }, build: build, redraw: function () { if (still) draw(0); },
       V: V, DEF: DEF, debug: false, onPick: null,
-      pin: function (kind) { pinned = kind || null; if (pinned) { if (pinned !== cur && morph > .04 && !still) { want = pinned; goal = 0; } else { cur = want = pinned; use(cur); goal = 1; } } else { want = cur; goal = 0; } if (still) draw(0); },
+      pin: function (kind) { pinned = kind || null; if (pinned) { cur = want = pinned; use(cur); goal = 1; } else { want = cur; goal = 0; } if (still) draw(0); },
       morph: function (v, kind) {
         kind = kind || 'robots';
         if (pinned) return;                       /* сцена закреплена кликом в режиме отладки */
         if (v) {
-          if (kind !== cur && morph > .04 && !still) { want = kind; goal = 0; }
-          else { cur = want = kind; use(cur); goal = 1; }
+          cur = want = kind; use(cur); goal = 1;
         } else if (kind === cur || kind === want) { want = cur; goal = 0; }
         if (still) draw(0);
       } };
