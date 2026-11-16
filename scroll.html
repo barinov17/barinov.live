@@ -279,40 +279,51 @@
   /* подзаголовки прошлых проектов — узкой колонкой, раскрывающиеся описания — на всю ширину карточки */
   .zone.past .case > p { max-width: 400px; }
 
-  /* ——— Страница «scroll»: полноэкранные шаги — About и по одному на проект. Текст слева прямо по фону,
-     справа точки собираются в сцену текущего шага; переход между шагами — прокруткой. ——— */
+  /* ——— Страница «scroll»: полноэкранные шаги — About, по одному на проект и контакты в конце. Текст слева
+     прямо по фону, справа точки собираются в сцену текущего шага; переход — прокруткой или точками справа. ——— */
   html.listpage { scroll-snap-type: y mandatory; scroll-behavior: smooth; }
   main.list { display: none; }
-  .steps section.slide { position: relative; z-index: 1; display: flex; align-items: center; box-sizing: border-box; max-width: none; min-height: 100vh; min-height: 100svh; padding: 70px clamp(22px, 6.5vw, 104px) 50px; scroll-snap-align: start; scroll-snap-stop: always; }
-  .steps .pg { width: min(470px, 100%); max-width: none; }
+  .steps section.slide { position: relative; z-index: 1; display: flex; align-items: center; box-sizing: border-box; max-width: none; min-height: 100vh; min-height: 100svh; padding: 70px clamp(22px, 6.5vw, 104px) 56px; scroll-snap-align: start; scroll-snap-stop: always; }
+  .steps .pg { width: min(560px, 100%); max-width: none; }
+  .steps .first .pg { width: min(760px, 100%); }
   .steps .pg > * { grid-column: auto; max-width: none; }
-  .slide .next { position: absolute; left: clamp(22px, 6.5vw, 104px); bottom: 24px; font-size: 10px; letter-spacing: .12em; text-transform: uppercase; color: var(--muted); text-decoration: none; }
-  .slide .next:hover { color: var(--ink); }
-  .steps h1 { margin: 0 0 14px; font-size: clamp(32px, 3.3vw, 46px); line-height: 1.04; font-weight: 600; letter-spacing: -0.035em; color: var(--ink); white-space: normal; }
-  .steps h1.pt { font-size: clamp(27px, 2.7vw, 38px); font-weight: 500; letter-spacing: -0.025em; color: var(--accent); margin-bottom: 10px; }
-  .steps h3.lab { display: flex; justify-content: space-between; margin: 0 0 12px; font-size: 10px; font-weight: 500; letter-spacing: .12em; text-transform: uppercase; color: var(--muted); }
-  .steps .sum { max-width: none; margin: 0 0 28px; font-size: clamp(18px, 1.5vw, 21px); line-height: 1.34; letter-spacing: -0.012em; color: var(--muted); text-wrap: pretty; }
+  /* первая страница: крупное имя и крупное описание */
+  .steps h1 { margin: 0 0 clamp(18px, 2.4vw, 34px); font-size: clamp(46px, 6.6vw, 104px); line-height: .98; font-weight: 600; letter-spacing: -0.04em; color: var(--ink); white-space: normal; }
+  .steps .sum { max-width: 20em; margin: 0; font-size: clamp(22px, 2.5vw, 38px); line-height: 1.22; letter-spacing: -0.022em; color: var(--muted); text-wrap: balance; }
   .steps .sum b { color: var(--ink); font-weight: inherit; }
   .steps .sum em { color: var(--accent); font-style: normal; }
-  .steps .sub { margin: 0 0 18px; font-size: 18px; line-height: 1.38; color: var(--ink); }
-  .steps .body { font-size: 15px; line-height: 1.56; color: #CFC8C9; }
+  /* страницы проектов */
+  .steps h1.pt { margin: 0 0 14px; font-size: clamp(34px, 3.9vw, 60px); line-height: 1.04; font-weight: 500; letter-spacing: -0.03em; color: var(--accent); }
+  .steps .sub { margin: 0 0 22px; font-size: clamp(19px, 1.65vw, 25px); line-height: 1.32; letter-spacing: -0.012em; color: var(--ink); text-wrap: pretty; }
+  .steps .body { font-size: clamp(15.5px, 1.2vw, 18px); line-height: 1.55; color: #CFC8C9; }
   .steps .body p { margin: 0; max-width: none; }
-  .steps .body p + p, .page .body ul + p, .page .body p + ul { margin-top: .7em; }
-  .steps .body ul { margin: 0; padding-left: 1.1em; max-width: none; }
-  .steps .body li { margin: .25em 0; }
-  .steps .body a, .page .muted a { color: inherit; text-decoration: underline; text-decoration-color: rgba(243, 238, 232, .35); text-underline-offset: 3px; }
-  .steps .body a:hover { color: #7CC6DC; }
-  .steps .plabel { margin-top: 1em; color: var(--muted); }
+  .steps .body p + p, .steps .body ul + p, .steps .body p + ul { margin-top: .75em; }
+  .steps .body ul { display: block; margin: 0; padding: 0 0 0 1.25em; max-width: none; list-style: disc outside; }
+  .steps .body li { display: list-item; margin: .35em 0; padding: 0; }
+  .steps .body li::marker { color: var(--accent); }
+  .steps .body a { color: #7CC6DC; text-decoration: underline; text-decoration-color: rgba(124, 198, 220, .5); text-underline-offset: 3px; border: 0; }
+  .steps .body a:hover { color: #A8DDEC; text-decoration-color: currentColor; }
+  .steps .plabel { margin-top: 1.1em; color: var(--muted); }
   .steps .soon { color: var(--muted); }
-  .steps .site { display: inline-block; margin-top: 18px; }
-  .steps ul.links.col { display: flex; flex-direction: column; gap: 11px; max-width: none; margin: 0 0 26px; padding: 0; list-style: none; font-size: 17px; }
-  .steps ul.links.col a { display: inline-flex; align-items: center; gap: 11px; color: var(--ink); text-decoration: none; }
+  .steps .site { display: inline-block; margin-top: 22px; font-size: clamp(15.5px, 1.2vw, 18px); color: #7CC6DC; text-decoration: underline; text-decoration-color: rgba(124, 198, 220, .5); text-underline-offset: 3px; border: 0; }
+  .steps .site:hover { color: #A8DDEC; }
+  /* контакты */
+  .steps ul.links.col { display: flex; flex-direction: column; gap: clamp(12px, 1.4vw, 20px); max-width: none; margin: clamp(10px, 1.4vw, 22px) 0 0; padding: 0; list-style: none; font-size: clamp(20px, 2vw, 30px); letter-spacing: -0.015em; }
+  .steps ul.links.col a { display: inline-flex; align-items: center; gap: .6em; color: var(--ink); text-decoration: none; }
   .steps ul.links.col a:hover { color: #7CC6DC; }
-  .steps ul.links.col .logo { width: 18px; height: 18px; fill: currentColor; }
-  .steps .muted { margin: 0; font-size: 11.5px; color: var(--muted); }
+  .steps ul.links.col .logo { width: .9em; height: .9em; fill: currentColor; }
+  /* точки-навигация у правого края: текущий шаг крупнее, при наведении — название */
+  .dots { position: fixed; right: 14px; top: 50%; z-index: 6; display: flex; flex-direction: column; gap: 4px; transform: translateY(-50%); }
+  .dots a { position: relative; display: block; width: 18px; height: 14px; }
+  .dots a::before { content: ""; position: absolute; right: 6px; top: 4px; width: 6px; height: 6px; border-radius: 50%; background: rgba(243, 238, 232, .3); transition: background .2s, transform .2s; }
+  .dots a:hover::before { background: rgba(243, 238, 232, .8); }
+  .dots a[aria-current]::before { background: var(--accent); transform: scale(1.6); }
+  .dots a span { position: absolute; right: 24px; top: 50%; transform: translateY(-50%); padding: 3px 8px; border-radius: 999px; background: rgba(19, 18, 24, .8); font-size: 11px; white-space: nowrap; color: var(--ink); opacity: 0; pointer-events: none; transition: opacity .15s; }
+  .dots a:hover span { opacity: 1; }
   @media (max-width: 720px) {
-    .steps section.slide { align-items: flex-end; padding: 56px 18px 26px; }
-    .slide .next { display: none; }
+    .steps section.slide { align-items: flex-end; padding: 56px 26px 30px 18px; }
+    .dots { right: 2px; }
+    .dots a span { display: none; }
   }
   @media (prefers-reduced-motion: reduce) { html.listpage { scroll-behavior: auto; } }
 </style>
@@ -324,27 +335,15 @@
 <main class="list"></main>
 
 <div class="steps">
-  <section class="slide" id="about" data-scene="me">
+  <section class="slide first" id="about" data-scene="me" data-name="About">
     <article class="pg">
-      <h3 class="lab"><span>About</span><span>01 / 12</span></h3>
       <h1>Aleksandr Barinov</h1>
       <p class="sum"><b>Real estate professional</b> specializing in <b>concept development</b>, <b>masterplanning</b>, and <b>technology solutions</b> for <em><span style="white-space:nowrap">large-scale</span> development</em>.</p>
-      <h3 class="lab">Contacts</h3>
-      <ul class="links col">
-    <li><a href="https://wa.me/12428075582" target="_blank" rel="noopener"><svg class="logo" viewBox="0 0 24 24" aria-hidden="true"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/></svg>WhatsApp</a></li>
-    <li><a href="https://t.me/forbarinov" target="_blank" rel="noopener"><svg class="logo" viewBox="0 0 24 24" aria-hidden="true"><path d="M11.944 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0a12 12 0 0 0-.056 0zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 0 1 .171.325c.016.093.036.306.02.472-.18 1.898-.962 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.48.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z"/></svg>Telegram</a></li>
-    <li><a href="https://x.com/BarinovLive" target="_blank" rel="noopener"><svg class="logo" viewBox="0 0 24 24" aria-hidden="true"><path d="M18.901 1.153h3.68l-8.04 9.19L24 22.846h-7.406l-5.8-7.584-6.638 7.584H.474l8.6-9.83L0 1.154h7.594l5.243 6.932ZM17.61 20.644h2.039L6.486 3.24H4.298Z"/></svg>X.com</a></li>
-    <li><a href="https://medium.com/@barinov.live" target="_blank" rel="noopener"><svg class="logo" viewBox="0 0 24 24" aria-hidden="true"><path d="M13.54 12a6.8 6.8 0 01-6.77 6.82A6.8 6.8 0 010 12a6.8 6.8 0 016.77-6.82A6.8 6.8 0 0113.54 12zM20.96 12c0 3.54-1.51 6.42-3.38 6.42-1.87 0-3.39-2.88-3.39-6.42s1.52-6.42 3.39-6.42 3.38 2.88 3.38 6.42M24 12c0 3.17-.53 5.75-1.19 5.75-.66 0-1.19-2.58-1.19-5.75s.53-5.75 1.19-5.75C23.47 6.25 24 8.83 24 12z"/></svg>Medium</a></li>
-    <li><a href="https://www.linkedin.com/in/forbarinov/" target="_blank" rel="noopener"><svg class="logo" viewBox="0 0 24 24" aria-hidden="true"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>LinkedIn</a></li>
-  </ul>
-      <p class="muted">©2026 Aleksandr Barinov · Map data © <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener" style="color: inherit">OpenStreetMap</a> contributors</p>
     </article>
-    <a class="next" href="#rubiqos">scroll ↓</a>
   </section>
 
-  <section class="slide" id="rubiqos" data-scene="robots">
+  <section class="slide" id="rubiqos" data-scene="robots" data-name="RubiqOS">
     <article class="pg">
-      <h3 class="lab"><span>Now</span><span>02 / 12</span></h3>
       <h1 class="pt">RubiqOS</h1>
       <p class="sub">Physical AI platform for resort operations.</p>
       <div class="body">
@@ -354,9 +353,8 @@
     </article>
   </section>
 
-  <section class="slide" id="island" data-scene="island">
+  <section class="slide" id="island" data-scene="island" data-name="Private island">
     <article class="pg">
-      <h3 class="lab"><span>Masterplanning &amp; product</span><span>03 / 12</span></h3>
       <h1 class="pt">Private island development</h1>
       <p class="sub">Masterplan development for a $1B resort on a private island in the Caribbean.</p>
       <div class="body">
@@ -367,9 +365,41 @@
     </article>
   </section>
 
-  <section class="slide" id="moscow" data-scene="moscow">
+  <section class="slide" id="cern" data-scene="cern" data-name="CERN campus">
     <article class="pg">
-      <h3 class="lab"><span>Masterplanning &amp; product</span><span>04 / 12</span></h3>
+      <h1 class="pt">CERN campus</h1>
+      <p class="sub">Concept development for a laboratory complex on the CERN campus.</p>
+      <div class="body">
+        <p>I helped shape the concept for a complex of administrative buildings and laboratories at CERN. I ran several strategy sessions with the architectural teams and laboratory representatives to define clear requirements for the architectural design.</p>
+        <p class="plabel">Partners:</p>
+        <ul class="partners">
+          <li><a href="https://home.cern/" target="_blank" rel="noopener">CERN</a></li>
+          <li><a href="https://www.nickl-partner.com/en/" target="_blank" rel="noopener">Nickl &amp; Partner</a></li>
+        </ul>
+      </div>
+      
+    </article>
+  </section>
+
+  <section class="slide" id="easyinn" data-scene="" data-name="Easyinn">
+    <article class="pg">
+      <h1 class="pt">Easyinn</h1>
+      <p class="sub">Platform for automated property management.</p>
+      <div class="body">
+        <p>Easyinn started as an internal tool for running my own network of hotels with 280 units in total. It included a keyless access system and a guest app with a marketplace of local services.</p>
+        <p>It was later spun off as a standalone product and launched in several countries.</p>
+        <p class="plabel">Partners:</p>
+        <ul class="partners">
+          <li><a href="https://www.guesty.com/" target="_blank" rel="noopener">Guesty</a> — property management system</li>
+          <li><a href="https://nuki.io/" target="_blank" rel="noopener">Nuki</a> — smart locks</li>
+        </ul>
+      </div>
+      
+    </article>
+  </section>
+
+  <section class="slide" id="moscow" data-scene="moscow" data-name="Moscow-2050">
+    <article class="pg">
       <h1 class="pt">Foresight Moscow-2050</h1>
       <p class="sub">The largest foresight study for the Moscow masterplan.</p>
       <div class="body">
@@ -390,27 +420,8 @@
     </article>
   </section>
 
-  <section class="slide" id="easyinn" data-scene="">
+  <section class="slide" id="aircraft" data-scene="avia" data-name="Aircraft plant">
     <article class="pg">
-      <h3 class="lab"><span>Masterplanning &amp; product</span><span>05 / 12</span></h3>
-      <h1 class="pt">Easyinn</h1>
-      <p class="sub">Platform for automated property management.</p>
-      <div class="body">
-        <p>Easyinn started as an internal tool for running my own network of hotels with 280 units in total. It included a keyless access system and a guest app with a marketplace of local services.</p>
-        <p>It was later spun off as a standalone product and launched in several countries.</p>
-        <p class="plabel">Partners:</p>
-        <ul class="partners">
-          <li><a href="https://www.guesty.com/" target="_blank" rel="noopener">Guesty</a> — property management system</li>
-          <li><a href="https://nuki.io/" target="_blank" rel="noopener">Nuki</a> — smart locks</li>
-        </ul>
-      </div>
-      
-    </article>
-  </section>
-
-  <section class="slide" id="aircraft" data-scene="avia">
-    <article class="pg">
-      <h3 class="lab"><span>Masterplanning &amp; product</span><span>06 / 12</span></h3>
       <h1 class="pt">Aircraft assembly plant</h1>
       <p class="sub">Masterplan optimization for a high-tech manufacturing site.</p>
       <div class="body">
@@ -421,26 +432,8 @@
     </article>
   </section>
 
-  <section class="slide" id="cern" data-scene="cern">
+  <section class="slide" id="habithai" data-scene="" data-name="Habithai">
     <article class="pg">
-      <h3 class="lab"><span>Masterplanning &amp; product</span><span>07 / 12</span></h3>
-      <h1 class="pt">CERN campus</h1>
-      <p class="sub">Concept development for a laboratory complex on the CERN campus.</p>
-      <div class="body">
-        <p>I helped shape the concept for a complex of administrative buildings and laboratories at CERN. I ran several strategy sessions with the architectural teams and laboratory representatives to define clear requirements for the architectural design.</p>
-        <p class="plabel">Partners:</p>
-        <ul class="partners">
-          <li><a href="https://home.cern/" target="_blank" rel="noopener">CERN</a></li>
-          <li><a href="https://www.nickl-partner.com/en/" target="_blank" rel="noopener">Nickl &amp; Partner</a></li>
-        </ul>
-      </div>
-      
-    </article>
-  </section>
-
-  <section class="slide" id="habithai" data-scene="">
-    <article class="pg">
-      <h3 class="lab"><span>Real estate development</span><span>08 / 12</span></h3>
       <h1 class="pt">Habithai</h1>
       <p class="sub">Gated community development in Thailand.</p>
       <div class="body">
@@ -450,9 +443,8 @@
     </article>
   </section>
 
-  <section class="slide" id="nikolskiy" data-scene="">
+  <section class="slide" id="nikolskiy" data-scene="" data-name="Nikolskiy market">
     <article class="pg">
-      <h3 class="lab"><span>Real estate development</span><span>09 / 12</span></h3>
       <h1 class="pt">Nikolskiy market</h1>
       <p class="sub">Redevelopment of a cluster of historic buildings in Saint Petersburg.</p>
       <div class="body">
@@ -469,9 +461,8 @@
     </article>
   </section>
 
-  <section class="slide" id="sevkabel" data-scene="">
+  <section class="slide" id="sevkabel" data-scene="" data-name="Sevkabel Port">
     <article class="pg">
-      <h3 class="lab"><span>Real estate development</span><span>10 / 12</span></h3>
       <h1 class="pt">Sevkabel Port</h1>
       
       <div class="body">
@@ -481,9 +472,8 @@
     </article>
   </section>
 
-  <section class="slide" id="newholland" data-scene="">
+  <section class="slide" id="newholland" data-scene="" data-name="New Holland">
     <article class="pg">
-      <h3 class="lab"><span>Real estate development</span><span>11 / 12</span></h3>
       <h1 class="pt">New Holland</h1>
       
       <div class="body">
@@ -493,15 +483,27 @@
     </article>
   </section>
 
-  <section class="slide" id="colony" data-scene="">
+  <section class="slide" id="colony" data-scene="" data-name="The Colony">
     <article class="pg">
-      <h3 class="lab"><span>Real estate development</span><span>12 / 12</span></h3>
       <h1 class="pt">The Colony</h1>
       
       <div class="body">
         <p class="soon">Description coming soon.</p>
       </div>
       
+    </article>
+  </section>
+
+  <section class="slide" id="contacts" data-scene="" data-name="Contacts">
+    <article class="pg">
+      <h1 class="pt">Contacts</h1>
+      <ul class="links col">
+    <li><a href="https://wa.me/12428075582" target="_blank" rel="noopener"><svg class="logo" viewBox="0 0 24 24" aria-hidden="true"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/></svg>WhatsApp</a></li>
+    <li><a href="https://t.me/forbarinov" target="_blank" rel="noopener"><svg class="logo" viewBox="0 0 24 24" aria-hidden="true"><path d="M11.944 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0a12 12 0 0 0-.056 0zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 0 1 .171.325c.016.093.036.306.02.472-.18 1.898-.962 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.48.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z"/></svg>Telegram</a></li>
+    <li><a href="https://x.com/BarinovLive" target="_blank" rel="noopener"><svg class="logo" viewBox="0 0 24 24" aria-hidden="true"><path d="M18.901 1.153h3.68l-8.04 9.19L24 22.846h-7.406l-5.8-7.584-6.638 7.584H.474l8.6-9.83L0 1.154h7.594l5.243 6.932ZM17.61 20.644h2.039L6.486 3.24H4.298Z"/></svg>X.com</a></li>
+    <li><a href="https://medium.com/@barinov.live" target="_blank" rel="noopener"><svg class="logo" viewBox="0 0 24 24" aria-hidden="true"><path d="M13.54 12a6.8 6.8 0 01-6.77 6.82A6.8 6.8 0 010 12a6.8 6.8 0 016.77-6.82A6.8 6.8 0 0113.54 12zM20.96 12c0 3.54-1.51 6.42-3.38 6.42-1.87 0-3.39-2.88-3.39-6.42s1.52-6.42 3.39-6.42 3.38 2.88 3.38 6.42M24 12c0 3.17-.53 5.75-1.19 5.75-.66 0-1.19-2.58-1.19-5.75s.53-5.75 1.19-5.75C23.47 6.25 24 8.83 24 12z"/></svg>Medium</a></li>
+    <li><a href="https://www.linkedin.com/in/forbarinov/" target="_blank" rel="noopener"><svg class="logo" viewBox="0 0 24 24" aria-hidden="true"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>LinkedIn</a></li>
+  </ul>
     </article>
   </section>
 </div>
@@ -1315,12 +1317,20 @@
 </script>
 <script>
   /* ——— scroll: какой шаг занимает экран, та сцена и собирается; у шагов без своей сцены остаётся сфера.
-     Текущий шаг пишется в адрес (#island и т. п.), по такой ссылке страница откроется сразу на нём. ——— */
+     Справа — точки по числу шагов. Текущий шаг пишется в адрес (#island и т. п.). ——— */
   (function () {
-    var S = window.sphere, slides = document.querySelectorAll('.slide'), cur = -1;
+    var S = window.sphere, slides = document.querySelectorAll('.slide'), dots = document.createElement('nav'), links = [], cur = -1;
+    dots.className = 'dots'; dots.setAttribute('aria-label', 'Pages');
+    for (var i = 0; i < slides.length; i++) {
+      var a = document.createElement('a'), t = document.createElement('span');
+      a.href = '#' + slides[i].id; t.textContent = slides[i].getAttribute('data-name') || ''; a.setAttribute('aria-label', t.textContent);
+      a.appendChild(t); dots.appendChild(a); links.push(a);
+    }
+    document.body.appendChild(dots);
     function show(i) {
       if (i === cur || i < 0) return;
       cur = i;
+      for (var k = 0; k < links.length; k++) { if (k === i) links[k].setAttribute('aria-current', 'true'); else links[k].removeAttribute('aria-current'); }
       if (S && S.pin) S.pin(slides[i].getAttribute('data-scene') || null);
       try { history.replaceState(null, '', i === 0 ? location.pathname + location.search : '#' + slides[i].id); } catch (e) {}
     }
