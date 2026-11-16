@@ -514,6 +514,7 @@
       robots: { scale: 1, x: .71, y: .33, tilt: .27, turn: .01, swing: .65, speed: .22, dot: .85, dotHalo: .9, bright: 1.1, free: .2, halo: .08, spread: 1.5, jitter: .02, edge: 0, accent: 1, accentDot: 1, marina: 1, build: 1 },
       cern:   { scale: 1.42, x: .675, y: .46, tilt: .5, turn: 0, swing: 0, speed: .12, dot: .9, dotHalo: .8, bright: 1.1, free: .2, halo: .3, spread: .35, jitter: .04, edge: 0, accent: 1, accentDot: 1, marina: 1, build: 1 },
       moscow: { scale: 1, x: .72, y: .48, tilt: .72, turn: 0, swing: 0, speed: .06, dot: .85, dotHalo: .8, bright: 1.1, free: .1, halo: .12, spread: .4, jitter: .004, edge: 0, accent: 1.5, accentDot: .8, marina: 1.9, build: 1 },
+      avia:   { scale: 1.6, x: .72, y: .52, tilt: .4, turn: -.2, swing: .2, speed: .14, dot: .9, dotHalo: .8, bright: 1.1, free: .12, halo: .12, spread: .4, jitter: .006, edge: 0, accent: 1.3, accentDot: .9, marina: 1, build: 1.25 },
       island: { scale: 1.61, x: .69, y: .45, tilt: .65, turn: -.45, swing: .08, speed: .53, dot: 1.1, dotHalo: .85, bright: 1, free: .35, halo: .2, spread: 1.36, jitter: 0, edge: .26, accent: 1.85, accentDot: .8, marina: 1.75, build: 2.05 }
     };
     var V = {}, vk, vp;
@@ -631,6 +632,7 @@
       function S(c, r, m) { var w = 12.566 * r * r * (m || 1) * g; L.push({ c: at(c), r: r, w: w }); tot += w; }
       function B(c, h, m) { var w = 8 * (h[0] * h[1] + h[1] * h[2] + h[0] * h[2]) * (m || 1) * g; L.push({ bc: at(c), h: h, yc: yc, ys: ys, w: w }); tot += w; }
       function E(c, h, m) { var w = 5.2 * (h[0] * h[1] + h[1] * h[2] + h[0] * h[2]) * (m || 1) * g; L.push({ ec: at(c), h: h, yc: yc, ys: ys, w: w }); tot += w; }
+      function T3(a, b, c, m) { a = at(a); b = at(b); c = at(c); var ux = b[0] - a[0], uy = b[1] - a[1], uz = b[2] - a[2], vx = c[0] - a[0], vy = c[1] - a[1], vz = c[2] - a[2], cx = uy * vz - uz * vy, cy = uz * vx - ux * vz, cz = ux * vy - uy * vx, w = Math.sqrt(cx * cx + cy * cy + cz * cz) * (m || 1) * g; L.push({ t3: [a, b, c], w: w }); tot += w; }
       function R(c, rad, m, kz, tb) { var w = rad * .4 * (m || 1) * g; L.push({ rc: at(c), R: rad, kz: kz || 1, tb: tb || .006, w: w }); tot += w; }
       var k, sx, sz;
 
@@ -702,6 +704,67 @@
         put(0, 0, 0, 0, 1);
         pl = [[-2.0, -.37], [-.75, -.3], [-.3, -.26], [0, -.56], [.65, .2], [.75, .72], [.7, -.34], [1.52, .52], [1.75, .3], [2.3, .24]];
         for (k = 0; k < pl.length; k++) { var py = hgt(pl[k][0], pl[k][1]), ph0 = .34 + rnd(k, 34) * .2; Ln([pl[k][0], py + .05, pl[k][1]], [pl[k][0], py + ph0, pl[k][1]], 1.3); S([pl[k][0], py + ph0 + .04, pl[k][1]], .04, 22); }
+        return (ARM[kind] = { L: L, tot: tot });
+      }
+
+      /* ——— Аэродром авиазавода (для проекта Aircraft assembly plant) ———
+         Бетонный перрон с сеткой швов, ряд самолётов наискосок, «летающее крыло» у большого арочного ангара,
+         диспетчерская вышка с пристройками, дальние ангары, ограждение, машины и горная гряда на горизонте.
+         Формы условные: фюзеляжи — цилиндры, крылья и кили — треугольники. x — вправо, z — вдаль. */
+      if (kind === 'avia') {
+        put(0, 0, 0, 0, 1);
+        function Lq(a, b, kk, kd) { Ln(a, b, kk); if (kd) L[L.length - 1].k = kd; }
+        /* перрон: швы плит — редкие фоновые линии, край перрона — чёткий */
+        for (k = 0; k <= 10; k++) { Lq([-1.25 + k * .37, 0, -1.6], [-1.25 + k * .37 + .55, 0, 2.0], .16, 2); Lq([-1.25, 0, -1.6 + k * .36], [2.6, 0, -1.6 + k * .36], .16, 2); }
+        Lq([-1.25, 0, -1.6], [-.7, 0, 2.0], .7); Lq([-.7, 0, 2.0], [2.9, 0, 2.0], .5);
+        /* самолёт: sc0 — размер, нос смотрит по локальной оси x */
+        function jet(px, pz, yaw, sc0, gain) {
+          put(px, 0, pz, yaw, gain || 5);
+          function v(a, b, c) { return [a * sc0, b * sc0, c * sc0]; }
+          C(v(-.3, .1, 0), v(.2, .1, 0), .036 * sc0); C(v(.2, .1, 0), v(.36, .094, 0), .021 * sc0); S(v(.37, .093, 0), .012 * sc0, 2); S(v(.13, .135, 0), .03 * sc0, 1.5);
+          for (var sd = -1; sd <= 1; sd += 2) {
+            C(v(-.37, .095, sd * .045), v(-.1, .095, sd * .045), .03 * sc0, true);
+            T3(v(.12, .1, sd * .036), v(-.2, .1, sd * .036), v(-.15, .1, sd * .28), 2.2); T3(v(-.15, .1, sd * .28), v(-.07, .1, sd * .28), v(.12, .1, sd * .036), 2.2);
+            T3(v(-.24, .1, sd * .05), v(-.39, .1, sd * .05), v(-.37, .1, sd * .18), 2.2);
+            T3(v(-.2, .12, sd * .06), v(-.37, .12, sd * .06), v(-.37, .28, sd * .1), 2.2);
+            Lq(v(-.12, .09, sd * .06), v(-.12, 0, sd * .06), 1.2);
+          }
+          Lq(v(.18, .09, 0), v(.18, 0, 0), 1.2);
+        }
+        jet(-.95, -1.05, -.12, 1.25); jet(-.8, -.35, -.1, 1.15); jet(-.62, .3, -.1, 1.1); jet(-.48, .9, -.12, 1.05);
+        jet(-2.15, .75, -.05, .85, 3.5); jet(-1.9, 1.05, -.05, .8, 3.5); jet(-.9, 1.75, -.3, .8, 3.5);
+        /* «летающее крыло» перед большим ангаром */
+        put(1.45, 0, .85, 3.0, 4);
+        for (var sw = -1; sw <= 1; sw += 2) { T3([.32, .09, 0], [-.12, .09, 0], [-.25, .09, sw * .62], 1.6); T3([-.12, .09, 0], [-.3, .09, sw * .3], [-.25, .09, sw * .62], 1.6); Lq([-.05, .08, sw * .12], [-.05, 0, sw * .12], 1.2); }
+        C([-.1, .1, 0], [.2, .1, 0], .035); S([.16, .125, 0], .028, 1.5); Lq([.2, .08, 0], [.2, 0, 0], 1.2);
+        /* арочные ангары: половина цилиндра над землёй, торец с воротами */
+        function hangar(px, pz, yaw, len, rad, gain) {
+          put(px, 0, pz, yaw, gain || 1.4);
+          C([-len, 0, 0], [len, 0, 0], rad); L[L.length - 1].arch = 1;
+          for (var h0 = 0; h0 < 12; h0++) { var a0 = h0 * .2618, a1 = (h0 + 1) * .2618; Lq([len, Math.sin(a0) * rad, Math.cos(a0) * rad], [len, Math.sin(a1) * rad, Math.cos(a1) * rad], 1.6); Lq([-len, Math.sin(a0) * rad, Math.cos(a0) * rad], [-len, Math.sin(a1) * rad, Math.cos(a1) * rad], 1); }
+          Lq([len, 0, -rad * .62], [len, rad * .55, -rad * .62], 1.4); Lq([len, rad * .55, -rad * .62], [len, rad * .55, rad * .62], 1.4); Lq([len, rad * .55, rad * .62], [len, 0, rad * .62], 1.4); Lq([len, 0, -rad], [len, 0, rad], 1.2);
+        }
+        hangar(2.45, 1.05, 3.14, .5, .46, 1.5); hangar(.1, 2.55, -1.57, .28, .24, 1.6); hangar(.95, 2.6, -1.57, .32, .27, 1.6);
+        /* диспетчерская вышка с пристройками */
+        put(1.35, 0, 2.3, .1, 3);
+        B([0, .26, 0], [.065, .26, .065]); B([0, .57, 0], [.095, .05, .095]); B([0, .64, 0], [.07, .02, .07]); Lq([0, .66, 0], [0, .8, 0], 1.6);
+        B([.3, .09, .02], [.2, .09, .12]); B([-.28, .07, .05], [.17, .07, .1]); B([.62, .06, -.02], [.1, .06, .08]);
+        /* ограждение слева, машины на перроне */
+        put(0, 0, 0, 0, 1);
+        Lq([-1.75, .06, -1.6], [-1.2, .06, 1.6], .9); Lq([-1.75, 0, -1.6], [-1.2, 0, 1.6], .4);
+        for (k = 0; k < 14; k++) Lq([-1.75 + k * .0423, 0, -1.6 + k * .246], [-1.75 + k * .0423, .06, -1.6 + k * .246], 1);
+        function truck(px, pz, yaw, sc0) { put(px, 0, pz, yaw, 3); B([0, .045 * sc0, 0], [.1 * sc0, .03 * sc0, .035 * sc0]); B([.07 * sc0, .075 * sc0, 0], [.03 * sc0, .028 * sc0, .033 * sc0]); C([-.03 * sc0, .085 * sc0, 0], [-.1 * sc0, .085 * sc0, 0], .026 * sc0, true); }
+        truck(-1.5, -.75, 1.3, 1.1); truck(-1.42, -.2, 1.3, .9); truck(2.25, -.1, .2, 1.1); truck(2.5, -.02, .2, 1); truck(1.3, 1.75, 0, .9);
+        /* горы на горизонте: две ломаные гряды */
+        put(0, 0, 0, 0, 1);
+        for (var rg = 0; rg < 2; rg++) {
+          var prev = null;
+          for (k = 0; k <= 22; k++) {
+            var mx0 = -4.2 + k * .38, mh = (rg ? .34 : .2) + (rg ? .5 : .28) * rnd(k + rg * 40, 61) * (k % 2 ? 1 : .45) * (mx0 < .5 ? 1 : .55), cur0 = [mx0, mh, 4.2 + rg * .7];
+            if (prev) Lq(prev, cur0, rg ? .55 : .4);
+            prev = cur0;
+          }
+        }
         return (ARM[kind] = { L: L, tot: tot });
       }
 
@@ -816,7 +879,7 @@
         if (best >= 0) { q.NX[i] = q.X[best]; q.NY[i] = q.Y[best]; q.NZ[i] = q.Z[best]; }
       }
     }
-    function targets() { fill('robots'); fill('cern'); fill('island'); fill('moscow'); use(cur); }
+    function targets() { fill('robots'); fill('cern'); fill('island'); fill('moscow'); fill('avia'); use(cur); }
 
     function fill(kind) {
       if (kind === 'moscow') {
@@ -856,7 +919,12 @@
         var pick = rnd(i, 3) * A.tot, o = 0, P0 = A.L[0];
         for (; o < A.L.length; o++) { P0 = A.L[o]; pick -= P0.w; if (pick <= 0) break; }
         var u1 = rnd(i, 5), u2 = rnd(i, 6), u3 = rnd(i, 8), u4 = rnd(i, 9), ph = 6.2832 * u2;
-        if (P0.gc) {
+        if (P0.t3) {
+          /* треугольник: равномерно по площади */
+          var ta = u1, tb2 = u2; if (ta + tb2 > 1) { ta = 1 - ta; tb2 = 1 - tb2; }
+          var A0 = P0.t3[0], B0 = P0.t3[1], C1 = P0.t3[2];
+          TX[i] = A0[0] + (B0[0] - A0[0]) * ta + (C1[0] - A0[0]) * tb2; TY[i] = A0[1] + (B0[1] - A0[1]) * ta + (C1[1] - A0[1]) * tb2; TZ[i] = A0[2] + (B0[2] - A0[2]) * ta + (C1[2] - A0[2]) * tb2;
+        } else if (P0.gc) {
           /* облако: точки внутри приплюснутого эллипсоида, гуще к центру, только над землёй */
           var cz = 1 - 2 * u1, cq = Math.sqrt(1 - cz * cz), cr = Math.pow(u3, .6);
           TX[i] = P0.gc[0] + P0.h[0] * cr * cq * Math.cos(ph); TY[i] = P0.gc[1] + P0.h[1] * cr * Math.abs(cz); TZ[i] = P0.gc[2] + P0.h[2] * cr * cq * Math.sin(ph);
@@ -905,6 +973,7 @@
           TX[i] = a[0] + (b[0] - a[0]) * t + ux * cs + wx * sn; TY[i] = a[1] + (b[1] - a[1]) * t + uy * cs + wy * sn; TZ[i] = a[2] + (b[2] - a[2]) * t + uz * cs + wz * sn;
         }
         /* вид точки: 1 — чёткая линия или кольцо (не размывается), 0 — обычная; размытие добавляется при отрисовке */
+        if (P0.arch && TY[i] < 0) TY[i] = -TY[i];       /* арочный ангар: нижняя половина цилиндра зеркалится наверх */
         TH[i] = P0.k || (P0.ln || (P0.rc && !soft) ? 1 : P0.bg ? 2 : 0);   /* k — явно заданный вид: 3 — линии-акценты, 4 — вода */
         TD[i] = rnd(i, 7);
       }
@@ -946,10 +1015,10 @@
         /* роботы: вид чуть сверху, сцена покачивается; коллайдер: вид сверху под углом, медленно вращается;
            остров: вид сверху, как на макете, плавно поворачивается туда-обратно;
            Москва: вид сверху под углом, очень медленно вращается */
-        var cn = cur === 'cern', isl = cur === 'island', mk = cur === 'moscow', v = V[cur], tt = ms / 1000;
+        var cn = cur === 'cern', isl = cur === 'island', mk = cur === 'moscow', av = cur === 'avia', v = V[cur], tt = ms / 1000;
         var ang = v.turn + (v.swing > 0 ? v.swing * Math.sin(tt * v.speed) : tt * v.speed), ca = Math.cos(ang), sa = Math.sin(ang);
-        var ct = Math.cos(v.tilt), st = Math.sin(v.tilt), ey = cn || mk ? 0 : isl ? .1 : 1.75, pd = cn || isl || mk ? 10 : 8, dk = cn ? .14 : isl || mk ? .1 : .13;
-        var sc = (cn ? Math.min(H * .147, W * .102) : mk ? Math.min(H * .16, W * .1) : isl ? Math.min(H * .2, W * .096) : Math.min(H * .2, W * .105)) * v.scale, ox = W * v.x, oy = H * v.y;
+        var ct = Math.cos(v.tilt), st = Math.sin(v.tilt), ey = cn || mk ? 0 : isl ? .1 : av ? .55 : 1.75, pd = cn || isl || mk ? 10 : 8, dk = cn ? .14 : isl || mk ? .1 : av ? .09 : .13;
+        var sc = (av ? Math.min(H * .2, W * .1) : cn ? Math.min(H * .147, W * .102) : mk ? Math.min(H * .16, W * .1) : isl ? Math.min(H * .2, W * .096) : Math.min(H * .2, W * .105)) * v.scale, ox = W * v.x, oy = H * v.y;
         for (i = 0; i < PTS.length; i++) {
           var e = morph * 1.6 - TD[i] * .6;
           if (e <= 0) continue;
@@ -1022,7 +1091,7 @@
         if (still) draw(0);
       } };
 
-    /* наведение на проект собирает точки в его сцену: RubiqOS — парк роботов, CERN — коллайдер, частный остров — макет острова, Москва-2050 — карта города по данным OpenStreetMap;
+    /* наведение на проект собирает точки в его сцену: RubiqOS — парк роботов, CERN — коллайдер, частный остров — макет острова, Москва-2050 — карта города по данным OpenStreetMap, авиазавод — аэродром с самолётами;
        на узких экранах эффект выключен */
     function bind(el, kind) {
       if (!el) return;
@@ -1036,6 +1105,7 @@
       if (/CERN/.test(hs[hi].textContent)) bind(hs[hi].closest('.case'), 'cern');
       if (/island/i.test(hs[hi].textContent)) bind(hs[hi].closest('.case'), 'island');
       if (/Moscow/i.test(hs[hi].textContent)) bind(hs[hi].closest('.case'), 'moscow');
+      if (/Aircraft/i.test(hs[hi].textContent)) bind(hs[hi].closest('.case'), 'avia');
     }
   })();
 </script>
@@ -1060,7 +1130,7 @@
       ['speed', 'Скорость', 0, 2.5, .01], ['count', 'Число точек', 300, 16000, 100], ['dot', 'Размер точки', .3, 3.5, .05],
       ['alpha', 'Яркость', 0, 1.6, .01], ['breathe', '«Дыхание» формы', 0, 3, .05], ['accent', 'Акцентных точек, %', 0, 40, 1]
     ];
-    var SCN = [['robots', 'RubiqOS'], ['island', 'Private island'], ['cern', 'CERN campus'], ['moscow', 'Moscow-2050']];
+    var SCN = [['robots', 'RubiqOS'], ['island', 'Private island'], ['cern', 'CERN campus'], ['moscow', 'Moscow-2050'], ['avia', 'Aircraft plant']];
     var GROUPS = [
       ['Положение и вид', [
         ['scale', 'Размер', .3, 2.5, .01], ['x', 'Позиция по X', .2, 1.1, .005], ['y', 'Позиция по Y', .1, .9, .005],
@@ -1149,7 +1219,7 @@
     });
     var hs = document.querySelectorAll('.case h3');
     for (var i = 0; i < hs.length; i++) {
-      var t = hs[i].textContent, el = hs[i].closest('.case'), k = /RubiqOS/.test(t) ? 'robots' : /CERN/.test(t) ? 'cern' : /island/i.test(t) ? 'island' : /Moscow/i.test(t) ? 'moscow' : null;
+      var t = hs[i].textContent, el = hs[i].closest('.case'), k = /RubiqOS/.test(t) ? 'robots' : /CERN/.test(t) ? 'cern' : /island/i.test(t) ? 'island' : /Moscow/i.test(t) ? 'moscow' : /Aircraft/i.test(t) ? 'avia' : null;
       if (k) { cases[k] = el; el.classList.add('pick'); }
     }
     GROUPS.forEach(function (g) {
