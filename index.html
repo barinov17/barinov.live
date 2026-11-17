@@ -692,7 +692,7 @@
        поэтому любое число первых точек даёт ровную выборку. */
     /* данные сцен лежат отдельными файлами в /data и подгружаются, когда сцена нужна (и заранее — для соседних страниц);
        на телефоне берётся облегчённый набор — первые 5000 точек того же перемешанного набора, то есть ровно те, что он рисует */
-    var IP = null, MP = null, AP = null, SPB = null, CP = null, PP = null, GP = null, DV = '3', LOADING = {};
+    var IP = null, MP = null, AP = null, SPB = null, CP = null, PP = null, GP = null, DV = '4', LOADING = {};
     function dat(kind) { return kind === 'island' ? IP : kind === 'moscow' ? MP : kind === 'avia' ? AP : kind === 'spb' ? SPB : kind === 'cern' ? CP : kind === 'me' ? PP : kind === 'globe' ? GP : null; }
     function has(kind) { if (kind === 'robots') return true; var d = dat(kind); return !!d && !(d.lite && d.n < PTS.length); }
     function load(kind, done) {
@@ -1005,7 +1005,7 @@
           TX[aq] = (AD.mn[0] + (araw.charCodeAt(ao) + araw.charCodeAt(ao + 1) * 256) / 65535 * (AD.mx[0] - AD.mn[0])) / adv;
           TZ[aq] = (AD.mn[1] + (araw.charCodeAt(ao + 2) + araw.charCodeAt(ao + 3) * 256) / 65535 * (AD.mx[1] - AD.mn[1]) + azs) / adv;
           TY[aq] = araw.charCodeAt(ao + 4) / 255 * AD.hm / 1000 / adv * ahx;
-          TH[aq] = af === 2 ? 3 : af === 3 ? 4 : af === 1 ? 0 : af === 4 ? 1 : 2;   /* 4 — рёбра корпусов: чёткие линии, рисуются всегда */
+          TH[aq] = af === 2 ? 3 : af === 3 ? 4 : af === 1 ? 0 : af === 4 ? 1 : af === 5 ? 6 : 2;   /* 4 — рёбра корпусов: чёткие линии, рисуются всегда */
           TD[aq] = rnd(aq, 7);
         }
         SC[kind] = { X: TX, Y: TY, Z: TZ, D: TD, H: TH }; nearest(SC[kind]);
@@ -1169,7 +1169,7 @@
           if (e > 1) e = 1;
           e = e * e * (3 - 2 * e);
           /* часть точек остаётся в сфере, часть уходит в облако вокруг формы, остальные встают в форму с небольшим размытием */
-          var kf = TH[i], r1 = Q1[i], crisp = kf === 1 || kf >= 3;   /* 1 — чёткая линия, 3 — берег и дороги острова, 4 — марина, 5 — контур шара */
+          var kf = TH[i], r1 = Q1[i], crisp = kf === 1 || kf >= 3;   /* 1 — чёткая линия, 3 — берег и дороги острова, 4 — марина, 5 — контур шара, 6 — круги радиусов (приглушённая линия) */
           if (!crisp && r1 < v.free) continue;
           var cl = !crisp && r1 < v.free + v.halo, off = kf === 1 ? 0 : kf >= 3 ? v.jitter * Q2[i] * .5 : cl ? v.spread * (.1 + .9 * Q2[i] * Q2[i]) : v.jitter * Q2[i];
           var eg = crisp ? 0 : v.edge;                /* прижатие к ближайшей линии */
@@ -1186,12 +1186,12 @@
             if (qx0 || qy0 || qz0) { var rn = 1 - Math.abs(-qy0 * st + (qz0 * ca - qx0 * sa) * ct); rn = rn * rn * rn; tn *= (1 - .7 * v.rim) + 2.6 * v.rim * rn; rimS = 1 + .45 * v.rim * rn; }
             else tn *= 1 + .5 * v.rim;                 /* рёбра коробок всегда считаются профилем */
           }
-          if (cl || kf === 2) tn = .06 + tn * .22; else if (kf === 3) tn *= v.accent; else if (kf === 5) tn = .5 * v.accent; else if (kf === 4) tn *= v.marina; else if (kf === 0 || (kf === 1 && (cn || av))) tn *= v.build;
+          if (cl || kf === 2) tn = .06 + tn * .22; else if (kf === 3) tn *= v.accent; else if (kf === 5) tn = .5 * v.accent; else if (kf === 4) tn *= v.marina; else if (kf === 6) tn = .12 * v.accent; else if (kf === 0 || (kf === 1 && (cn || av))) tn *= v.build;
           if (tn > 1) tn = 1;
           if (mk && kf === 4) tn *= 2;   /* Москва: река вдвое ярче остальных линий (выше обычного потолка яркости), точки реки крупнее — см. ниже */
           if (v.fade > 0 && (kf === 0 || kf === 2 || kf === 4 || ((cn || av) && kf === 1))) { var fr = Math.sqrt((bx - FCX) * (bx - FCX) + (bz - FCZ) * (bz - FCZ)) / RAD; fr = fr < .2 ? 0 : fr > 1 ? 1 : (fr - .2) / .8; var fg = 1 - v.fade * Math.pow(fr, 1.3); tn *= fg < .08 ? .08 : fg; }   /* затухание от центра к краям: середина сцены в полную яркость, дальше плавно гаснет; акцентные линии (контуры, дороги) не трогаем — силуэт остаётся */
           if (kf === 3 && cur === 'spb' && TY[i] > .012) { var ag = 1 - (TY[i] - .012) / .352; tn *= ag > 0 ? Math.pow(ag, 1.5) : 0; }   /* Петербург: вертикальные оси проектов гаснут кверху — яркие у основания, вверху растворяются */
-          SZ[i] = (1 + ((cl || kf === 2 ? v.dotHalo : kf >= 3 ? v.dot * v.accentDot : v.dot) - 1) * e) * (1 + (rimS - 1) * e) * (1 + (md - 1) * e) * (mk && kf === 4 ? 1 + .3 * e : 1);
+          SZ[i] = (1 + ((cl || kf === 2 ? v.dotHalo : kf >= 3 ? v.dot * v.accentDot : v.dot) - 1) * e) * (1 + (rimS - 1) * e) * (1 + (md - 1) * e) * (mk && kf === 4 ? 1 + .3 * e : 1) * (cur === 'spb' && kf === 4 ? 1 + .55 * e : 1);   /* Петербург: точки берегов крупнее — линия воды читается первой */
           SX[i] += (ox + ax * sc * pf - SX[i]) * e; SY[i] += (oy + ay2 * sc * pf - SY[i]) * e; NR[i] += (tn - NR[i]) * e;
         }
       }
