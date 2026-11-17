@@ -692,7 +692,7 @@
        поэтому любое число первых точек даёт ровную выборку. */
     /* данные сцен лежат отдельными файлами в /data и подгружаются, когда сцена нужна (и заранее — для соседних страниц);
        на телефоне берётся облегчённый набор — первые 5000 точек того же перемешанного набора, то есть ровно те, что он рисует */
-    var IP = null, MP = null, AP = null, SPB = null, CP = null, PP = null, GP = null, DV = '4', LOADING = {};
+    var IP = null, MP = null, AP = null, SPB = null, CP = null, PP = null, GP = null, DV = '5', LOADING = {};
     function dat(kind) { return kind === 'island' ? IP : kind === 'moscow' ? MP : kind === 'avia' ? AP : kind === 'spb' ? SPB : kind === 'cern' ? CP : kind === 'me' ? PP : kind === 'globe' ? GP : null; }
     function has(kind) { if (kind === 'robots') return true; var d = dat(kind); return !!d && !(d.lite && d.n < PTS.length); }
     function load(kind, done) {
